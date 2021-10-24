@@ -1,0 +1,9 @@
+unquote -> u
+remove  -> r
+dup     -> d
+quote   -> q
+concat  -> c
+swap    -> s
+dip   -> s q c u
+swapd -> (s) dip
+dupd  -> (d) dip
