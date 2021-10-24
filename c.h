@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-typedef int I; typedef char *C; typedef void V; typedef enum { Q,TRM,ST,ER } T;
+typedef int I; typedef char *C; typedef void V; typedef enum { Q,TRM,ST } T;
 typedef struct m { I t; C w; struct m *c,*n; } *M;                     I sM=sizeof(struct m); // ast
 typedef struct d { I (*p)(); C w; struct d *c,*n; V (*f)(); I l; } *D; I sD=sizeof(struct d); // def
 #define R return
@@ -20,10 +20,9 @@ M nM(I t,C w) { M m=ma(sM); m->t=t; m->w=ma(strlen(w)+1); strcpy(m->w,w); m->n=m
 M cM(M m) { M z=nM(m->t,m->w); if (m->c) { M oc=m->c, nc=cM(oc); MAP(oc->n,nc=nc->n=cM(c)); z->c=nc; } R z; }
 
 M wd(C t,I st,I l,M *p) { C w=ma(l+1); strncpy(w,t+st,l); w[l]='\0'; M n=nM(TRM,w); fr(w); *p=n; R n; }
-V P(C t,I *i,M *s,I lvl) { I st=*i; M *c=s; /* n/c */ do switch (t[*i]) { 
-	// todo: error checking
+V P(C t,I *i,M *s) { I st=*i; M *c=s; /* n/c */ do switch (t[*i]) { 
 	#define WD if (*i>st) c=&(wd(t,st,*i-st,c)->n)
 	case ' ': case '\0': WD; st=*i+1; break;
-	case '(': WD; M n=nM(Q,""); *c=n; c=&(n->n); (*i)++; P(t,i,&(n->c),lvl+1); st=*i+1; break;
-	case ')': WD; R; } while (t[(*i)++]); }
+	case '(': WD; M n=nM(Q,""); *c=n; c=&(n->n); (*i)++; P(t,i,&(n->c)); st=*i+1; break;
+	case ')': WD; R; } while ((*i)++<strlen(t)); }
 #endif
