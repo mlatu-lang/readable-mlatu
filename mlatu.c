@@ -29,7 +29,7 @@ I main(I ac,C *av) { D a=nID(wP,0,"?a\0"), r=nD("r\0",rPtv), d=nD("d\0",dPtv), q
 	for (I i=0;i<ac;i++) { if (!strcmp("-d",av[i])) dbg=1; }
 	C t=ma(100); I i, l;
 	while (gets(t)) { l=ch=i=0; M ast=nM(ST,""); P(t,&i,&ast->n); 
-		if (i!=1+strlen(t)) { printf("parsing error: mismatched parentheses\n"); goto end; }
+		if (i!=1+strlen(t)) { printf("X-> parsing error: mismatched parentheses\n"); goto end; }
 		ex(ast,a); MAP(ast,l++); if (l==2&&!strcmp("bye",ast->n->w)) { fML(ast); exit(0); } 
 		if (!dbg||!ch) prAST(ast); end: fML(ast); }
 	fD(a); }
