@@ -1,4 +1,5 @@
-# Readable Mlatu - an implementation of Mlatu written in C
+# Readable Mlatu 
+### An implementation of Mlatu written in C
 Some Quiche Eaters have been complaining that code here is illegible, so I have named it "Readable Mlatu" to assert their fallaciousness.
 
 ## Compiling and running
