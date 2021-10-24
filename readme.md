@@ -9,7 +9,7 @@ Any line that rewrites to `bye` will exit the repl.
 Run with `-d` to enable debug mode.
 
 ## Files
-[c.h](c.h) - Common header. Macros, types and type helper functions, and parser.
+[c.h](c.h) - Common header. Macros, types and type helper functions, and parser.  
 [mlatu.c](mlatu.c) - The repl, and rewriting functions.
 
 ## Parsing tests:
