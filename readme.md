@@ -1,6 +1,7 @@
 # Readable Mlatu 
 ## An implementation of Mlatu written in C
-Some Quiche Eaters have been complaining that code here is illegible, so I have named it "Readable Mlatu" to assert their fallaciousness.
+Some Quiche Eaters have been complaining that code here is illegible, so I have named it "Readable Mlatu" to assert their fallaciousness.  
+Documentation for primitives at [docs.md](docs.md).
 
 ## Compiling and running
 Works with gcc/clang, hasn't been tested with any other compilers.  
@@ -10,7 +11,8 @@ Any line that rewrites to `bye` will exit the repl.
 Run with `-d` to enable debug mode.
 
 ## Files
-[c.h](c.h) - Common header. Macros, types and type helper functions, and parser. If you are reading the code, it's a good idea to start here, at the parse function (`P`).  
+[c.h](c.h) - Common header. Macros, types and type helper functions, and parser.  
+[p.c](p.c) - Parsers (query/rule). If you're reading the code, it's a good idea to start here, at the parser function (`P`).  
 [mlatu.c](mlatu.c) - The repl, and rewriting functions.
 
 ## Parsing tests:

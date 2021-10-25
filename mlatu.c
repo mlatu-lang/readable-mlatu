@@ -1,5 +1,5 @@
-// primitives - u (unquote) r (remove) d (dup) q (quote) c (concat) s (swap)
 #include "c.h"
+#include "p.c"
 V r(M m) { M n=m->n->n; fM(m->n); m->n=n; }
 I wP(M M) { R 1; } I qP(M m) { R m->t==Q; }
 V rPtv(M m) { r(m); r(m); } 
