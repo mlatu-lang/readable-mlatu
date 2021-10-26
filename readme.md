@@ -19,3 +19,6 @@ Run with `-d` to enable debug mode.
 ```
 cat t.txt | ./mlatu
 ```
+
+## License
+readable-mlatu, like all mlatu-lang projects, is licensed under https://mlatu-lang.github.io/license/
