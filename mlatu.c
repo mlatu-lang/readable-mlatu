@@ -1,7 +1,7 @@
 #include "c.h"
 #include "p.c"
 V rm(M m) { M n=m->n->n; fM(m->n); m->n=n; }
-I wP(M M) { R 1; } I qP(M m) { R m->t==Q; }
+I wP(M M) { R 1; } I qP(M m) { R m->t==Q; } // ?w and ?q
 V rPtv(M m) { rm(m); rm(m); } 
 V sPtv(M m) { M c=m->n; m->n=c->n; c->n=m->n->n; m->n->n=c; rm(m->n->n); }
 V dPtv(M m) { rm(m->n); M c=cM(m->n); c->n=m->n->n; m->n->n=c; }
@@ -9,18 +9,19 @@ V qPtv(M m) { rm(m->n); M q=nM(Q,""); q->c=m->n; q->n=m->n->n; q->c->n=0; m->n=q
 V uPtv(M m) { M cs=m->n->c; m->n->c=0; rm(m); rm(m); if (!cs) R; MAP(cs,); c->n=m->n; m->n=cs;  }
 V cPtv(M m) { M q=m->n->n; MAP(m->n->c,); if (!c) m->n->c=q->c; else c->n=q->c; q->c=0; rm(m->n); rm(m->n); }
  
-I lst; V prML(M m); V prM(M m) { if (lst==Q) lst=TRM; else PF(" "); switch (m->t) { 
+I lst; V prML(M m); V prM(M m) { if (lst==Q) lst=TRM; else PF(" "); switch (m->t) { // print ast node
 	case TRM: DO(strlen(m->w),I e=esc(m->w[i]);PF("%*s%c",e,e?"`":"",m->w[i])); break;
 	case Q: PF("("); lst=Q; prML(m->c); PF(")"); break; } }
-V prML(M m) { MAP(m,prM(c)); } V prAST(M m) { lst=TRM; PF("|->"); prML(m->n); PF("\n"); }
+V prML(M m) { MAP(m,prM(c)); } // prints full list of M 
+V prAST(M m) { lst=TRM; PF("|->"); prML(m->n); PF("\n"); } // print ast
 
 I dbg=0, ch;
-typedef struct ll { D d; struct ll *n; } *LL; I sLL=sizeof(struct ll); 
-M idx(M oM,I t) { I i=0; M m=oM; while (m->n&&i++<t) m=m->n; R m; }
-V mch(M m,D r,LL ms) { if (!m) R; D cR=r; while (cR) { //PF("(%s %s) ",m->w,cR->w);
+typedef struct ll { D d; struct ll *n; } *LL; I sLL=sizeof(struct ll); // linked list
+M idx(M oM,I t) { I i=0; M m=oM; while (m->n&&i++<t) m=m->n; R m; } // index LL
+V mch(M m,D r,LL ms) /* finds first match in m */ { if (!m) R; D cR=r; while (cR) { //PF("(%s %s) ",m->w,cR->w);
 	if (cR->p) { if (!(cR->p(m))) R; } else if (strcmp(m->w,cR->w)) R; LL lst; MAP(ms,); lst=c;
 	if (!(cR->c)) { LL n=ma(sLL); n->d=cR; n->n=0; lst->n=n; R; } {MAP(cR->c,mch(m->n,c,ms))} cR=cR->n; } }
-V ex(M m,D r) { I i=0, l; LL ms=ma(sLL); ms->n=0; while (1) { l=0; {MAP(m->n,l++)} if (i>=l) break;
+V ex(M m,D r) /* rewrites */ { I i=0, l; LL ms=ma(sLL); ms->n=0; while (1) { l=0; {MAP(m->n,l++)} if (i>=l) break;
 	M iM=idx(m,i); ms->n=0; MAP(ms->n,fr(c)); mch(iM->n,r,ms); i++;
 	if (ms->n) { ch=1; LL r=ms->n; MAP(ms->n,r=c->d->l>r->d->l?c:r); 
 		if (r->d->f) r->d->f(iM); else { DO(r->d->l+1,rm(iM)); M z=cM(r->d->r); MAP(z,); c->n=iM->n; iM->n=z; }
