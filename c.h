@@ -11,6 +11,8 @@ typedef struct d { I (*p)(); C w; struct d *c,*n; V (*f)(); I l; } *D; I sD=size
 #define ma(x) malloc(x)
 #define fr(x) free(x)
 #define MAP(_d,x...) typeof(_d) c=_d, _n; if (c) { while (1) { _n=c->n; x; if (!_n) break; c=_n; } }
+#define DO(n,x) { I _n=(n); for (I i=0;i<_n;i++) {x;} }
+#define esc(x) (x==' '||x=='`'||x=='('||x==')')
 D nID(I (*p)(),V (*f)(),C w) { D d=ma(sD); d->w=w; d->f=f; d->p=p; d->l=d->c=d->n=0; R d; }
 D nD(C w,V (*f)()) { D d=ma(sD); d->w=ma(strlen(w)+1); strcpy(d->w,w); d->f=f; d->l=d->p=d->c=d->n=0; R d; }
 V nC(D p,D cd) { cd->l=p->l+1; if (p->c) { MAP(p->c,); c->n=cd; } else p->c=cd; }
