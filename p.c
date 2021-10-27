@@ -1,6 +1,5 @@
-M wd(C t,I st,I l,I e,M *p) { C w=ma(l-e+1); for (I i=st,n=0;n<l;i++) w[n++]=t[i=t[i]=='`'&&esc(t[i+1])?i+1:i];
-	w[l-e]='\0'; M n=nM(TRM,w); fr(w); *p=n; R n; }
-// todo: improve wd
+M wd(C t,I st,I l,I e,M *p) { C w=ma(l-e+1); I j=0; DO(l,w[j++]=t[st+(i=t[st+i]=='`'&&esc(t[st+i+1])?i+1:i)])
+	w[l-e]='\0'; M n=nM(TRM,w); fr(w); R *p=n; }
 V P(C t,I *i,M *s) { I st=*i, e=0; M *c=s; /* n/c */ do switch (t[*i]) { 
 	#define WD if (*i>st) c=&(wd(t,st,*i-st,e,c)->n), e=0
 	case '`': if (esc(t[*i+1])) e++,(*i)++; break;
