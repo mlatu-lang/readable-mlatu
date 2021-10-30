@@ -9,7 +9,7 @@ V dPtv(M m) { rm(m->n); M c=cM(m->n); c->n=m->n->n; m->n->n=c; }
 V qPtv(M m) { rm(m->n); M q=nM(Q,""); q->c=m->n; q->n=m->n->n; q->c->n=0; m->n=q; }
 V uPtv(M m) { M cs=m->n->c; m->n->c=0; rm(m); rm(m); if (!cs) R; MAP(cs,); c->n=m->n; m->n=cs;  }
 V cPtv(M m) { M q=m->n->n; MAP(m->n->c,); c?(c->n=q->c):(m->n->c=q->c); q->c=0; rm(m->n); rm(m->n); }
-V lenPtv(M m) { I i=0; MAP(m->n->c,); C w=m->n->n->w; fr(w); w=ma(i?floor(log10(i))+2:1); sprintf(w,"%d",i); }
+V lenPtv(M m) { I i=0; MAP(m->n->c,); C w=m->n->n->w; w=realloc(w,i?floor(log10(i))+2:2); sprintf(w,"%d",i); }
  
 I lst; V prML(M m); V prM(M m) { lst==Q?lst=TRM:PF(" "); switch (m->t) { // print ast node
 	case TRM: DO(strlen(m->w),I e=esc(m->w[i]); PF("%*s%c",e,e?"`":"",m->w[i])); break;
