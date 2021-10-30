@@ -6,3 +6,5 @@ V P(C t,I *i,M *s) { I st=*i, e=0; M *c=s; /* n/c */ do switch (t[*i]) { // pars
 	case ' ': case '\0': WD; st=*i+1; break;
 	case '(': WD; M n=nM(Q,""); *c=n; c=&(n->n); (*i)++; P(t,i,&(n->c)); st=*i+1; break;
 	case ')': WD; R; } while ((*i)++<strlen(t)); }
+V pF(FILE *f) { PF("%d",f); fclose(f); // parse file
+}
