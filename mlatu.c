@@ -6,8 +6,7 @@ I wF(M M) { R 1; } I qF(M m) { R m->t==Q; } // ?w and ?q
 V rPtv(M m) { rm(m); rm(m); } 
 V dPtv(M m) { rm(m->n); M c=cM(m->n); c->n=m->n->n; m->n->n=c; }
 V sPtv(M m) { M c=m->n; m->n=c->n; c->n=m->n->n; m->n->n=c; rm(m->n->n); }
-//V qPtv(M m) { M q=m->n->n; q->w=""; q->t=Q; q->c=m->n; q->c->n=0; m->n=q; }
-V qPtv(M m) { rm(m->n); M q=nM(Q,""); q->c=m->n; q->n=m->n->n; q->c->n=0; m->n=q; }
+V qPtv(M m) { M q=m->n->n; strcpy(q->w,""); q->t=Q; q->c=m->n; q->c->n=0; m->n=q; }
 V uPtv(M m) { M cs=m->n->c; m->n->c=0; rm(m); rm(m); if (!cs) R; MAP(cs,); c->n=m->n; m->n=cs;  }
 V cPtv(M m) { M q=m->n->n; MAP(m->n->c,); c?(c->n=q->c):(m->n->c=q->c); q->c=0; rm(m->n); rm(m->n); }
  
