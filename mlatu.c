@@ -15,11 +15,11 @@ I lst; V prML(M m); V prM(M m) { lst==Q?lst=TRM:PF(" "); switch (m->t) { // prin
 	case Q: PF("("); lst=Q; prML(m->c); PF(")"); lst=TRM; break; } }
 V prML(M m) { MAP(m,prM(c)); } // prints full list of M 
 V prAST(M m) { lst=TRM; PF("|->"); prML(m->n); PF("\n"); } // print ast
-// todo: use DO in mch, rewrite to ast
+// todo: rewrite to ast, linked list of numbers of defs
 I dbg=0, ch;
 M idx(M oM,I t) { I i=0; M m=oM; while (m->n&&i++<t) m=m->n; R m; } // index M
-D mch(I i,M m,D rs[]) { I l=1; while (l<=i) { D r=rs[l-1]; // find first match
-	MAP(r,I fd=1;DO(n,l,M iM=idx(m,i-n);P p=c->p[n];fd*=p->f?p->f(iM):!strcmp(iM->w,p->w))if (fd) R c;) l++; } R 0; }
+D mch(I i,M m,D rs[]) { DO(l,i,D r=rs[l]; // find first match
+	MAP(r,I fd=1;DO(n,l+1,M iM=idx(m,i-n);P p=c->p[n];fd*=p->f?p->f(iM):!strcmp(iM->w,p->w))if (fd) R c;)) R 0; }
 V ex(M m,D rs[]) /* rewrites */ { I i=1, l, n; while (1) { l=0; {MAP(m->n,l++)} if (i>l) break;
 	D r=mch(i,m,rs); i++; if (r) { r->f(idx(m,i-r->l-1)); if (dbg) prAST(m); ch=i=1; } } }
 I main(I ac,C *av) { 
