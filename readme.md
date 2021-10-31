@@ -12,7 +12,7 @@ Run with `-d` to enable debug mode.
 
 ## Files
 [c.h](c.h) - Common header. Macros, types and type helper functions, and parser.  
-[p.c](p.c) - Parsers (query/rule). If you're reading the code, it's a good idea to start here, at the parser function (`P`).  
+[ps.c](ps.c) - Parsers (query/rule). If you're reading the code, it's a good idea to start here, at the parser function (`PS`).  
 [mlatu.c](mlatu.c) - The repl, and rewriting functions.
 
 ## Parsing tests:
