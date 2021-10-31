@@ -34,4 +34,4 @@ I main(I ac,C *av) {
 		if (i!=1+strlen(t)) { PF("X-> parsing error: mismatched parentheses\n"); goto end; }
 		ex(ast,rs); MAP(ast,l++); if (l==2&&!strcmp("bye",ast->n->w)) { fML(ast); exit(0); } 
 		if (!dbg||!ch) prAST(ast); end: fML(ast); }
-	DO(i1,10,fD(rs[i1])); }
+	DO(i,10,fD(rs[i])); }
