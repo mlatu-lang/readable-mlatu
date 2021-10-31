@@ -21,7 +21,7 @@ M nM(I t,C w) { M m=ma(sM); m->t=t; m->w=ma(strlen(w)+1); strcpy(m->w,w); m->n=m
 M cM(M m) { M z=nM(m->t,m->w); if (m->c) { M oc=m->c, nc=cM(oc); MAP(oc->n,nc=nc->n=cM(c)); z->c=nc; } R z; }
 V fM(M m) { fr(m->w); MAP(m->c,fM(c)); fr(m); } V fML(M m) { MAP(m,fM(c)); } // free M, free M list
 V fD(D d) { fr(d->p); fML(d->r); fD(d->n); } // free D
-P nP(I (*f)(),C w) { P p=ma(sP); p->f=f; p->w=w; } // new predicate
+P nP(I (*f)(),C w) { P p=ma(sP); p->f=f; p->w=w; return p; } // new predicate
 D nD(I l,...) { va_list a; va_start(a,l); D d=calloc(1,sD); d->p=ma(sP*(l-1)); 
 	DO(i,l,d->p[l-i-1]=va_arg(a,P)); va_end(a); d->l=l; R d; } // new rule
 #endif
