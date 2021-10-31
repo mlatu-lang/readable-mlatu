@@ -18,9 +18,9 @@ V prAST(M m) { lst=TRM; PF("|->"); prML(m->n); PF("\n"); } // print ast
 // todo: rewrite to ast, linked list of numbers of defs
 I dbg=0, ch;
 M idx(M oM,I t) { I i=0; M m=oM; while (m->n&&i++<t) m=m->n; R m; } // index M
-D mch(I i,M m,D rs[]) { DO(l,i,D r=rs[l]; // find first match
+D mch(I i,M m,const D rs[]) { DO(l,i,D r=rs[l]; // find first match
 	MAP(r,I fd=1;DO(n,l+1,M iM=idx(m,i-n);P p=c->p[n];fd*=p->f?p->f(iM):!strcmp(iM->w,p->w))if (fd) R c;)) R 0; }
-V ex(M m,D rs[]) /* rewrites */ { I i=1, l, n; while (1) { l=0; {MAP(m->n,l++)} if (i>l) break;
+V ex(M m,D rs[]) /* rewrites */ { I i=1; while (1) { I l=0; {MAP(m->n,l++)} if (i>l) break;
 	D r=mch(i,m,rs); i++; if (r) { r->f(idx(m,i-r->l-1)); if (dbg) prAST(m); ch=i=1; } } }
 I main(I ac,C *av) { 
 	D rs[10]={0}; P wP=nP(wF,""); P qP=nP(qF,"");
@@ -30,7 +30,7 @@ I main(I ac,C *av) {
 	DO(i,ac-1,if (!strcmp("-d",av[i+1])) dbg=1; else { FILE *f=fopen(av[i+1],"r"); 
 		if (!f) { PF("error opening file '%s'\n",av[i+1]); exit(-1); } pF(f); }); // flags and rules
 	C t=ma(100); I i, l;
-	while (gets(t)) { l=ch=i=0; M ast=nM(ST,""); PS(t,&i,&ast->n); // repl
+	while (fgets(t, 100, stdin)) { l=ch=i=0; M ast=nM(ST,""); PS(t,&i,&ast->n); // repl
 		if (i!=1+strlen(t)) { PF("X-> parsing error: mismatched parentheses\n"); goto end; }
 		ex(ast,rs); MAP(ast,l++); if (l==2&&!strcmp("bye",ast->n->w)) { fML(ast); exit(0); } 
 		if (!dbg||!ch) prAST(ast); end: fML(ast); }
