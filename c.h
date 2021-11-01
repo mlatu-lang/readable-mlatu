@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-typedef int I; typedef char *C; typedef void V; typedef enum { Q,TRM,ST } T;
+typedef int I; typedef char *C; typedef void V; typedef enum { Q,TRM,ST } T; // types (ST starts each ast)
 typedef struct m { I t; C w; struct m *c,*n; } *M;        I sM=sizeof(struct m); // ast: type, word, children, next
 typedef struct p { C w; I (*f)(); } *P;                   I sP=sizeof(struct p); // pred: word, function
 // def (rule): preds, rewrite, next, length
@@ -23,5 +23,5 @@ V fM(M m) { fr(m->w); MAP(m->c,fM(c)); fr(m); } V fML(M m) { MAP(m,fM(c)); } // 
 V fD(D d) { if (!d) R; fr(d->p); fML(d->r); fD(d->n); } // free linked list of D
 P nP(I (*f)(),C w) { P p=ma(sP); p->f=f; p->w=w; R p; } // new predicate
 D nD(I l,...) { va_list a; va_start(a,l); D d=calloc(1,sD); d->p=ma(sP*(l-1)); // new rule
-	DO(i,l,*(d->p[l-i-1])=va_arg(a,P)); va_end(a); d->l=l; R d; }
+	DO(i,l,d->p[l-i-1]=va_arg(a,P)); va_end(a); d->l=l; R d; }
 #endif

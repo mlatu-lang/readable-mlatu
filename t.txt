@@ -1,7 +1,0 @@
-asdfasdf
-asdfasdf asdfasdf
-()
-test           lotsOfSpacesAndTrailingSpace       
-a (( really (nested   ( program ) (with ))     random  ) ) whitespace
-spaces(are(for)(noobs(lol)))
-$.. -{}" |]'!@318 `'?:/'`] <>?{|}": &78%6741

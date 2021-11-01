@@ -15,10 +15,5 @@ Run with `-d` to enable debug mode.
 [ps.c](ps.c) - Parsers (query/rule). If you're reading the code, it's a good idea to start here, at the parser function (`PS`).  
 [mlatu.c](mlatu.c) - The repl, and rewriting functions.
 
-## Parsing tests:
-```
-cat t.txt | ./mlatu
-```
-
 ## License
 readable-mlatu, like all mlatu-lang projects, is licensed under https://mlatu-lang.github.io/license/
