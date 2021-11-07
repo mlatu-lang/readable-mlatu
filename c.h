@@ -23,10 +23,10 @@ M nM(I t,C w) { M m=ma(sM); m->t=t; m->w=ma(strlen(w)+1); strcpy(m->w,w); m->n=m
 // clone M
 M cM(M m) { M z=nM(m->t,m->w); if (m->c) { M oc=m->c, nc=cM(oc); MAP(oc->n,nc=nc->n=cM(c)); z->c=nc; } R z; }
 V fM(M m) { fr(m->w); MAP(m->c,fM(c)); fr(m); } V fML(M m) { MAP(m,fM(c)); } // free M
-V fD(D d) { if (!d) R; MAP(d,fr(c->w);fD(c->c);fML(c->r);fr(c)) } // free linked list of D
-// new internal rule (rewrite is fn, predicate is fn)
-D nID(I (*p)(),V (*f)(),C w) { D d=ca(sD); d->w=w; d->f=f; d->p=p; R d; } 
+V fD(D d) { MAP(d,fr(c->w);fD(c->c);fML(c->r);fr(c)) } // free linked list of D
 D nDW(C w) { D d=ca(sD); d->w=ma(strlen(w)+1); strcpy(d->w,w); R d; } // new rule with match on literal
+// new internal rule (rewrite is fn, predicate is fn)
+D nID(I (*p)(),V (*f)(),C w) { D d=nDW(w); d->f=f; d->p=p; R d; } 
 D nRD(C w,M r) { D d=nDW(w); d->r=r; R d; } // new rewrite rule (rewrite is terms, predicate is literal)
 D nD(C w,V (*f)()) { D d=nDW(w); d->f=f; R d; } // new rule (rewrite is fn, predicate is literal)
 V nC(D p,D cd) { cd->l=p->l+1; if (p->c) { MAP(p->c,); c->n=cd; } else p->c=cd; } // adds child to rule
