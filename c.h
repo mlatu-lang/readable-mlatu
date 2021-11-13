@@ -3,22 +3,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-typedef int I; typedef char *C; typedef void V; typedef enum { Q,TRM,ST } T;
+typedef int I; typedef char *C; typedef void V; typedef enum { Q,TRM,ST } T; // ST starts each ast
 // type, word, children, next
 typedef struct m { I t; C w; struct m *c,*n; } *M;                          I sM=sizeof(struct m); // ast
 // predicate, word, children, next, function, rewrite, length
 typedef struct d { I (*p)(); C w; struct d *c,*n; V (*f)(); M r; I l; } *D; I sD=sizeof(struct d); // def
-/* rule matching layout
-   mlatu: foo = x; foo bar = y; foo baz = z;
-   C: D foo, bar, baz; foo->w="foo" etc; foo->r=ast with x then NULL etc; foo->c=bar; bar->n=baz; */
+/*  rule matching layout
+	mlatu: foo = x; foo bar = y; foo baz = z;
+	internal representation:
+     foo = x
+     /    \
+    /      \
+bar = y   baz = z */
 #define R return
+#define B break
 #define PF printf
 #define ma(x) malloc(x)
 #define ca(x) calloc(1,x)
 #define fr(x) free(x)
 #define MAP(_d,x) typeof(_d) c=_d, _n; if (c) { while (1) { _n=c->n; x; if (!_n) break; c=_n; } }
 #define DO(n,x) { I _n=(n); for (I i=0;i<_n;i++) {x;} }
-#define esc(x) ((x)==' '||(x)=='`'||(x)=='('||(x)==')')
+#define esc(x) ((x)==' '||(x)=='`'||(x)=='('||(x)==')'||(x)==';'||(x)=='=')
 M nM(I t,C w) { M m=ma(sM); m->t=t; m->w=ma(strlen(w)+1); strcpy(m->w,w); m->n=m->c=0; R m; } // new M
 // clone M
 M cM(M m) { M z=nM(m->t,m->w); if (m->c) { M oc=m->c, nc=cM(oc); MAP(oc->n,nc=nc->n=cM(c)); z->c=nc; } R z; }
