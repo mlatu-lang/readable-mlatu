@@ -1,4 +1,3 @@
-#include <math.h>
 #include "c.h"
 #include "p.c"
 V rm(M m) { M n=m->n->n; fM(m->n); m->n=n; }
@@ -21,19 +20,20 @@ typedef struct ll { D d; struct ll *n; } *LL; I sLL=sizeof(struct ll);
 M idx(M oM,I t) { I i=0; M m=oM; while (m->n&&i++<t) m=m->n; R m; } // index M linked list
 V mch(M m,D r,LL ms) /* finds first match in m */ { if (!m) R; D cR=r; while (cR) { //PF("(%s %s) ",m->w,cR->w);
 	if (cR->p) { if (!(cR->p(m))) goto cont; } else if (strcmp(m->w,cR->w)) goto cont; LL lst; MAP(ms,); lst=c;
-	if (!(cR->c)) { LL n=ma(sLL); n->d=cR; n->n=0; lst->n=n; R; } {MAP(cR->c,mch(m->n,c,ms))} cont: cR=cR->n; } }
+	LL n=ma(sLL); n->d=cR; n->n=0; lst->n=n; if (!(cR->c)) R; {MAP(cR->c,mch(m->n,c,ms))} cont: cR=cR->n; } }
 V ex(M m,D r) /* rewrites */ { I i=0, l; LL ms=ma(sLL); ms->n=0; while (1) { l=0; {MAP(m->n,l++)} if (i>=l) B;
 	M iM=idx(m,i); ms->n=0; MAP(ms->n,fr(c)); mch(iM->n,r,ms); i++;
 	if (ms->n) { ch=1; LL r=ms->n; MAP(ms->n,r=c->d->l>r->d->l?c:r); 
 		if (r->d->f) r->d->f(iM); 
-		else { DO(r->d->l+1,rm(iM)); M z=cM(r->d->r); if (z) { MAP(z,); c->n=iM->n; iM->n=z; } } 
+		else { DO(r->d->l,rm(iM)); M z=cM(r->d->r); if (z) { MAP(z,); c->n=iM->n; iM->n=z; } } 
 		i=0; if (dbg) prAST(m); } } }
+#define abrt { fD(q1); R -1; }
+I file(C n,D root) { FILE *f=fopen(n,"r"); if (!f) { PF("error opening file '%s'\n",n); R 1; } R pF(f,n,root); }
 I main(I ac,C *av) { D root=nD("",0), q1=nID(qP,0,"?q"), r=nD("r",rPtv), d=nD("d",dPtv), q=nD("q",qPtv),
 		q2=nID(qP,0,"?q"), s=nD("s",sPtv), u=nD("u",uPtv), c=nD("c",cPtv);
 	root->c=q1; nC(q1,r); nC(q1,d); nC(q1,q); nC(q1,q2); nC(q2,s); nC(q1,u); nC(q2,c); // set ptvs
-	DO(ac,if (!strcmp("-d",av[i])) dbg=1; else { C n=i?av[i]:"prelude.mlt"; FILE *f=fopen(n,"r"); // flags and files
-		if (!f) { PF("error opening file '%s'\n",n); goto exit; } if (pF(f,n,root)) goto exit; });
-	C t=ma(100); I i, l, er;
+	DO(ac-1,if (!strcmp("-d",av[i+1])) dbg=1; else if (file(av[i+1],root)) abrt;) // flags and files
+	if (file("prelude.mlt",root)) abrt; C t=ma(100); I i, l, er;
 	while (fgets(t,100,stdin)) { t[strlen(t)-1]='\0'; er=l=ch=i=0; M ast=nM(ST,""); P(t,&i,&er,0,&ast->n); // repl
 		if (er) { switch (er) { 
 			case PRN:          PF("X-> parsing error: unbalanced parentheses\n"); B;
@@ -44,5 +44,4 @@ If you are trying to define a rule, they cannot be defined in the repl, you need
 If you are trying to define a rule, they cannot be defined in the repl, you need to load it from a file.\n"); B;
 		} goto end; }
 		ex(ast,root->c); MAP(ast,l++); if (l==2&&!strcmp("bye",ast->n->w)) { fML(ast); B; } 
-		if (!dbg||!ch) prAST(ast); end: fML(ast); }
-	exit: fD(q1); }
+		if (!dbg||!ch) prAST(ast); end: fML(ast); } fD(q1); }
