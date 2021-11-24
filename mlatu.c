@@ -20,10 +20,10 @@ I dbg=0, ch;
 M idx(M oM,I t) { I i=0; M m=oM; while (m->n&&i++<t) m=m->n; R m; } // index M linked list
 V mch(M m,D r,LL ms) /* finds first match in m */ { if (!m) R; D cR=r; while (cR) { //PF("(%s %s) ",m->w,cR->w);
 	if (cR->p) { if (!(cR->p(m))) goto cont; } else if (strcmp(m->w,cR->w)) goto cont; LL lst; MAP(ms,); lst=c;
-	if (cR->f||cR->r) { LL n=ma(sLL); n->d=cR; n->n=0; lst->n=n; } {MAP(cR->c,mch(m->n,c,ms))} cont: cR=cR->n; } }
+	if (cR->f||cR->r||cR->e) { LL n=ma(sLL); n->d=cR; n->n=0; lst->n=n; } {MAP(cR->c,mch(m->n,c,ms))} cont: cR=cR->n; } }
 V ex(M m,D r) /* rewrites */ { I i=0, l; LL ms=ma(sLL); ms->n=0; while (1) { l=0; {MAP(m->n,l++)} if (i>=l) B;
 	M iM=idx(m,i); ms->n=0; MAP(ms->n,fr(c)); mch(iM->n,r,ms); i++;
-	if (ms->n) { ch=1; LL r=ms->n; MAP(ms->n,r=c->d->l>r->d->l?c:r); 
+	if (ms->n) { ch=1; LL r=ms->n; MAP(ms->n,r=c->d->l>r->d->l?c:r);
 		if (r->d->f) r->d->f(iM); 
 		else { DO(r->d->l,rm(iM)); M z=cM(r->d->r); if (z) { MAP(z,); c->n=iM->n; iM->n=z; } } 
 		i=0; if (dbg) prAST(m); } } }

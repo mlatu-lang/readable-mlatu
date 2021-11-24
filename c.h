@@ -6,8 +6,8 @@
 typedef int I; typedef char *C; typedef void V; typedef enum { Q,TRM,ST } T; // ST starts each ast
 // type, word, children, next
 typedef struct m { I t; C w; struct m *c,*n; } *M;                          I sM=sizeof(struct m); // ast
-// predicate, word, children, next, function, rewrite, length
-typedef struct d { I (*p)(); C w; struct d *c,*n; V (*f)(); M r; I l; } *D; I sD=sizeof(struct d); // def
+// predicate, word, children, next, function, rewrite, length, empty rewrite?
+typedef struct d { I (*p)(); C w; struct d *c,*n; V (*f)(); M r; I l, e; } *D; I sD=sizeof(struct d); // def
 /*  rule matching layout
 	mlatu: foo = x; foo bar = y; foo baz = z;
 	internal representation:
