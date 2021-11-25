@@ -1,7 +1,7 @@
 #include "c.h"
 #include "p.c"
 V rm(M m) { M n=m->n->n; fM(m->n); m->n=n; }
-I wP(M M) { R 1; } I qP(M m) { R m->t==Q; } // ?w and ?q
+I qP(M m) { R m->t==Q; } // ?q
 V zapPtv(M m) { rm(m); rm(m); } 
 V swapPtv(M m) { M c=m->n; m->n=c->n; c->n=m->n->n; m->n->n=c; rm(m->n->n); }
 V copyPtv(M m) { rm(m->n); M n=m->n->n; m->n->n=0; M c=cM(m->n); m->n->n=c; c->n=n; }
@@ -15,18 +15,17 @@ I lst; V prML(M m); V prM(M m) { lst==Q?lst=TRM:PF(" "); switch (m->t) { // prin
 V prML(M m) { MAP(m,prM(c)); } // prints full list of M 
 V prAST(M m) { lst=TRM; PF("|->"); prML(m->n); PF("\n"); } // print ast
 
-typedef struct ll { D d; struct ll *n; } *LL; I sLL=sizeof(struct ll);
 I dbg=0, ch;
 M idx(M oM,I t) { I i=0; M m=oM; while (m->n&&i++<t) m=m->n; R m; } // index M linked list
-V mch(M m,D r,LL ms) /* finds first match in m */ { if (!m) R; D cR=r; while (cR) { //PF("(%s %s) ",m->w,cR->w);
-	if (cR->p) { if (!(cR->p(m))) goto cont; } else if (strcmp(m->w,cR->w)) goto cont; LL lst; MAP(ms,); lst=c;
-	if (cR->f||cR->r||cR->e) { LL n=ma(sLL); n->d=cR; n->n=0; lst->n=n; } {MAP(cR->c,mch(m->n,c,ms))} cont: cR=cR->n; } }
-V ex(M m,D r) /* rewrites */ { I i=0, l; LL ms=ma(sLL); ms->n=0; while (1) { l=0; {MAP(m->n,l++)} if (i>=l) B;
-	M iM=idx(m,i); ms->n=0; MAP(ms->n,fr(c)); mch(iM->n,r,ms); i++;
-	if (ms->n) { ch=1; LL r=ms->n; MAP(ms->n,r=c->d->l>r->d->l?c:r);
-		if (r->d->f) r->d->f(iM); 
-		else { DO(r->d->l,rm(iM)); M z=cM(r->d->r); if (z) { MAP(z,); c->n=iM->n; iM->n=z; } } 
-		i=0; if (dbg) prAST(m); } } }
+V mch(M m,D r,D *bst) /* finds first match in m */ { if (!m) R; D cR=r; while (cR) { //PF("(%s %s) ",m->w,cR->w);
+	if (cR->p) { if (!(cR->p(m))) goto cont; } else if (strcmp(m->w,cR->w)) goto cont;
+	if ((cR->f||cR->r||cR->e)&&(!*bst||cR->l>(*bst)->l)) *bst=cR;
+	{MAP(cR->c,mch(m->n,c,bst))} cont: cR=cR->n; } }
+V ex(M m,D r) /* rewrite algorithm */ { I i=0, l; D bst; while (1) { l=0; bst=0; {MAP(m->n,l++)} if (i>=l) B;
+	M iM=idx(m,i); mch(iM->n,r,&bst); i++;
+	if (bst) {
+		if (bst->f) bst->f(iM); else { DO(bst->l,rm(iM)); M z=cM(bst->r); if (z) { MAP(z,); c->n=iM->n; iM->n=z; } }
+		ch=1; i=0; if (dbg) prAST(m); } } }
 #define abrt { fD(q1); R -1; }
 I file(C n,D root) { FILE *f=fopen(n,"r"); if (!f) { PF("error opening file '%s'\n",n); R 1; } R pF(f,n,root); }
 I main(I ac,C *av) { D root=nD("",0), q1=nID(qP,0,"?q"), q2=nID(qP,0,"?q"); root->c=q1; nC(q1,q2); // setting ptvs
