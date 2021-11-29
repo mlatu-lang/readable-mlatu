@@ -1,0 +1,16 @@
+done:
+parse_terms(&str) -> Result<Terms, String>
+pretty_terms(Terms) -> String
+rewrite(Rules, Terms) -> Terms
+pretty_term(Term) -> String
+remove state from printing terms
+
+todo:
+parse_rule(&str) -> Result<Rule, String>
+parse_rules(&str) -> Result<Rules, String>
+pretty_rule(Rule) -> String
+remove qP
+
+not doing:
+parse_term(&str) -> Result<Term, String>
+pretty_rules(Rules) -> String

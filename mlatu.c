@@ -1,47 +1,80 @@
-#include "c.h"
-#include "p.c"
-V rm(M m) { M n=m->n->n; fM(m->n); m->n=n; }
-I qP(M m) { R m->t==Q; } // ?q
-V zapPtv(M m) { rm(m); rm(m); } 
-V swapPtv(M m) { M c=m->n; m->n=c->n; c->n=m->n->n; m->n->n=c; rm(m->n->n); }
-V copyPtv(M m) { rm(m->n); M n=m->n->n; m->n->n=0; M c=cM(m->n); m->n->n=c; c->n=n; }
-V wrapPtv(M m) { M q=m->n->n; strcpy(q->w,""); q->t=Q; q->c=m->n; q->c->n=0; m->n=q; }
-V execPtv(M m) { M cs=m->n->c; m->n->c=0; rm(m); rm(m); if (!cs) R; MAP(cs,); c->n=m->n; m->n=cs;  }
-V catPtv(M m) { M q=m->n->n; MAP(m->n->c,); c?(c->n=q->c):(m->n->c=q->c); q->c=0; rm(m->n); rm(m->n); }
- 
-I lst; V prML(M m); V prM(M m) { lst==Q?lst=TRM:PF(" "); switch (m->t) { // print ast node
-	case TRM: DO(strlen(m->w),I e=esc(m->w[i]); PF("%*s%c",e,e?"`":"",m->w[i])); B;
-	case Q: PF("("); lst=Q; prML(m->c); PF(")"); lst=TRM; B; } }
-V prML(M m) { MAP(m,prM(c)); } // prints full list of M 
-V prAST(M m) { lst=TRM; PF("|->"); prML(m->n); PF("\n"); } // print ast
+#include "mlatuMacros.h"
+#include "mlatu.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-I dbg=0, ch;
-M idx(M oM,I t) { I i=0; M m=oM; while (m->n&&i++<t) m=m->n; R m; } // index M linked list
-V mch(M m,D r,D *bst) /* finds first match in m */ { if (!m) R; D cR=r; while (cR) { //PF("(%s %s) ",m->w,cR->w);
-	if (cR->p) { if (!(cR->p(m))) goto cont; } else if (strcmp(m->w,cR->w)) goto cont;
-	if ((cR->f||cR->r||cR->e)&&(!*bst||cR->l>(*bst)->l)) *bst=cR;
-	{MAP(cR->c,mch(m->n,c,bst))} cont: cR=cR->n; } }
-V ex(M m,D r) /* rewrite algorithm */ { I i=0, l; D bst; while (1) { l=0; bst=0; {MAP(m->n,l++)} if (i>=l) B;
-	M iM=idx(m,i); mch(iM->n,r,&bst); i++;
-	if (bst) {
-		if (bst->f) bst->f(iM); else { DO(bst->l,rm(iM)); M z=cM(bst->r); if (z) { MAP(z,); c->n=iM->n; iM->n=z; } }
-		ch=1; i=0; if (dbg) prAST(m); } } }
-#define abrt { fD(q1); R -1; }
-I file(C n,D root) { FILE *f=fopen(n,"r"); if (!f) { PF("error opening file '%s'\n",n); R 1; } R pF(f,n,root); }
-I main(I ac,C *av) { D root=nD("",0), q1=nID(qP,0,"?q"), q2=nID(qP,0,"?q"); root->c=q1; nC(q1,q2); // setting ptvs
+// free T, free list of T, new T, clone T
+V fT(T t) { fr(t->w); MAP(t->c,fT(c)); fr(t); } V fTL(T t) { MAP(t,fT(c)); } V freeTerms(T t) { fTL(t); }
+T nT(I t,C w) { T z=ma(sizeof(struct t)); z->t=t; z->w=ma(strlen(w)+1); strcpy(z->w,w); z->n=z->c=0; R z; }
+T cT(T t) { T z=nT(0,""), n=z; MAP(t,n=n->n=nT(c->t,c->w);n->c=cT(c->c)); n=z->n; fT(z); R n; }
+
+enum { Q,TRM,ST }; // ST starts each ast
+V fD(D d) { MAP(d,fr(c->w);fD(c->c);fTL(c->r);fr(c)) } V freeRules(D r) { fD(r); } // free linked list of D
+D nDW(C w) { D d=ca(sizeof(struct d)); d->w=ma(strlen(w)+1); strcpy(d->w,w); R d; } // new rule, match on literal
+D nID(I (*p)(),V (*f)(),C w) { D d=nDW(w); d->f=f; d->p=p; R d; } // internal rule (match on quote, rewrite is fn)
+D nRD(C w,T r) { D d=nDW(w); d->r=r; R d; } // new rewrite rule (rewrite is terms, predicate is literal)
+D nD(C w,V (*f)()) { D d=nDW(w); d->f=f; R d; } // new rule (rewrite is fn, predicate is literal)
+V nC(D p,D cd) { cd->l=p->l+1; if (p->c) { MAP(p->c,); c->n=cd; } else p->c=cd; } // adds child to rule
+
+#define esc(x) ((x)==' '||(x)=='`'||(x)=='('||(x)==')'||(x)==';'||(x)=='=')
+T wd(C t,I st,I l,I e,T *p) { C w=ma(l-e+1); I j=0; DO(l,w[j++]=t[st+(i=t[st+i]=='`'&&esc(t[st+i+1])?i+1:i)])
+	w[l-e]='\0'; T n=nT(TRM,w); fr(w); R *p=n; }
+V P(C t,I *i,I *er,I lvl,T *s) { I st=*i, e=0; T *c=s; /* n/c */ do switch (t[*i]) { // parser
+	#define WD if (*i>st) c=&(wd(t,st,*i-st,e,c)->n), e=0; st=*i+1
+	case '`': if (esc(t[*i+1])) e++,(*i)++; else *er=UNESC; B;
+	case ' ': case '\0': case '\n': case '\t': WD; B;
+	case '=': WD; c=&(*c=nT(TRM,"="))->n; *er=lvl?QEQ:EQ; B; case ';': *er=SEMI; B;
+	case '+': case '-': case '<': case '>': case '~': case ',': WD; char s[2]={t[*i],0}; c=&(*c=nT(TRM,s))->n; B;
+	case '(': WD; T n=nT(Q,""); *c=n; c=&(n->n); (*i)++; P(t,i,er,lvl+1,&(n->c)); st=*i+1; B;
+	case ')': WD; if (lvl==0) *er=PRN; R; } while ((*i)++<strlen(t)); if (lvl) *er=PRN; }
+T parseTerms(C s,I *er) { T t=nT(ST,""); I i=0; *er=0; P(s,&i,er,0,&t->n); R t; }
+#define ER(e) { PF("error parsing file '%s': "#e"\n",n); R 1; }
+I pD(C s,T t);
+// parse file
+I pF(C n,D root) { FILE *f=fopen(n,"r");
+	I pos, l=0, d, lst=1, st=ftell(f); while (1) { d=fgetc(f); if (d==-1) B; char c=d;
+		if (c==';') { lst=1; pos=ftell(f); C s=ma(l+1); fseek(f,st,0); fread(s,1,l,f); s[l]='\0';
+			I er=0; T t=parseTerms(s,&er); fr(s);
+			if (er!=EQ) { if (er==PRN) ER(unbalanced parentheses); if (er==QEQ) ER(unescaped quoted equal sign);
+				ER(an unquoted unescaped equal sign is needed in each rule); }
+			I eq=0; MAP(t,if(!strcmp(c->w,"="))eq+=1); if (eq!=1) ER(each rule must have exactly one equal sign);
+			if (!strcmp(t->n->w,"=")) ER(each rule must have a pattern it matches);
+			t=t->n; D d=root, n; while (1) { if (!strcmp(t->w,"=")) { d->r=t->n; if (!t->n) d->e=1; t->n=0; B; }
+				if (t->c) ER(quotes are opaque and cannot be matched on); n=0; MAP(d->c,if(!strcmp(t->w,c->w))n=c); 
+				if (!n||!d->c) { n=nRD(t->w,0); n->l=d->l+1; if (d->c) c->n=n; else d->c=n; } d=n; t=t->n; }
+			fTL(t); l=0; fseek(f,pos,0); st=ftell(f); } 
+		else lst=(c==' '||c=='\t'||c=='\n')&&lst?1:0, l++; }
+	if (!lst) ER(semicolon expected at end of last rule); fclose(f); R 0; }
+
+V rm(T t) { T n=t->n->n; fT(t->n); t->n=n; }
+I qP(T t) { R t->t==Q; } // ?q
+V zapPtv(T t) { rm(t); rm(t); } 
+V swapPtv(T t) { T c=t->n; t->n=c->n; c->n=t->n->n; t->n->n=c; rm(t->n->n); }
+V copyPtv(T t) { rm(t->n); T n=t->n->n; t->n->n=0; T c=cT(t->n); t->n->n=c; c->n=n; }
+V wrapPtv(T t) { T q=t->n->n; strcpy(q->w,""); q->t=Q; q->c=t->n; q->c->n=0; t->n=q; }
+V execPtv(T t) { T cs=t->n->c; t->n->c=0; rm(t); rm(t); if (!cs) R; MAP(cs,); c->n=t->n; t->n=cs;  }
+V catPtv(T t) { T q=t->n->n; MAP(t->n->c,); c?(c->n=q->c):(t->n->c=q->c); q->c=0; rm(t->n); rm(t->n); }
+
+D newRoot() { D root=nD("",0), q1=nID(qP,0,"?q"), q2=nID(qP,0,"?q"); root->c=q1; nC(q1,q2);
 		D zap=nD("-",zapPtv), copy=nD("+",copyPtv);   nC(q1,zap); nC(q1, copy);
 		D exec=nD("<",execPtv), wrap=nD(">",wrapPtv); nC(q1,exec); nC(q1,wrap);
-		D swap=nD("~",swapPtv), cat=nD(",",catPtv);   nC(q2,swap); nC(q2,cat);
-	DO(ac-1,if (!strcmp("-d",av[i+1])) dbg=1; else if (file(av[i+1],root)) abrt;) // flags and files
-	if (file("prelude.mlt",root)) abrt; C t=ma(100); I i, l, er;
-	while (fgets(t,100,stdin)) { t[strlen(t)-1]='\0'; er=l=ch=i=0; M ast=nM(ST,""); P(t,&i,&er,0,&ast->n); // repl
-		if (er) { switch (er) { 
-			case PRN:          PF("X-> parsing error: unbalanced parentheses\n"); B;
-			case UNESC:        PF("X-> parsing error: unescaped backtick\n"); B;
-			case EQ: case QEQ: PF("X-> parsing error: unescaped equal sign. \
-If you are trying to define a rule, they cannot be defined in the repl, you need to load it from a file.\n"); B;
-			case SEMI:         PF("X-> parsing error: unescaped semicolon. \
-If you are trying to define a rule, they cannot be defined in the repl, you need to load it from a file.\n"); B;
-		} goto end; }
-		ex(ast,root->c); MAP(ast,l++); if (l==2&&!strcmp("bye",ast->n->w)) { fML(ast); B; } 
-		if (!dbg||!ch) prAST(ast); end: fML(ast); } fD(q1); }
+		D swap=nD("~",swapPtv), cat=nD(",",catPtv);   nC(q2,swap); nC(q2,cat); R root; }
+ 
+V prTL(T t); V prT(T t,I q) { switch (t->t) { // print term node
+	case TRM: DO(strlen(t->w),I e=esc(t->w[i]); PF("%*s%c",e,e?"`":"",t->w[i])); B;
+	case Q: PF("("); prTL(t->c); PF(")"); B; } }
+V prTL(T t) { MAP(t,prT(c,0);if(c->n)PF(" ")); } // print term list
+V prettyTerms(T t) { prTL(t->n); } V prettyTerm(T t) { prT(t,0); }
+
+T idx(T oT,I i) { I j=0; T t=oT; while (t->n&&j++<i) t=t->n; R t; } // index T linked list
+V mch(T t,D r,D *bst) /* finds first match in t */ { if (!t) R; D cR=r; while (cR) { //PF("(%s %s) ",t->w,cR->w);
+	if (cR->p) { if (!(cR->p(t))) goto cont; } else if (strcmp(t->w,cR->w)) goto cont;
+	if ((cR->f||cR->r||cR->e)&&(!*bst||cR->l>(*bst)->l)) *bst=cR;
+	{MAP(cR->c,mch(t->n,c,bst))} cont: cR=cR->n; } }
+I ex(T t,D r,I stp) /* rewrite alg */ { I i=0, l; D bst; while (1) { l=0; bst=0; {MAP(t->n,l++)} if (i>=l) R 1;
+	T iT=idx(t,i); mch(iT->n,r,&bst); i++;
+	if (bst) {
+		if (bst->f) bst->f(iT); else { DO(bst->l,rm(iT)); T z=cT(bst->r); if (z) { MAP(z,); c->n=iT->n; iT->n=z; } }
+		i=0; if (stp) R 0; } } }
+V rewrite(D r,T t) { ex(t,r->c,0); } I stepRewrite(D r,T t) { R ex(t,r->c,1); }
