@@ -1,5 +1,5 @@
-#ifndef mlatuh_h
-#define mlatuh_h
+#ifndef mlatuMacros_h 
+#define mlatuMacros_h
 #define R return
 #define B break
 #define PF printf

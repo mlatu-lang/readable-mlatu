@@ -24,28 +24,25 @@ V P(C t,I *i,I *er,I lvl,T *s) { I st=*i, e=0; T *c=s; /* n/c */ do switch (t[*i
 	#define WD if (*i>st) c=&(wd(t,st,*i-st,e,c)->n), e=0; st=*i+1
 	case '`': if (esc(t[*i+1])) e++,(*i)++; else *er=UNESC; B;
 	case ' ': case '\0': case '\n': case '\t': WD; B;
-	case '=': WD; c=&(*c=nT(TRM,"="))->n; *er=lvl?QEQ:EQ; B; case ';': *er=SEMI; B;
+	case '=': WD; c=&(*c=nT(TRM,"="))->n; *er=EQ; B; case ';': WD; c=&(*c=nT(TRM,";"))->n; *er=SEMI; B;
 	case '+': case '-': case '<': case '>': case '~': case ',': WD; char s[2]={t[*i],0}; c=&(*c=nT(TRM,s))->n; B;
 	case '(': WD; T n=nT(Q,""); *c=n; c=&(n->n); (*i)++; P(t,i,er,lvl+1,&(n->c)); st=*i+1; B;
 	case ')': WD; if (lvl==0) *er=PRN; R; } while ((*i)++<strlen(t)); if (lvl) *er=PRN; }
 T parseTerms(C s,I *er) { T t=nT(ST,""); I i=0; *er=0; P(s,&i,er,0,&t->n); R t; }
-#define ER(e) { PF("error parsing file '%s': "#e"\n",n); R 1; }
-I pD(C s,T t);
+I parseRule(C s,D root) { I e=0; T t=parseTerms(s,&e); if (e==PRN||e==UNESC) R e;
+	I eq=0, semi=0; MAP(t,if(!strcmp(c->w,"="))eq++;if(!strcmp(c->w,";"))semi++;if(!eq&&c->c)R MCH;);
+	if (eq!=1) R EQ; if (!strcmp(t->n->w,"=")) R EMPTY; 
+	if (semi!=1) R SEMI; if (strcmp(c->w,";")) R END; {MAP(t,if(!strcmp(c->n->w,";")){fT(c->n);c->n=0;B;})}
+	t=t->n; D d=root, n; while (1) { if (!strcmp(t->w,"=")) { d->r=t->n; if (!t->n) d->e=1; t->n=0; B; }
+		n=0; MAP(d->c,if(!strcmp(t->w,c->w))n=c); 
+		if (!n||!d->c) { n=nRD(t->w,0); n->l=d->l+1; if (d->c) c->n=n; else d->c=n; } d=n; t=t->n; }
+	fTL(t); R 0; } 
 // parse file
-I pF(C n,D root) { FILE *f=fopen(n,"r");
-	I pos, l=0, d, lst=1, st=ftell(f); while (1) { d=fgetc(f); if (d==-1) B; char c=d;
-		if (c==';') { lst=1; pos=ftell(f); C s=ma(l+1); fseek(f,st,0); fread(s,1,l,f); s[l]='\0';
-			I er=0; T t=parseTerms(s,&er); fr(s);
-			if (er!=EQ) { if (er==PRN) ER(unbalanced parentheses); if (er==QEQ) ER(unescaped quoted equal sign);
-				ER(an unquoted unescaped equal sign is needed in each rule); }
-			I eq=0; MAP(t,if(!strcmp(c->w,"="))eq+=1); if (eq!=1) ER(each rule must have exactly one equal sign);
-			if (!strcmp(t->n->w,"=")) ER(each rule must have a pattern it matches);
-			t=t->n; D d=root, n; while (1) { if (!strcmp(t->w,"=")) { d->r=t->n; if (!t->n) d->e=1; t->n=0; B; }
-				if (t->c) ER(quotes are opaque and cannot be matched on); n=0; MAP(d->c,if(!strcmp(t->w,c->w))n=c); 
-				if (!n||!d->c) { n=nRD(t->w,0); n->l=d->l+1; if (d->c) c->n=n; else d->c=n; } d=n; t=t->n; }
-			fTL(t); l=0; fseek(f,pos,0); st=ftell(f); } 
-		else lst=(c==' '||c=='\t'||c=='\n')&&lst?1:0, l++; }
-	if (!lst) ER(semicolon expected at end of last rule); fclose(f); R 0; }
+I pF(C n,D root) { FILE *f=fopen(n,"r"); if (!f) R OPEN;
+	I pos, l=0, d, st=ftell(f); while (1) { d=fgetc(f); if (d==-1) B; char c=d; l++;
+		if (c==';') { pos=ftell(f); C s=ma(l+1); fseek(f,st,0); fread(s,1,l,f); s[l]='\0'; 
+			I er=parseRule(s,root); if (er) R er; fr(s); l=0; fseek(f,pos,0); st=ftell(f); } }
+	fclose(f); R 0; }
 
 V rm(T t) { T n=t->n->n; fT(t->n); t->n=n; }
 I qP(T t) { R t->t==Q; } // ?q
@@ -61,11 +58,10 @@ D newRoot() { D root=nD("",0), q1=nID(qP,0,"?q"), q2=nID(qP,0,"?q"); root->c=q1;
 		D exec=nD("<",execPtv), wrap=nD(">",wrapPtv); nC(q1,exec); nC(q1,wrap);
 		D swap=nD("~",swapPtv), cat=nD(",",catPtv);   nC(q2,swap); nC(q2,cat); R root; }
  
-V prTL(T t); V prT(T t,I q) { switch (t->t) { // print term node
+V prTL(T t) { MAP(t,prettyTerm(c);if(c->n)PF(" ")); } // print term list
+V prettyTerm(T t) { switch (t->t) { // print term node
 	case TRM: DO(strlen(t->w),I e=esc(t->w[i]); PF("%*s%c",e,e?"`":"",t->w[i])); B;
-	case Q: PF("("); prTL(t->c); PF(")"); B; } }
-V prTL(T t) { MAP(t,prT(c,0);if(c->n)PF(" ")); } // print term list
-V prettyTerms(T t) { prTL(t->n); } V prettyTerm(T t) { prT(t,0); }
+	case Q: PF("("); prTL(t->c); PF(")"); B; } } V prettyTerms(T t) { prTL(t->n); }
 
 T idx(T oT,I i) { I j=0; T t=oT; while (t->n&&j++<i) t=t->n; R t; } // index T linked list
 V mch(T t,D r,D *bst) /* finds first match in t */ { if (!t) R; D cR=r; while (cR) { //PF("(%s %s) ",t->w,cR->w);
