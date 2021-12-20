@@ -5,7 +5,7 @@
 #include "mlatu.h"
 I dbg=0;
 V pr(term t) { PF("|-> "); prettyTerms(t); PF("\n"); }
-I main(I ac,C *av) { C s=ma(100); rule root=newRoot(); pF("prelude.mlt",root); term ast;
+I main(I ac,C *av) { C s=ma(100); rule root=newRoot(); pF("prelude.mlt",root); /*prettyRules(root);*/ term ast;
 	DO(ac-1,if(!strcmp("-d",av[i+1]))dbg=1;else{C n=av[i+1];I er=pF(n,root);if(er){switch(er){ // flags and files
 		case OPEN: PF("Error opening file '%s'",n); exit(-1);
 		case PRN: PF("Error parsing file '%s': unbalanced parentheses",n); exit(-1);
@@ -26,4 +26,4 @@ If you are trying to define a rule, they cannot be defined in the repl, you need
 		} goto end; }
 		I ch=0; if (dbg) { while (!stepRewrite(root,ast)) { ch=1; pr(ast); } } else rewrite(root,ast); 
 		I l=0; MAP(ast,l++); if (l==2&&!strcmp("bye",ast->n->w)) B;
-		if (!ch) pr(ast); end: freeTerms(ast); } freeTerms(ast); freeRules(root); fr(s); }
+		if (!ch) pr(ast); end: freeTerms(ast); } freeRules(root); fr(s); }

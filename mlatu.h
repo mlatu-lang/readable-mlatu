@@ -39,6 +39,7 @@ int pF(C n,D root);
 void freeTerms(term m);
 void prettyTerms(term t);
 void prettyTerm(term t);
+void prettyRules(rule r);
 void rewrite(rule r,term t);
 I stepRewrite(rule r,term t);
 #endif

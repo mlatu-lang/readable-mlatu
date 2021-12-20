@@ -4,13 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-// free T, free list of T, new T, clone T
-V fT(T t) { fr(t->w); MAP(t->c,fT(c)); fr(t); } V fTL(T t) { MAP(t,fT(c)); } V freeTerms(T t) { fTL(t); }
-T nT(I t,C w) { T z=ma(sizeof(struct t)); z->t=t; z->w=ma(strlen(w)+1); strcpy(z->w,w); z->n=z->c=0; R z; }
-T cT(T t) { T z=nT(0,""), n=z; MAP(t,n=n->n=nT(c->t,c->w);n->c=cT(c->c)); n=z->n; fT(z); R n; }
+V fT(T t) { fr(t->w); MAP(t->c,fT(c)); fr(t); } V freeTerms(T t) { MAP(t,fT(c)); } // free T
+T nT(I t,C w) { T z=ma(sizeof(struct t)); z->t=t; z->w=ma(strlen(w)+1); strcpy(z->w,w); z->n=z->c=0; R z; } // new T
+T cT(T t) { T z=nT(0,""), n=z; MAP(t,n=n->n=nT(c->t,c->w);n->c=cT(c->c)); n=z->n; fT(z); R n; } // clone T
 
 enum { Q,TRM,ST }; // ST starts each ast
-V fD(D d) { MAP(d,fr(c->w);fD(c->c);fTL(c->r);fr(c)) } V freeRules(D r) { fD(r); } // free linked list of D
+V freeRules(D d) { if (!d) R; MAP(d,fr(c->w);freeRules(c->c);freeTerms(c->r);fr(c)); }
 D nDW(C w) { D d=ca(sizeof(struct d)); d->w=ma(strlen(w)+1); strcpy(d->w,w); R d; } // new rule, match on literal
 D nID(I (*p)(),V (*f)(),C w) { D d=nDW(w); d->f=f; d->p=p; R d; } // internal rule (match on quote, rewrite is fn)
 D nRD(C w,T r) { D d=nDW(w); d->r=r; R d; } // new rewrite rule (rewrite is terms, predicate is literal)
@@ -18,8 +17,9 @@ D nD(C w,V (*f)()) { D d=nDW(w); d->f=f; R d; } // new rule (rewrite is fn, pred
 V nC(D p,D cd) { cd->l=p->l+1; if (p->c) { MAP(p->c,); c->n=cd; } else p->c=cd; } // adds child to rule
 
 #define esc(x) ((x)==' '||(x)=='`'||(x)=='('||(x)==')'||(x)==';'||(x)=='=')
-T wd(C t,I st,I l,I e,T *p) { C w=ma(l-e+1); I j=0; DO(l,w[j++]=t[st+(i=t[st+i]=='`'&&esc(t[st+i+1])?i+1:i)])
-	w[l-e]='\0'; T n=nT(TRM,w); fr(w); R *p=n; }
+//T wd(C t,I st,I l,I e,T *p) { C w=ma(l-e+1); I j=0; DO(l,t[st+i]=='`'&&esc(t[st+i+1])?i++:(w[j++]=t[st+i]));PF("%s ",w);
+T wd(C t,I st,I l,I e,T *p) { C w=ma(l/*-e*/+1); I j=0; DO(l,w[i]=t[st+i]);
+	w[l/*-e*/]='\0'; /*PF("|%s|",w);*/ T n=nT(TRM,w); fr(w); R *p=n; }
 V P(C t,I *i,I *er,I lvl,T *s) { I st=*i, e=0; T *c=s; /* n/c */ do switch (t[*i]) { // parser
 	#define WD if (*i>st) c=&(wd(t,st,*i-st,e,c)->n), e=0; st=*i+1
 	case '`': if (esc(t[*i+1])) e++,(*i)++; else *er=UNESC; B;
@@ -29,18 +29,18 @@ V P(C t,I *i,I *er,I lvl,T *s) { I st=*i, e=0; T *c=s; /* n/c */ do switch (t[*i
 	case '(': WD; T n=nT(Q,""); *c=n; c=&(n->n); (*i)++; P(t,i,er,lvl+1,&(n->c)); st=*i+1; B;
 	case ')': WD; if (lvl==0) *er=PRN; R; } while ((*i)++<strlen(t)); if (lvl) *er=PRN; }
 T parseTerms(C s,I *er) { T t=nT(ST,""); I i=0; *er=0; P(s,&i,er,0,&t->n); R t; }
-I parseRule(C s,D root) { I e=0; T t=parseTerms(s,&e); if (e==PRN||e==UNESC) R e;
+I parseRule(C s,D root) { I e=0; PF("%s\n",s); T t=parseTerms(s,&e); prettyTerms(t); if (e==PRN||e==UNESC) R e;
 	I eq=0, semi=0; MAP(t,if(!strcmp(c->w,"="))eq++;if(!strcmp(c->w,";"))semi++;if(!eq&&c->c)R MCH;);
-	if (eq!=1) R EQ; if (!strcmp(t->n->w,"=")) R EMPTY; 
+	if (eq!=1) R EQ; if (!strcmp(t->n->w,"=")) R EMPTY;
 	if (semi!=1) R SEMI; if (strcmp(c->w,";")) R END; {MAP(t,if(!strcmp(c->n->w,";")){fT(c->n);c->n=0;B;})}
 	t=t->n; D d=root, n; while (1) { if (!strcmp(t->w,"=")) { d->r=t->n; if (!t->n) d->e=1; t->n=0; B; }
-		n=0; MAP(d->c,if(!strcmp(t->w,c->w))n=c); 
+		n=0; MAP(d->c,if(!strcmp(t->w,c->w))n=c);
 		if (!n||!d->c) { n=nRD(t->w,0); n->l=d->l+1; if (d->c) c->n=n; else d->c=n; } d=n; t=t->n; }
-	fTL(t); R 0; } 
+	freeTerms(t); R 0; } 
 // parse file
 I pF(C n,D root) { FILE *f=fopen(n,"r"); if (!f) R OPEN;
 	I pos, l=0, d, st=ftell(f); while (1) { d=fgetc(f); if (d==-1) B; char c=d; l++;
-		if (c==';') { pos=ftell(f); C s=ma(l+1); fseek(f,st,0); fread(s,1,l,f); s[l]='\0'; 
+		if (c==';') { pos=ftell(f); C s=ma(l+1); fseek(f,st,0); fread(s,1,l,f); s[l]='\0';
 			I er=parseRule(s,root); if (er) R er; fr(s); l=0; fseek(f,pos,0); st=ftell(f); } }
 	fclose(f); R 0; }
 
@@ -62,6 +62,9 @@ V prTL(T t) { MAP(t,prettyTerm(c);if(c->n)PF(" ")); } // print term list
 V prettyTerm(T t) { switch (t->t) { // print term node
 	case TRM: DO(strlen(t->w),I e=esc(t->w[i]); PF("%*s%c",e,e?"`":"",t->w[i])); B;
 	case Q: PF("("); prTL(t->c); PF(")"); B; } } V prettyTerms(T t) { prTL(t->n); }
+V prD(D d,I i) { DO(i,PF("  ")); PF("%s: ",d->p?"?q":d->w);
+	if (d->r||d->f||d->e) PF("[rewrite]"); PF("\n"); MAP(d->c,prD(c,i+1)); }
+V prettyRules(D d) { prD(d,0); }
 
 T idx(T oT,I i) { I j=0; T t=oT; while (t->n&&j++<i) t=t->n; R t; } // index T linked list
 V mch(T t,D r,D *bst) /* finds first match in t */ { if (!t) R; D cR=r; while (cR) { //PF("(%s %s) ",t->w,cR->w);
