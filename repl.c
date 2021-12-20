@@ -5,7 +5,7 @@
 #include "mlatu.h"
 I dbg=0;
 V pr(term t) { PF("|-> "); prettyTerms(t); PF("\n"); }
-I main(I ac,C *av) { C s=ma(100); rule root=newRoot(); pF("prelude.mlt",root); /*prettyRules(root);*/ term ast;
+I main(I ac,C *av) { C s=ma(100); rule root=newRoot(); pF("prelude.mlt",root); prettyRules(root); term ast;
 	DO(ac-1,if(!strcmp("-d",av[i+1]))dbg=1;else{C n=av[i+1];I er=pF(n,root);if(er){switch(er){ // flags and files
 		case OPEN: PF("Error opening file '%s'",n); exit(-1);
 		case PRN: PF("Error parsing file '%s': unbalanced parentheses",n); exit(-1);

@@ -17,9 +17,8 @@ D nD(C w,V (*f)()) { D d=nDW(w); d->f=f; R d; } // new rule (rewrite is fn, pred
 V nC(D p,D cd) { cd->l=p->l+1; if (p->c) { MAP(p->c,); c->n=cd; } else p->c=cd; } // adds child to rule
 
 #define esc(x) ((x)==' '||(x)=='`'||(x)=='('||(x)==')'||(x)==';'||(x)=='=')
-//T wd(C t,I st,I l,I e,T *p) { C w=ma(l-e+1); I j=0; DO(l,t[st+i]=='`'&&esc(t[st+i+1])?i++:(w[j++]=t[st+i]));PF("%s ",w);
-T wd(C t,I st,I l,I e,T *p) { C w=ma(l/*-e*/+1); I j=0; DO(l,w[i]=t[st+i]);
-	w[l/*-e*/]='\0'; /*PF("|%s|",w);*/ T n=nT(TRM,w); fr(w); R *p=n; }
+T wd(C t,I st,I l,I e,T *p) { C w=ma(l-e+1); I j=0; DO(l,w[j++]=t[st+(i=t[st+i]=='`'&&esc(t[st+i+1])?i+1:i)])
+	w[l-e]='\0'; T n=nT(TRM,w); fr(w); R *p=n; }
 V P(C t,I *i,I *er,I lvl,T *s) { I st=*i, e=0; T *c=s; /* n/c */ do switch (t[*i]) { // parser
 	#define WD if (*i>st) c=&(wd(t,st,*i-st,e,c)->n), e=0; st=*i+1
 	case '`': if (esc(t[*i+1])) e++,(*i)++; else *er=UNESC; B;
@@ -29,7 +28,7 @@ V P(C t,I *i,I *er,I lvl,T *s) { I st=*i, e=0; T *c=s; /* n/c */ do switch (t[*i
 	case '(': WD; T n=nT(Q,""); *c=n; c=&(n->n); (*i)++; P(t,i,er,lvl+1,&(n->c)); st=*i+1; B;
 	case ')': WD; if (lvl==0) *er=PRN; R; } while ((*i)++<strlen(t)); if (lvl) *er=PRN; }
 T parseTerms(C s,I *er) { T t=nT(ST,""); I i=0; *er=0; P(s,&i,er,0,&t->n); R t; }
-I parseRule(C s,D root) { I e=0; PF("%s\n",s); T t=parseTerms(s,&e); prettyTerms(t); if (e==PRN||e==UNESC) R e;
+I parseRule(C s,D root) { I e=0; T t=parseTerms(s,&e); if (e==PRN||e==UNESC) R e;
 	I eq=0, semi=0; MAP(t,if(!strcmp(c->w,"="))eq++;if(!strcmp(c->w,";"))semi++;if(!eq&&c->c)R MCH;);
 	if (eq!=1) R EQ; if (!strcmp(t->n->w,"=")) R EMPTY;
 	if (semi!=1) R SEMI; if (strcmp(c->w,";")) R END; {MAP(t,if(!strcmp(c->n->w,";")){fT(c->n);c->n=0;B;})}
@@ -63,8 +62,9 @@ V prettyTerm(T t) { switch (t->t) { // print term node
 	case TRM: DO(strlen(t->w),I e=esc(t->w[i]); PF("%*s%c",e,e?"`":"",t->w[i])); B;
 	case Q: PF("("); prTL(t->c); PF(")"); B; } } V prettyTerms(T t) { prTL(t->n); }
 V prD(D d,I i) { DO(i,PF("  ")); PF("%s: ",d->p?"?q":d->w);
-	if (d->r||d->f||d->e) PF("[rewrite]"); PF("\n"); MAP(d->c,prD(c,i+1)); }
-V prettyRules(D d) { prD(d,0); }
+	if (d->r||d->f||d->e) { if (d->f) PF("[internal rewrite]"); if (d->e) PF("[empty rewrite]"); if (d->r) prTL(d->r); }
+	PF("\n"); MAP(d->c,prD(c,i+1)); }
+V prettyRules(D r) { MAP(r->c,prD(c,0)); }
 
 T idx(T oT,I i) { I j=0; T t=oT; while (t->n&&j++<i) t=t->n; R t; } // index T linked list
 V mch(T t,D r,D *bst) /* finds first match in t */ { if (!t) R; D cR=r; while (cR) { //PF("(%s %s) ",t->w,cR->w);
