@@ -3,8 +3,8 @@
 typedef int I; typedef char *C; typedef void V; 
 // type, word, children, next
 typedef struct t { I t; C w; struct t *c,*n; } *T, *term;
-// predicate, word, children, next, function, rewrite, length, rewrite to empty term?
-typedef struct d { I (*p)(); C w; struct d *c,*n; V (*f)(); T r; I l, e; } *D, *rule; // definition (R was taken)
+// word, children, next, function, rewrite, length, match only on quote, rewrite to empty term?
+typedef struct d { C w; struct d *c,*n; V (*f)(); T r; I l, q, e; } *D, *rule; // definition (R was taken)
 /*  rule matching layout
 	mlatu: foo = x; foo bar = y; foo baz = z;
 	internal representation:

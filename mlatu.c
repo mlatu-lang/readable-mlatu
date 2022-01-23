@@ -11,7 +11,7 @@ T cT(T t) { T z=nT(0,""), n=z; MAP(t,n=n->n=nT(c->t,c->w);n->c=cT(c->c)); n=z->n
 enum { Q,TRM,ST }; // ST starts each ast
 V freeRules(D d) { if (!d) R; MAP(d,fr(c->w);freeRules(c->c);freeTerms(c->r);fr(c)); }
 D nDW(C w) { D d=ca(sizeof(struct d)); d->w=ma(strlen(w)+1); strcpy(d->w,w); R d; } // new rule, match on literal
-D nID(I (*p)(),V (*f)(),C w) { D d=nDW(w); d->f=f; d->p=p; R d; } // internal rule (match on quote, rewrite is fn)
+D nID(V (*f)(),C w) { D d=nDW(w); d->f=f; d->q=1; R d; } // internal rule (match on quote, rewrite is fn)
 D nRD(C w,T r) { D d=nDW(w); d->r=r; R d; } // new rewrite rule (rewrite is terms, predicate is literal)
 D nD(C w,V (*f)()) { D d=nDW(w); d->f=f; R d; } // new rule (rewrite is fn, predicate is literal)
 V nC(D p,D cd) { cd->l=p->l+1; if (p->c) { MAP(p->c,); c->n=cd; } else p->c=cd; } // adds child to rule
@@ -44,7 +44,6 @@ I pF(C n,D root) { FILE *f=fopen(n,"r"); if (!f) R OPEN;
 	fclose(f); R 0; }
 
 V rm(T t) { T n=t->n->n; fT(t->n); t->n=n; }
-I qP(T t) { R t->t==Q; } // ?q
 V zapPtv(T t) { rm(t); rm(t); } 
 V swapPtv(T t) { T c=t->n; t->n=c->n; c->n=t->n->n; t->n->n=c; rm(t->n->n); }
 V copyPtv(T t) { rm(t->n); T n=t->n->n; t->n->n=0; T c=cT(t->n); t->n->n=c; c->n=n; }
@@ -52,23 +51,23 @@ V wrapPtv(T t) { T q=t->n->n; strcpy(q->w,""); q->t=Q; q->c=t->n; q->c->n=0; t->
 V execPtv(T t) { T cs=t->n->c; t->n->c=0; rm(t); rm(t); if (!cs) R; MAP(cs,); c->n=t->n; t->n=cs;  }
 V catPtv(T t) { T q=t->n->n; MAP(t->n->c,); c?(c->n=q->c):(t->n->c=q->c); q->c=0; rm(t->n); rm(t->n); }
 
-D newRoot() { D root=nD("",0), q1=nID(qP,0,"?q"), q2=nID(qP,0,"?q"); root->c=q1; nC(q1,q2);
-		D zap=nD("-",zapPtv), copy=nD("+",copyPtv);   nC(q1,zap); nC(q1, copy);
-		D exec=nD("<",execPtv), wrap=nD(">",wrapPtv); nC(q1,exec); nC(q1,wrap);
-		D swap=nD("~",swapPtv), cat=nD(",",catPtv);   nC(q2,swap); nC(q2,cat); R root; }
+D newRoot() { D root=nD("",0), q1=nID(0,"?q"), q2=nID(0,"?q"); root->c=q1; nC(q1,q2);
+	D zap=nD("-",zapPtv), copy=nD("+",copyPtv);   nC(q1,zap); nC(q1, copy);
+	D exec=nD("<",execPtv), wrap=nD(">",wrapPtv); nC(q1,exec); nC(q1,wrap);
+	D swap=nD("~",swapPtv), cat=nD(",",catPtv);   nC(q2,swap); nC(q2,cat); R root; }
  
 V prTL(T t) { MAP(t,prettyTerm(c);if(c->n)PF(" ")); } // print term list
 V prettyTerm(T t) { switch (t->t) { // print term node
 	case TRM: DO(strlen(t->w),I e=esc(t->w[i]); PF("%*s%c",e,e?"`":"",t->w[i])); B;
 	case Q: PF("("); prTL(t->c); PF(")"); B; } } V prettyTerms(T t) { prTL(t->n); }
-V prD(D d,I i) { DO(i,PF("  ")); PF("%s: ",d->p?"?q":d->w);
+V prD(D d,I i) { DO(i,PF("  ")); PF("%s: ",d->q?"?q":d->w);
 	if (d->r||d->f||d->e) { if (d->f) PF("[internal rewrite]"); if (d->e) PF("[empty rewrite]"); if (d->r) prTL(d->r); }
 	PF("\n"); MAP(d->c,prD(c,i+1)); }
 V prettyRules(D r) { MAP(r->c,prD(c,0)); }
 
 T idx(T oT,I i) { I j=0; T t=oT; while (t->n&&j++<i) t=t->n; R t; } // index T linked list
 V mch(T t,D r,D *bst) /* finds first match in t */ { if (!t) R; D cR=r; while (cR) { //PF("(%s %s) ",t->w,cR->w);
-	if (cR->p) { if (!(cR->p(t))) goto cont; } else if (strcmp(t->w,cR->w)) goto cont;
+	if (cR->q) { if (t->t!=Q) goto cont; } else if (strcmp(t->w,cR->w)) goto cont;
 	if ((cR->f||cR->r||cR->e)&&(!*bst||cR->l>(*bst)->l)) *bst=cR;
 	{MAP(cR->c,mch(t->n,c,bst))} cont: cR=cR->n; } }
 I ex(T t,D r,I stp) /* rewrite alg */ { I i=0, l; D bst; while (1) { l=0; bst=0; {MAP(t->n,l++)} if (i>=l) R 1;

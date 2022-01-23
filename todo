@@ -5,15 +5,16 @@ rewrite(Rules, Terms) -> Terms
 pretty_term(Term) -> String
 remove state from printing terms
 parse_rule(&str) -> Result<Rule, String>
+pretty_rules(Rules) -> String
+remove qP
 
 todo:
 last rule without semi
 UNESC in files
 parse_rules(&str) -> Result<Rules, String>
-pretty_rule(Rule) -> String
-remove qP
+docs
 fix long rule with clang
 
 not doing:
 parse_term(&str) -> Result<Term, String>
-pretty_rules(Rules) -> String
+pretty_rule(Rule) -> String
