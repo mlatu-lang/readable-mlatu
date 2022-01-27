@@ -23,18 +23,23 @@ the errors in the enum are ordered from least to most precedence -- higher ones 
 the term returned will always needs freeing regardless of whether there was an error or not
 */
 enum { OK,OPEN,MCH,SEMI,EQ,UNESC,PRN,EMPTY,END };
-term parseTerms(char *s,int *er);
+term parseTerms(char *s, int *er);
 
 /*
-takes a string, and a root to add the rule to (does not free s)
+takes a string, and a root to add the rule to
 same error scheme as above, but with different meanings (if there was an error, root will not be changed)
 PRN: unbalanced parens, UNESC: unescaped backtick, SEMI: more or less than 1 semicolon in rule,
 EQ: more or less than 1 equal sign in rule, EMPTY: match on nothing, END: semicolon is not at end of rule,
 MCH: tried to match on quote
 */
-int parseRule(char *s,rule root);
+int parseRule(char *s, rule root);
 
-int pF(C n,D root);
+/*
+takes a string, and a root to add rules to
+returns a non-zero positive error on failure: one of the parseRule failure codes, or OPEN for failure to open file
+if there is a rule in a rule, rules up until it will still be added to root
+*/
+int parseFile(char *name, D root);
 
 void freeTerms(term m);
 void prettyTerms(term t);

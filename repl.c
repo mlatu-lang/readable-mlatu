@@ -5,7 +5,7 @@
 #include "mlatu.h"
 V pr(T t) { PF("|-> "); prettyTerms(t); PF("\n"); }
 V f(C n,rule root) {
-	I er=pF(n,root); if (er) { switch(er) {
+	I er=parseFile(n,root); if (er) { switch(er) {
 		case OPEN: PF("Error opening file '%s'",n); B;
 		case PRN: PF("Error parsing file '%s': unbalanced parentheses",n); B;
 		case UNESC: PF("Error parsing file '%s': unescaped backtick",n); B;
