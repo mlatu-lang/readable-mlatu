@@ -7,11 +7,13 @@ remove state from printing terms
 parse_rule(&str) -> Result<Rule, String>
 pretty_rules(Rules) -> String
 remove qP
+last rule without semi
 
 todo:
-last rule without semi
 UNESC in files
+comments
 parse_rules(&str) -> Result<Rules, String>
+parse_file
 docs
 fix long rule with clang
 

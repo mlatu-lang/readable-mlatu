@@ -17,10 +17,9 @@ rule newRoot(); void freeRules(rule r);
 /*
 takes a string, and a pointer to an error variable
 if the parse was successful, er will be 0 (OK)
-otherwise, it will be nonzero
-PRN: unbalanced parens, UNESC: unescaped backtick, SEMI: unescaped semicolon,
-EQ: unescaped equal sign
-the term returned always needs freed regardless of whether there was an error or not
+otherwise, it will be nonzero -- one of
+PRN: unbalanced parens, UNESC: unescaped backtick, SEMI: unescaped semicolon, EQ: unescaped equal sign
+the term returned will always needs freeing regardless of whether there was an error or not
 */
 enum { OK,PRN,UNESC,SEMI,EQ,EMPTY,END,MCH,OPEN };
 term parseTerms(char *s,int *er);
