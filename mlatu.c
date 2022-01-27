@@ -21,15 +21,16 @@ T wd(C t,I st,I l,I e,T *p) { C w=ma(l-e+1); I j=0; DO(l,w[j++]=t[st+(i=t[st+i]=
 	w[l-e]='\0'; T n=nT(TRM,w); fr(w); R *p=n; }
 V P(C t,I *i,I *er,I lvl,T *s) { I st=*i, e=0; T *c=s; /* n/c */ do switch (t[*i]) { // parser
 	#define WD if (*i>st) c=&(wd(t,st,*i-st,e,c)->n), e=0; st=*i+1
-	case '`': if (esc(t[*i+1])) e++,(*i)++; else *er=UNESC; B;
+	#define ER(x) if (x>*er) *er=x;
+	case '`': if (esc(t[*i+1])) e++,(*i)++; else ER(UNESC); B;
 	case ' ': case '\0': case '\n': case '\t': WD; B;
-	case '=': WD; c=&(*c=nT(TRM,"="))->n; *er=EQ; B; case ';': WD; c=&(*c=nT(TRM,";"))->n; *er=SEMI; B;
+	case '=': WD; c=&(*c=nT(TRM,"="))->n; ER(EQ); B; case ';': WD; c=&(*c=nT(TRM,";"))->n; ER(SEMI); B;
 	case '+': case '-': case '<': case '>': case '~': case ',': WD; char s[2]={t[*i],0}; c=&(*c=nT(TRM,s))->n; B;
 	case '(': WD; T n=nT(Q,""); *c=n; c=&(n->n); (*i)++; P(t,i,er,lvl+1,&(n->c)); st=*i+1; B;
-	case ')': WD; if (lvl==0) *er=PRN; R; } while ((*i)++<strlen(t)); if (lvl) *er=PRN; }
+	case ')': WD; if (lvl==0) ER(PRN); R; } while ((*i)++<strlen(t)); if (lvl) ER(PRN); }
 T parseTerms(C s,I *er) { T t=nT(ST,""); I i=0; *er=0; P(s,&i,er,0,&t->n); R t; }
 I parseRule(C s,D root) { I e=0; T t=parseTerms(s,&e); if (e==PRN||e==UNESC) R e;
-	I eq=0, semi=0; MAP(t,if(!strcmp(c->w,"="))eq++;if(!strcmp(c->w,";"))semi++;if(!eq&&c->c)R MCH;);
+	I eq=0, semi=0; MAP(t,if(!strcmp(c->w,"="))eq++;if(!strcmp(c->w,";"))semi++;if(!eq&&c->c)R MCH);
 	if (eq!=1) R EQ; if (!strcmp(t->n->w,"=")) R EMPTY;
 	if (semi!=1) R SEMI; if (strcmp(c->w,";")) R END; {MAP(t,if(!strcmp(c->n->w,";")){fT(c->n);c->n=0;B;})}
 	t=t->n; D d=root, n; while (1) { if (!strcmp(t->w,"=")) { d->r=t->n; if (!t->n) d->e=1; t->n=0; B; }

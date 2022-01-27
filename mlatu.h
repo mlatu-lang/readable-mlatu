@@ -19,9 +19,10 @@ takes a string, and a pointer to an error variable
 if the parse was successful, er will be 0 (OK)
 otherwise, it will be nonzero -- one of
 PRN: unbalanced parens, UNESC: unescaped backtick, SEMI: unescaped semicolon, EQ: unescaped equal sign
+the errors in the enum are ordered from least to most precedence -- higher ones will override lower ones
 the term returned will always needs freeing regardless of whether there was an error or not
 */
-enum { OK,PRN,UNESC,SEMI,EQ,EMPTY,END,MCH,OPEN };
+enum { OK,OPEN,MCH,SEMI,EQ,UNESC,PRN,EMPTY,END };
 term parseTerms(char *s,int *er);
 
 /*
