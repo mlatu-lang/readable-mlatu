@@ -9,11 +9,11 @@ pretty_rules(Rules) -> String
 remove qP
 last rule without semi
 UNESC in files
+parse_file
 
 todo:
 comments
 parse_rules(&str) -> Result<Rules, String>
-parse_file
 docs
 fix long rule with clang
 
