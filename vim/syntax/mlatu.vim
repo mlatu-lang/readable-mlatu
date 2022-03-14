@@ -1,5 +1,5 @@
-if exists('b:current_syntax')|fini|en|sy clear|sy sync fromstart
-sy match comment   /#.*/
-sy match function  /[+\-~,<>]/ " primitives
-sy match statement /[=;()]/
+if exists('b:current_syntax')|fini|en
+sy match Comment   /#.*/
+sy match Function  /[+\-~,<>]/ " primitives
+sy match Statement /[=;()]/
 let b:current_syntax='mlatu'
