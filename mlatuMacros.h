@@ -1,5 +1,6 @@
 #ifndef mlatuMacros_h 
 #define mlatuMacros_h
+typedef int I; typedef char *C; typedef void V; 
 #define R return
 #define B break
 #define PF printf

@@ -1,3 +1,5 @@
+// timer.c - multiples 100 by 100 in mlatu and prints the result
+// needs to be used with a command-line utility like `time`
 #include <stdio.h>
 #include "../mlatu.h"
 #include "../mlatuMacros.h"
