@@ -1,4 +1,8 @@
 CC=gcc
+optimization=-Ofast
 
-repl: mlatu.c repl.c
-	$(CC) -Ofast mlatu.c repl.c -o repl
+lib:
+	$(CC) $(optimization) -c mlatu.c -o mlatu.o
+
+repl: lib
+	$(CC) $(optimization) mlatu.o repl.c -o repl
