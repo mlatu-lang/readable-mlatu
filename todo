@@ -18,8 +18,10 @@ try on ubuntu
 docs
 parse_term(&str) -> Result<Term, String>
 pretty_rule(Rule) -> String
+load prelude when not in dir where prelude is
 
 todo:
 make prints print to string
-load prelude when not in dir where prelude is
 fix long rule with clang
+add debug to repl
+add loading files to repl
