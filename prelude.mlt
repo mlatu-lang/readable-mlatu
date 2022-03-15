@@ -1,3 +1,6 @@
+# prelude.mlt
+# always gets loaded with the default readable-mlatu repl
+
 copy    = +;
 remove  = -;
 wrap    = <;

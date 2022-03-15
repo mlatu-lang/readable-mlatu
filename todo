@@ -1,0 +1,25 @@
+done:
+parse_terms(&str) -> Result<Terms, String>
+pretty_terms(Terms) -> String
+rewrite(Rules, Terms) -> Terms
+pretty_term(Term) -> String
+remove state from printing terms
+parse_rule(&str) -> Result<Rule, String>
+pretty_rules(Rules) -> String
+remove qP
+last rule without semi
+UNESC in files
+parse_file
+comments
+have # be an escape char, just have escapes in files work
+switch one char strcmps to deref and =
+parse_rules(&str) -> Result<Rules, String>
+try on ubuntu
+docs
+parse_term(&str) -> Result<Term, String>
+pretty_rule(Rule) -> String
+
+todo:
+make prints print to string
+load prelude when not in dir where prelude is
+fix long rule with clang
