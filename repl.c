@@ -1,8 +1,8 @@
+#include "mlatu.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "mlatuMacros.h"
-#include "mlatu.h"
 V pr(T t) { PF("|-> "); prettyTerms(t); PF("\n"); }
 V f(C n,rule root) {
 	I er=parseFile(n,root); if (er) { switch(er) {

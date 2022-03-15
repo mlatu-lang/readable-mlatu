@@ -1,5 +1,6 @@
-a*.*
 Session.vim
 repl.exe
 repl
+timer.exe
+timer
 mlatu.o

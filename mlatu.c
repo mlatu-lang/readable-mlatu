@@ -1,8 +1,8 @@
-#include "mlatuMacros.h"
 #include "mlatu.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "mlatuMacros.h"
 
 V fT(T t) { fr(t->w); MAP(t->c,fT(c)); fr(t); } V freeTerms(T t) { MAP(t,fT(c)); } // free T
 T nT(I t,C w) { T z=ma(sizeof(struct t)); z->t=t; z->w=ma(strlen(w)+1); strcpy(z->w,w); z->n=z->c=0; R z; } // new T
