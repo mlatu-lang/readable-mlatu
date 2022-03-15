@@ -35,9 +35,8 @@ I parseRule(C s,D root) { I l=strlen(s), cm=0; C nS=ma(l+1); strcpy(nS,s); DO(l,
 		n=0; MAP(d->c,if(!strcmp(t->w,c->w))n=c);
 		if (!n||!d->c) { n=nRD(t->w,0); n->l=d->l+1; if (d->c) c->n=n; else d->c=n; } d=n; t=t->n; }
 	freeTerms(t); R 0; } 
-I parseFile(C n,D root) { FILE *f=fopen(n,"r"); if (!f) R OPEN;
-	I pos, l=0, d, st=ftell(f), r=0, cm=0; while (1) { d=fgetc(f);
-		if (d==-1) B; if (d!=' '&&d!='\n'&&d!='\t'&&d!='#'&&!cm) r=1; l++;
+I parseFile(C n,D root) { FILE *f=fopen(n,"r"); if (!f) R OPEN; I pos, l=0, d, st=ftell(f), r=0, cm=0;
+	while (1) { d=fgetc(f); if (d==-1) B; if (d!=' '&&d!='\n'&&d!='\t'&&d!='#'&&!cm) r=1; l++;
 		if (!(cm=cm?d!='\n':d=='#')&&d==';') { pos=ftell(f); C s=ma(l+1); fseek(f,st,SEEK_SET); fread(s,1,l,f); s[l]='\0';
 			I er=parseRule(s,root); fr(s); if (er) R er; l=0; fseek(f,pos,SEEK_SET); st=ftell(f); r=0; } }
 	fclose(f); R r?END:0; }
