@@ -29,7 +29,8 @@ V P(C t,I *i,I *er,I lvl,T *s) { I st=*i, e=0; T *c=s; /* n/c */ do switch (t[*i
 	case '(': WD; T n=nT(Q,""); *c=n; c=&(n->n); (*i)++; P(t,i,er,lvl+1,&(n->c)); st=*i+1; B;
 	case ')': WD; if (lvl==0) ER(PRN); R; } while ((*i)++<strlen(t)); if (lvl) ER(PRN); }
 T parseTerms(C s,I *er) { T t=nT(ST,""); I i=0; *er=0; P(s,&i,er,0,&t->n); R t; }
-I parseRule(C s,D root) { I e=0; T t=parseTerms(s,&e); if (e==PRN||e==UNESC) R e;
+I parseRule(C s,D root) { I l=strlen(s), cm=0; C nS=ma(l+1); strcpy(nS,s); DO(l,if(cm=cm?s[i]!='\n':s[i]=='#')nS[i]=' ');
+	I e=1; T t=parseTerms(nS,&e); fr(nS); if (e==PRN||e==UNESC) R e;
 	I eq=0, semi=0; MAP(t,if(!strcmp(c->w,"="))eq++;if(!strcmp(c->w,";"))semi++;if(!eq&&c->c)R MCH);
 	if (eq!=1) R EQ; if (!strcmp(t->n->w,"=")) R EMPTY;
 	if (semi!=1) R SEMI; if (strcmp(c->w,";")) R END; {MAP(t,if(!strcmp(c->n->w,";")){fT(c->n);c->n=0;B;})}
@@ -38,23 +39,24 @@ I parseRule(C s,D root) { I e=0; T t=parseTerms(s,&e); if (e==PRN||e==UNESC) R e
 		if (!n||!d->c) { n=nRD(t->w,0); n->l=d->l+1; if (d->c) c->n=n; else d->c=n; } d=n; t=t->n; }
 	freeTerms(t); R 0; } 
 I parseFile(C n,D root) { FILE *f=fopen(n,"r"); if (!f) R OPEN;
-	I pos, l=0, d, st=ftell(f), r=0; while (1) { d=fgetc(f); if (d==-1) B; if (d!=' '&&d!='\n'&&d!='\t') r=1; char c=d; l++;
-		if (c==';') { pos=ftell(f); C s=ma(l+1); fseek(f,st,SEEK_SET); fread(s,1,l,f); s[l]='\0';
+	I pos, l=0, d, st=ftell(f), r=0, cm=0; while (1) { d=fgetc(f);
+		if (d==-1) B; if (d!=' '&&d!='\n'&&d!='\t'&&d!='#'&&!cm) r=1; l++;
+		if (!(cm=cm?d!='\n':d=='#')&&d==';') { pos=ftell(f); C s=ma(l+1); fseek(f,st,SEEK_SET); fread(s,1,l,f); s[l]='\0';
 			I er=parseRule(s,root); if (er) R er; fr(s); l=0; fseek(f,pos,SEEK_SET); st=ftell(f); r=0; } }
 	fclose(f); R r?END:0; }
 
 V rm(T t) { T n=t->n->n; fT(t->n); t->n=n; }
-V zapPtv(T t) { rm(t); rm(t); } 
+V zapPtv(T t)  { rm(t); rm(t); } 
 V swapPtv(T t) { T c=t->n; t->n=c->n; c->n=t->n->n; t->n->n=c; rm(t->n->n); }
 V copyPtv(T t) { rm(t->n); T n=t->n->n; t->n->n=0; T c=cT(t->n); t->n->n=c; c->n=n; }
 V wrapPtv(T t) { T q=t->n->n; strcpy(q->w,""); q->t=Q; q->c=t->n; q->c->n=0; t->n=q; }
 V execPtv(T t) { T cs=t->n->c; t->n->c=0; rm(t); rm(t); if (!cs) R; MAP(cs,); c->n=t->n; t->n=cs;  }
-V catPtv(T t) { T q=t->n->n; MAP(t->n->c,); c?(c->n=q->c):(t->n->c=q->c); q->c=0; rm(t->n); rm(t->n); }
+V catPtv(T t)  { T q=t->n->n; MAP(t->n->c,); c?(c->n=q->c):(t->n->c=q->c); q->c=0; rm(t->n); rm(t->n); }
 
 D newRoot() { D root=nD("",0), q1=nID(0,"?q"), q2=nID(0,"?q"); root->c=q1; nC(q1,q2);
-	D zap=nD("-",zapPtv), copy=nD("+",copyPtv);   nC(q1,zap); nC(q1, copy);
+	D zap= nD("-",zapPtv),  copy=nD("+",copyPtv); nC(q1,zap);  nC(q1, copy);
 	D exec=nD("<",execPtv), wrap=nD(">",wrapPtv); nC(q1,exec); nC(q1,wrap);
-	D swap=nD("~",swapPtv), cat=nD(",",catPtv);   nC(q2,swap); nC(q2,cat); R root; }
+	D swap=nD("~",swapPtv), cat= nD(",",catPtv);  nC(q2,swap); nC(q2,cat); R root; }
  
 V prTL(T t) { MAP(t,prettyTerm(c);if(c->n)PF(" ")); } // print term list
 V prettyTerm(T t) { switch (t->t) { // print term node
@@ -65,13 +67,12 @@ V prD(D d,I i) { DO(i,PF("  ")); PF("%s: ",d->q?"?q":d->w);
 	PF("\n"); MAP(d->c,prD(c,i+1)); }
 V prettyRules(D r) { MAP(r->c,prD(c,0)); }
 
-T idx(T oT,I i) { I j=0; T t=oT; while (t->n&&j++<i) t=t->n; R t; } // index T linked list
 V mch(T t,D r,D *bst) /* finds first match in t */ { if (!t) R; D cR=r; while (cR) { //PF("(%s %s) ",t->w,cR->w);
 	if (cR->q) { if (t->t!=Q) goto cont; } else if (strcmp(t->w,cR->w)) goto cont;
 	if ((cR->f||cR->r||cR->e)&&(!*bst||cR->l>(*bst)->l)) *bst=cR;
 	{MAP(cR->c,mch(t->n,c,bst))} cont: cR=cR->n; } }
 I ex(T t,D r,I stp) /* rewrite alg */ { I i=0, l; D bst; while (1) { l=0; bst=0; {MAP(t->n,l++)} if (i>=l) R 1;
-	T iT=idx(t,i); mch(iT->n,r,&bst); i++;
+	I j=0; T iT=t; while (t->n&&j++<i) iT=iT->n; mch(iT->n,r,&bst); i++;
 	if (bst) {
 		if (bst->f) bst->f(iT); else { DO(bst->l,rm(iT)); T z=cT(bst->r); if (z) { MAP(z,); c->n=iT->n; iT->n=z; } }
 		i=0; if (stp) R 0; } } }

@@ -3,6 +3,7 @@
 Some Quiche Eaters have been complaining that code here is illegible, so I have named it "Readable Mlatu" to assert their fallaciousness.  
 
 ## Compiling and running
+Run `make repl` to make the repl.  
 Works with gcc/clang, hasn't been tested with any other compilers.  
 Any line that rewrites to `bye` will exit the repl.
 
