@@ -13,9 +13,9 @@ parse_file
 comments
 have # be an escape char, just have escapes in files work
 switch one char strcmps to deref and =
+parse_rules(&str) -> Result<Rules, String>
 
 todo:
-parse_rules(&str) -> Result<Rules, String>
 docs
 fix long rule with clang
 try on ubuntu

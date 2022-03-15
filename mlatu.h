@@ -18,7 +18,7 @@ rule newRoot(); void freeRules(rule r);
 takes a string, and a pointer to an error variable
 if the parse was successful, er will be 0 (OK)
 otherwise, it will be nonzero -- one of
-PRN: unbalanced parens, SEMI: semicolon, EQ: equal sign
+PRN: unbalanced parens, SEMI: semicolon in query, EQ: equal sign in query
 the errors in the enum are ordered from least to most precedence -- higher ones will override lower ones
 the term returned will always needs freeing regardless of whether there was an error or not
 */
@@ -39,7 +39,9 @@ takes a string, and a root to add rules to
 returns a non-zero positive error on failure: one of the parseRule failure codes, or OPEN for failure to open file
 if there is a rule in a rule, rules up until it will still be added to root
 */
-int parseFile(char *name, D root);
+int parseFile(char *name, rule root);
+
+int parseRules(char *string, rule root);
 
 void freeTerms(term m);
 void prettyTerms(term t);

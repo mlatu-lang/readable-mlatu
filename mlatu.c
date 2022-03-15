@@ -39,8 +39,13 @@ I parseFile(C n,D root) { FILE *f=fopen(n,"r"); if (!f) R OPEN;
 	I pos, l=0, d, st=ftell(f), r=0, cm=0; while (1) { d=fgetc(f);
 		if (d==-1) B; if (d!=' '&&d!='\n'&&d!='\t'&&d!='#'&&!cm) r=1; l++;
 		if (!(cm=cm?d!='\n':d=='#')&&d==';') { pos=ftell(f); C s=ma(l+1); fseek(f,st,SEEK_SET); fread(s,1,l,f); s[l]='\0';
-			I er=parseRule(s,root); if (er) R er; fr(s); l=0; fseek(f,pos,SEEK_SET); st=ftell(f); r=0; } }
+			I er=parseRule(s,root); fr(s); if (er) R er; l=0; fseek(f,pos,SEEK_SET); st=ftell(f); r=0; } }
 	fclose(f); R r?END:0; }
+I parseRules(C s,D root) { I l=0, d, r=0, cm=0;
+	DO(strlen(s), d=s[i]; if (d!=' '&&d!='\n'&&d!='\t'&&d!='#'&&!cm) r=1; l++;
+		if (!(cm=cm?d!='\n':d=='#')&&d==';') { C nS=ma(l+1); strncpy(nS,s+i+1-l,l); nS[l]='\0';
+			I er=parseRule(nS,root); fr(nS); if (er) R er; l=0; r=0; });
+	R r?END:0; }
 
 V rm(T t) { T n=t->n->n; fT(t->n); t->n=n; }
 V zapPtv(T t)  { rm(t); rm(t); } 
