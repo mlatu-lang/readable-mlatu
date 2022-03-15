@@ -11,13 +11,14 @@ last rule without semi
 UNESC in files
 parse_file
 comments
+have # be an escape char, just have escapes in files work
 
 todo:
-have # be an escape char, just have escapes in files work
 switch one char strcmps to deref and =
 parse_rules(&str) -> Result<Rules, String>
 docs
 fix long rule with clang
+try on ubuntu
 
 not doing:
 parse_term(&str) -> Result<Term, String>

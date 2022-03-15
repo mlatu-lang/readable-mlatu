@@ -16,13 +16,10 @@ D nRD(C w,T r) { D d=nDW(w); d->r=r; R d; } // new rewrite rule (rewrite is term
 D nD(C w,V (*f)()) { D d=nDW(w); d->f=f; R d; } // new rule (rewrite is fn, predicate is literal)
 V nC(D p,D cd) { cd->l=p->l+1; if (p->c) { MAP(p->c,); c->n=cd; } else p->c=cd; } // adds child to rule
 
-#define esc(x) ((x)==' '||(x)=='`'||(x)=='('||(x)==')'||(x)==';'||(x)=='=')
-T wd(C t,I st,I l,I e,T *p) { C w=ma(l-e+1); I j=0; DO(l,w[j++]=t[st+(i=t[st+i]=='`'&&esc(t[st+i+1])?i+1:i)])
-	w[l-e]='\0'; T n=nT(TRM,w); fr(w); R *p=n; }
-V P(C t,I *i,I *er,I lvl,T *s) { I st=*i, e=0; T *c=s; /* n/c */ do switch (t[*i]) { // parser
-	#define WD if (*i>st) c=&(wd(t,st,*i-st,e,c)->n), e=0; st=*i+1
+T wd(C t,I st,I l,T *p) { C w=ma(l+1); strncpy(w,t+st,l); w[l]='\0'; T n=nT(TRM,w); fr(w); R *p=n; }
+V P(C t,I *i,I *er,I lvl,T *s) { I st=*i; T *c=s; /* n/c */ do switch (t[*i]) { // parser
+	#define WD if (*i>st) c=&(wd(t,st,*i-st,c)->n); st=*i+1
 	#define ER(x) if (x>*er) *er=x;
-	case '`': if (esc(t[*i+1])) e++,(*i)++; else ER(UNESC); B;
 	case ' ': case '\0': case '\n': case '\t': WD; B;
 	case '=': WD; c=&(*c=nT(TRM,"="))->n; ER(EQ); B; case ';': WD; c=&(*c=nT(TRM,";"))->n; ER(SEMI); B;
 	case '+': case '-': case '<': case '>': case '~': case ',': WD; char s[2]={t[*i],0}; c=&(*c=nT(TRM,s))->n; B;
@@ -30,7 +27,7 @@ V P(C t,I *i,I *er,I lvl,T *s) { I st=*i, e=0; T *c=s; /* n/c */ do switch (t[*i
 	case ')': WD; if (lvl==0) ER(PRN); R; } while ((*i)++<strlen(t)); if (lvl) ER(PRN); }
 T parseTerms(C s,I *er) { T t=nT(ST,""); I i=0; *er=0; P(s,&i,er,0,&t->n); R t; }
 I parseRule(C s,D root) { I l=strlen(s), cm=0; C nS=ma(l+1); strcpy(nS,s); DO(l,if(cm=cm?s[i]!='\n':s[i]=='#')nS[i]=' ');
-	I e=1; T t=parseTerms(nS,&e); fr(nS); if (e==PRN||e==UNESC) R e;
+	I e=1; T t=parseTerms(nS,&e); fr(nS); if (e==PRN) R e;
 	I eq=0, semi=0; MAP(t,if(!strcmp(c->w,"="))eq++;if(!strcmp(c->w,";"))semi++;if(!eq&&c->c)R MCH);
 	if (eq!=1) R EQ; if (!strcmp(t->n->w,"=")) R EMPTY;
 	if (semi!=1) R SEMI; if (strcmp(c->w,";")) R END; {MAP(t,if(!strcmp(c->n->w,";")){fT(c->n);c->n=0;B;})}
@@ -60,7 +57,7 @@ D newRoot() { D root=nD("",0), q1=nID(0,"?q"), q2=nID(0,"?q"); root->c=q1; nC(q1
  
 V prTL(T t) { MAP(t,prettyTerm(c);if(c->n)PF(" ")); } // print term list
 V prettyTerm(T t) { switch (t->t) { // print term node
-	case TRM: DO(strlen(t->w),I e=esc(t->w[i]); PF("%*s%c",e,e?"`":"",t->w[i])); B;
+	case TRM: PF("%s",t->w); B;
 	case Q: PF("("); prTL(t->c); PF(")"); B; } } V prettyTerms(T t) { prTL(t->n); }
 V prD(D d,I i) { DO(i,PF("  ")); PF("%s: ",d->q?"?q":d->w);
 	if (d->r||d->f||d->e) { if (d->f) PF("[internal rewrite]"); if (d->e) PF("[empty rewrite]"); if (d->r) prTL(d->r); }

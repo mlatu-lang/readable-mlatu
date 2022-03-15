@@ -18,17 +18,17 @@ rule newRoot(); void freeRules(rule r);
 takes a string, and a pointer to an error variable
 if the parse was successful, er will be 0 (OK)
 otherwise, it will be nonzero -- one of
-PRN: unbalanced parens, UNESC: unescaped backtick, SEMI: unescaped semicolon, EQ: unescaped equal sign
+PRN: unbalanced parens, SEMI: semicolon, EQ: equal sign
 the errors in the enum are ordered from least to most precedence -- higher ones will override lower ones
 the term returned will always needs freeing regardless of whether there was an error or not
 */
-enum { OK,OPEN,MCH,SEMI,EQ,UNESC,PRN,EMPTY,END };
+enum { OK,OPEN,MCH,SEMI,EQ,PRN,EMPTY,END };
 term parseTerms(char *s, int *er);
 
 /*
 takes a string, and a root to add the rule to
 same error scheme as above, but with different meanings (if there was an error, root will not be changed)
-PRN: unbalanced parens, UNESC: unescaped backtick, SEMI: more or less than 1 semicolon in rule,
+PRN: unbalanced parens, SEMI: more or less than 1 semicolon in rule,
 EQ: more or less than 1 equal sign in rule, EMPTY: match on nothing, END: semicolon is not at end of rule,
 MCH: tried to match on quote
 */
