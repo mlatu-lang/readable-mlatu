@@ -4,7 +4,7 @@
 #include <string.h>
 #include "prelude.c"
 #include "mlatuMacros.h"
-V pr(T t) { PF("|-> "); prettyTerms(t); PF("\n"); }
+V pr(T t) { C s=prettyTerms(t); PF("|-> %s\n",s); fr(s); }
 V e(I er,C n) { if (er) { switch(er) {
 	case OPEN:  PF("Error opening file '%s'\n",n); B;
 	case PRN:   PF("Error parsing file '%s': unbalanced parentheses\n",n); B;

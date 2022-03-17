@@ -4,10 +4,10 @@
 // type, word, children, next
 typedef struct t { int t; char *w; struct t *c,*n; } *T, *term;
 void freeTerms(term m);
-void prettyTerms(term t); // pretty prints a list of terms
-void prettyTerm(term t); // pretty prints a single term
+char *prettyTerms(term t); // pretty prints a list of terms, returning the allocated string
+char *prettyTerm(term t); // pretty prints a single term, returning the allocated string
 
-// word, children, next, function, rewrite, length, match only on quote, rewrite to empty term?
+// word, children, next, function, rewrite, total length length (of rule + parents), match only on quote, rewrite to empty term?
 typedef struct d { char *w; struct d *c,*n; void (*f)(); term r; int l, q, e; } *D, *rule; // definition (R was taken)
 /*  rule matching layout
 	mlatu: foo = x; foo bar = y; foo baz = z;
@@ -18,7 +18,7 @@ typedef struct d { char *w; struct d *c,*n; void (*f)(); term r; int l, q, e; } 
     bar = y  ->n  baz = z */
 rule newRoot();
 void freeRules(rule r);
-void prettyRules(rule r); // pretty prints all rules in the rule tree `r`
+//void prettyRules(rule r); // pretty prints all rules in the rule tree `r`
 
 /*
 takes a string, and a pointer to an error variable

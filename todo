@@ -17,11 +17,14 @@ parse_rules(&str) -> Result<Rules, String>
 try on ubuntu
 docs
 parse_term(&str) -> Result<Term, String>
-pretty_rule(Rule) -> String
 load prelude when not in dir where prelude is
+make term printer print to string
 
 todo:
-make prints print to string
+make rule printer print to string
+pretty_rule(Rule) -> String
+remove ->q
 fix long rule with clang
 add debug to repl
 add loading files to repl
+add printing rules to repl
