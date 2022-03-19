@@ -18,7 +18,6 @@ typedef struct d { char *w; struct d *c,*n; void (*f)(); term r; int l, q, e; } 
     bar = y  ->n  baz = z */
 rule newRoot();
 void freeRules(rule r);
-//void prettyRules(rule r); // pretty prints all rules in the rule tree `r`
 
 /*
 takes a string, and a pointer to an error variable

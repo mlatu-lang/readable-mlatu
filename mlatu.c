@@ -49,7 +49,7 @@ I parseRules(C s,D root) { I l=0, d, r=0, cm=0;
 I len(T t) { if (t->t==TRM) R strlen(t->w); else { I i=2; MAP(t->c,i+=len(c)+!!c->n) R i; } }
 I prT(T t,C s); I prTL(T t,C s) { I i=0; MAP(t,i+=prT(c,s+i);if(c->n)s[i++]=' '); R i; } // print term list
 I prT(T t,C s) { if (t->t==TRM) R strlen(strcpy(s,t->w)); else { *s='('; I i=prTL(t->c,++s); s[i]=')'; R i+2; } } // print term
-C prettyTerms(T t) { I l=0; MAP(t->n,l+=len(c)+!!c->n); C s=ma(l+1); prTL(t->n,s); s[l]=0; R s; }
+C prettyTerms(T t) { if (t->t==ST) t=t->n; I l=0; MAP(t,l+=len(c)+!!c->n); C s=ma(l+1); prTL(t,s); s[l]=0; R s; }
 C prettyTerm(T t) { I l=len(t); C s=ma(l+1); prT(t,s); s[l]=0; R s; }
 
 V rm(T t) { T n=t->n->n; fT(t->n); t->n=n; }
