@@ -21,9 +21,7 @@ load prelude when not in dir where prelude is
 make term printer print to string
 
 todo:
-make rule printer print to string
 pretty_rule(Rule) -> String
-remove ->q
 fix long rule with clang
 add debug to repl
 add loading files to repl
