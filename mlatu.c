@@ -52,11 +52,6 @@ I prT(T t,C s) { if (t->t==TRM) R strlen(strcpy(s,t->w)); else { *s='('; I i=prT
 C prettyTerms(T t) { I l=0; MAP(t->n,l+=len(c)+!!c->n); C s=ma(l+1); prTL(t->n,s); s[l]=0; R s; }
 C prettyTerm(T t) { I l=len(t); C s=ma(l+1); prT(t,s); s[l]=0; R s; }
 
-//V prD(D d,I i) { DO(i,PF("  ")); PF("%s: ",d->q?"?q":d->w);
-//	if (d->r||d->f||d->e) { if (d->f) PF("[internal rewrite]"); if (d->e) PF("[empty rewrite]"); if (d->r) prTL(d->r); }
-//	PF("\n"); MAP(d->c,prD(c,i+1)); }
-//V prettyRules(D r) { MAP(r->c,prD(c,0)); }
-
 V rm(T t) { T n=t->n->n; fT(t->n); t->n=n; }
 V zapPtv(T t)  { rm(t); rm(t); } 
 V swapPtv(T t) { T c=t->n; t->n=c->n; c->n=t->n->n; t->n->n=c; rm(t->n->n); }

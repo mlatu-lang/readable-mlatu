@@ -4,13 +4,15 @@ Some Quiche Eaters have been complaining that code here is illegible, so I have 
 
 ## Compiling and running
 Running `make lib` will compile the `mlatu.o` file.  
-Run `make repl` to make the repl.  
 Works with gcc/clang, hasn't been tested with any other compilers.  
-Any line that rewrites to `bye` will exit the repl.
 
-## Flags
-Run with `-d` to enable debug mode.
-This means that each rewrite will be printed separately.  
+## Repl
+Run `make repl` to make the repl.  
+Any line that rewrites to `bye` will exit the repl.  
+There are some repl-specific system commands:
+- `]d`:     toggles debug mode on or off
+- `]rules`: prints tree of all defined rules  
+I would have prefixed them with `)` instead of `]`, but it would make the parser super messy.
 
 ## Docs
 Documentation can be found in the header file [mlatu.h](mlatu.h).  
