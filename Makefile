@@ -2,7 +2,7 @@ CC=gcc
 optimization=-O2
 
 repl: lib
-	$(CC) $(optimization) mlatu.o repl.c -o repl
+	$(CC) $(optimization) mlatu.o repl-src/repl.c -o repl
 
 lib:
 	$(CC) $(optimization) -c mlatu.c -o mlatu.o

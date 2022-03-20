@@ -19,10 +19,12 @@ docs
 parse_term(&str) -> Result<Term, String>
 load prelude when not in dir where prelude is
 make term printer print to string
+add debug to repl
 
 todo:
 pretty_rule(Rule) -> String
+improve system commands
+improve loading rulesets
 fix long rule with clang
-add debug to repl
 add loading files to repl
 add printing rules to repl

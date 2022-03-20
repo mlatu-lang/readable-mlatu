@@ -1,21 +1,21 @@
-#include "mlatu.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "prelude.c"
-#include "mlatuMacros.h"
+#include "../mlatu.h"
+#include "../mlatuMacros.h"
 
 I dbg=0;
-V prD(D d,I i) { DO(i,PF("  ")); PF("%s: ",d->q?"?q":d->w);
+V prD(D d,I i) { DO(i,PF("  ")); PF(" %s: ",d->q?"?q":d->w);
 	if (d->r||d->f||d->e) { if (d->f) PF("[internal rewrite]"); if (d->e) PF("[empty rewrite]");
 		if (d->r) { C s=prettyTerms(d->r); PF("%s",s); fr(s); } }
 	PF("\n"); MAP(d->c,prD(c,i+1)); }
 I sys(T ast,D root) {
 	if (!strcmp(ast->n->w,"]h")&&!ast->n->n) PF(
-		"bye       exit\n"
-		"]h        you are here\n"
-		"]d        toggle debug mode\n"
-		"]ruletree print tree of all defined rules\n");
+		" ]h         you are here\n"
+		" bye        exit\n"
+		" ]d         toggle debug mode\n"
+		" ]ruletree  print tree of all defined rules\n");
 	else if (!strcmp(ast->n->w,"]ruletree")&&!ast->n->n) {MAP(root->c,prD(c,0));}
 	else if (!strcmp(ast->n->w,"]d")&&!ast->n->n) PF("Turning debug mode %s\n",(dbg=!dbg)?"on":"off");
 	else R 1; R 0; }
@@ -31,7 +31,7 @@ V e(I er,C n) { if (er) { switch(er) {
 	case MCH:   PF("Error parsing file '%s': quotes are opaque and cannot be matched on\n",n); B; } exit(-1); } }
 I main(I ac,C *av) { C s=ma(100), n; D root=newRoot(); I er=parseRules(prelude,root); e(er,"prelude"); term ast;
 	DO(ac-1,I er=parseFile(n,root);e(er,n);); // files
-	PF("readable-mlatu repl - github.com/mlatu-lang/readable-mlatu\nbye to exit, ]h for help\n");
+	PF(" readable-mlatu repl - github.com/mlatu-lang/readable-mlatu\n bye to exit, ]h for help\n");
 	while (fgets(s,100,stdin)) { s[strlen(s)-1]='\0'; I er; ast=parseTerms(s,&er);
 		if (er) { switch (er) { 
 			case PRN:   PF("X-> parsing error: unbalanced parentheses\n"); B;
@@ -41,5 +41,5 @@ If you are trying to define a rule, they cannot be defined in the repl, you need
 If you are trying to define a rule, they cannot be defined in the repl, you need to load it from a file.\n"); B;
 		} goto end; }
 		I show=1; if (dbg) { while (!stepRewrite(root,ast)) { show=0; pr(ast); } } else rewrite(root,ast); 
-		I l=0; MAP(ast,l++); if (l==2&&!strcmp("bye",ast->n->w)) B; if (*ast->n->w==']') show=sys(ast,root);
+		I l=0; MAP(ast,l++); if (l==2&&!strcmp("bye",ast->n->w)) B; if (ast->n&&*ast->n->w==']') show=sys(ast,root);
 		if (show) pr(ast); end: freeTerms(ast); } freeRules(root); fr(s); }
