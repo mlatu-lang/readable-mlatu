@@ -15,7 +15,11 @@ typedef struct d { char *w; struct d *c,*n; void (*f)(); term r; int l, q, e; } 
     foo = x
        |
       ->c 
-    bar = y  ->n  baz = z */
+    bar = y  ->n  baz = z 
+	rules are represented as a tree, where, in this example, the word foo is the parent of bar and baz
+	parentship is represented by foo's child pointer pointing to bar, while bar's next pointer points to baz
+	this means that if you can't match foo, it doesn't even try foo bar or foo baz
+	you can see the tree in the repl by typing ]ruletree */
 rule newRoot();
 void freeRules(rule r);
 

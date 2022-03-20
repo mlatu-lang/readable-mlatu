@@ -6,7 +6,7 @@
 #include "../mlatuMacros.h"
 
 I dbg=0;
-V prD(D d,I i) { DO(i,PF("  ")); PF(" %s: ",d->q?"?q":d->w);
+V prD(D d,I i) { DO(i,PF("  ")); PF(" %s: ",d->q?"(?q)":d->w);
 	if (d->r||d->f||d->e) { if (d->f) PF("[internal rewrite]"); if (d->e) PF("[empty rewrite]");
 		if (d->r) { C s=prettyTerms(d->r); PF("%s",s); fr(s); } }
 	PF("\n"); MAP(d->c,prD(c,i+1)); }
@@ -15,7 +15,9 @@ I sys(T ast,D root) {
 		" ]h         you are here\n"
 		" bye        exit\n"
 		" ]d         toggle debug mode\n"
-		" ]ruletree  print tree of all defined rules\n");
+		" ]ruletree  print tree of all defined rules\n"
+		" the term (?q) is used to represent an interal rule that matches on any quote\n"
+	);
 	else if (!strcmp(ast->n->w,"]ruletree")&&!ast->n->n) {MAP(root->c,prD(c,0));}
 	else if (!strcmp(ast->n->w,"]d")&&!ast->n->n) PF("Turning debug mode %s\n",(dbg=!dbg)?"on":"off");
 	else R 1; R 0; }
@@ -29,8 +31,8 @@ V e(I er,C n) { if (er) { switch(er) {
 	case EMPTY: PF("Error parsing file '%s': cannot match with empty LHS\n",n); B;
 	case END:   PF("Error parsing file '%s': semicolon expected at end of every rule\n",n); B;
 	case MCH:   PF("Error parsing file '%s': quotes are opaque and cannot be matched on\n",n); B; } exit(-1); } }
-I main(I ac,C *av) { C s=ma(100), n; D root=newRoot(); I er=parseRules(prelude,root); e(er,"prelude"); term ast;
-	DO(ac-1,I er=parseFile(n,root);e(er,n);); // files
+I main(I ac,C *av) { C s=ma(100); D root=newRoot(); I er=parseRules(prelude,root); e(er,"prelude"); term ast;
+	DO(ac-1,I er=parseFile(av[i+1],root);e(er,av[i+1]);); // files
 	PF(" readable-mlatu repl - github.com/mlatu-lang/readable-mlatu\n bye to exit, ]h for help\n");
 	while (fgets(s,100,stdin)) { s[strlen(s)-1]='\0'; I er; ast=parseTerms(s,&er);
 		if (er) { switch (er) { 
