@@ -34,7 +34,7 @@ V e(I er,C n) { if (er) { switch(er) {
 I main(I ac,C *av) { C s=ma(100); D root=newRoot(); I er=parseRules(prelude,root); e(er,"prelude"); term ast;
 	DO(ac-1,I er=parseFile(av[i+1],root);e(er,av[i+1]);); // files
 	PF(" readable-mlatu repl - github.com/mlatu-lang/readable-mlatu\n bye to exit, ]h for help\n");
-	while (fgets(s,100,stdin)) { s[strlen(s)-1]='\0'; I er; ast=parseTerms(s,&er);
+	while (fgets(s,100,stdin)) { s[strlen(s)-1]=0; I er; ast=parseTerms(s,&er);
 		if (er) { switch (er) { 
 			case PRN:   PF("X-> parsing error: unbalanced parentheses\n"); B;
 			case EQ:    PF("X-> parsing error: equal sign. \
