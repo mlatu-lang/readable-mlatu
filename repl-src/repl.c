@@ -16,7 +16,7 @@ I sys(T ast,D root) {
 		" bye        exit\n"
 		" ]d         toggle debug mode\n"
 		" ]ruletree  print tree of all defined rules\n"
-		" the term (?q) is used to represent an interal rule that matches on any quote\n"
+		" the term (?q) is used to represent an internal rule that matches on any quote\n"
 	);
 	else if (!strcmp(ast->n->w,"]ruletree")&&!ast->n->n) {MAP(root->c,prD(c,0));}
 	else if (!strcmp(ast->n->w,"]d")&&!ast->n->n) PF("Turning debug mode %s\n",(dbg=!dbg)?"on":"off");
