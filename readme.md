@@ -7,7 +7,6 @@ Running `make lib` will compile the `mlatu.o` file.
 Works with gcc/clang, hasn't been tested with any other compilers.  
 Run `make repl` to make the repl.  
 Mlatu rule files to be loaded in the repl can be passed as command line args.  
-I would have prefixed repl commands with `)` instead of `]`, but it would have made the parser super messy.
 
 ## Docs
 Documentation can be found in the header file [mlatu.h](mlatu.h).  
