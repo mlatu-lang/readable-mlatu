@@ -1,8 +1,8 @@
 char prelude[]=
 "copy    = +;\n"
 "remove  = -;\n"
-"wrap    = <;\n"
-"unwrap  = >;\n"
+"wrap    = >;\n"
+"unwrap  = <;\n"
 "swap    = ~;\n"
 "combine = ,;\n"
 "zap     = -;\n"
