@@ -1,0 +1,19 @@
+# church encoding ruleset for mlatu
+# inspired by https://www.youtube.com/watch?v=TcveznrwYtk
+
+# church booleans:
+# (a) (b) true<  |->  (a), (a) (b) false<  |->  (b)
+true  = (-);
+false = (~-);
+not   = (~)~,;
+and   = +<;
+or    = +swapd<;
+xor   = (~)~()~<~,;
+
+
+# church pairs:
+# (f) (a) (b) cons<  |->  (a) (b) f
+# (a) (b) cons       |->  ( ((a) (b)) ~ (<) dip < )
+cons = ~>~>,>(~(<)dip<),;
+car  = ( -)~<;
+cdr  = (~-)~<;
