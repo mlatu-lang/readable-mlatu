@@ -65,7 +65,7 @@ D newRoot() { D root=nD("",0), q1=nID(0,"(?q)"), q2=nID(0,"(?q)"); root->c=q1; n
 	D exec=nD("<",execPtv), wrap=nD(">",wrapPtv); nC(q1,exec); nC(q1,wrap);
 	D swap=nD("~",swapPtv), cat =nD(",",catPtv);  nC(q2,swap); nC(q2,cat); R root; }
  
-V mch(T t,D r,D *fst) /* finds rule that matches t */ { if (!t) R; D cR=r; while (cR) { // PF("(%s %s) ",t->w,cR->w);
+V mch(T t,D r,D *bst) /* finds rule that matches t */ { if (!t) R; D cR=r; while (cR) { // PF("(%s %s) ",t->w,cR->w);
 	if (cR->q) { if (t->t!=Q) goto cont; } else if (strcmp(t->w,cR->w)) goto cont;
 	if ((cR->f||cR->r||cR->e)&&(!*bst||cR->l>(*bst)->l)) *bst=cR;
 	{MAP(cR->c,mch(t->n,c,bst))} cont: cR=cR->n; } }
