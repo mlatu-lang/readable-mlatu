@@ -2,8 +2,7 @@ done:
 improve system commands
 
 todo:
-pretty_rule(Rule) -> String
-improve loading rulesets
+improve loading rulesets (don't load if any rule is malformed)
 fix long rule with clang
 add loading files to repl
 add printing rules to repl

@@ -19,7 +19,7 @@ typedef struct d { char *w; struct d *c,*n; void (*f)(); term r; int l, q, e; } 
 	rules are represented as a tree, where, in this example, the word foo is the parent of bar and baz
 	parentship is represented by foo's child pointer pointing to bar, while bar's next pointer points to baz
 	this means that if you can't match foo, it doesn't even try foo bar or foo baz
-	you can see the tree in the repl by typing ]ruletree */
+	you can see the tree in the repl by typing )ruletree */
 rule newRoot();
 void freeRules(rule r);
 
@@ -64,9 +64,8 @@ returns 1 if no more rewrites can be applied, and 0 if more can
 int stepRewrite(rule r, term t); 
 
 /*
-you might notice that some functions are missing - namely parseTerm, which parses a single term, and prettyRule, which pretty prints a single rule
-parseTerm is missing because it is not needed
-prettyRule is missing because in this rule layout, it would be very clumsy to make a function that prints a specific rule
-this is the more feasable of the two functions to add, and I might add it in the future, but it's still largely useless
+you might notice that some functions are missing - namely parseTerm, which parses a single term, prettyRule, which pretty prints a single rule, and prettyRules, which pretty prints multiple rules
+parseTerm is missing because tokenizing and parsing are done in one step, and aren't separate
+prettyRule(s) is missing because in this tree-like rule layout, it doesn't make sense to have any sort of print function that prints one specific rule
 */
 #endif

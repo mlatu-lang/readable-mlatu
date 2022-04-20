@@ -16,7 +16,7 @@ V sys(C s,D root) { C t=strtok(s," ");
 		" bye        exit\n"
 		" )d         toggle debug mode\n"
 		" )ruletree  print tree of all defined rules\n"
-		" the term (?q) is used to represent an internal rule that matches on any quote\n"); 
+		" (?q) is used to represent an internal predicate that matches on any quote, something impossible for a user to use\n"); 
 	else if (!strcmp(t,")d")&&!strtok(0,s)) PF(" Turning debug mode %s\n",(dbg=!dbg)?"on":"off");
 	else if (!strcmp(t,")ruletree")&&!strtok(0,s)) {MAP(root->c,prD(c,0));}
 	else PF(" invalid command\n"); }

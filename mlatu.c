@@ -60,12 +60,12 @@ V wrapPtv(T t) { T q=t->n->n; strcpy(q->w,""); q->t=Q; q->c=t->n; q->c->n=0; t->
 V execPtv(T t) { T cs=t->n->c; t->n->c=0; rm(t); rm(t); if (!cs) R; MAP(cs,); c->n=t->n; t->n=cs;  }
 V catPtv (T t) { T q=t->n->n; MAP(t->n->c,); c?(c->n=q->c):(t->n->c=q->c); q->c=0; rm(t->n); rm(t->n); }
 
-D newRoot() { D root=nD("",0), q1=nID(0,"?q"), q2=nID(0,"?q"); root->c=q1; nC(q1,q2);
-	D zap= nD("-",zapPtv),  copy=nD("+",copyPtv); nC(q1,zap);  nC(q1, copy);
+D newRoot() { D root=nD("",0), q1=nID(0,"(?q)"), q2=nID(0,"(?q)"); root->c=q1; nC(q1,q2);
+	D zap =nD("-",zapPtv),  copy=nD("+",copyPtv); nC(q1,zap);  nC(q1, copy);
 	D exec=nD("<",execPtv), wrap=nD(">",wrapPtv); nC(q1,exec); nC(q1,wrap);
-	D swap=nD("~",swapPtv), cat= nD(",",catPtv);  nC(q2,swap); nC(q2,cat); R root; }
+	D swap=nD("~",swapPtv), cat =nD(",",catPtv);  nC(q2,swap); nC(q2,cat); R root; }
  
-V mch(T t,D r,D *bst) /* finds first match in t */ { if (!t) R; D cR=r; while (cR) { //PF("(%s %s) ",t->w,cR->w);
+V mch(T t,D r,D *fst) /* finds rule that matches t */ { if (!t) R; D cR=r; while (cR) { // PF("(%s %s) ",t->w,cR->w);
 	if (cR->q) { if (t->t!=Q) goto cont; } else if (strcmp(t->w,cR->w)) goto cont;
 	if ((cR->f||cR->r||cR->e)&&(!*bst||cR->l>(*bst)->l)) *bst=cR;
 	{MAP(cR->c,mch(t->n,c,bst))} cont: cR=cR->n; } }
