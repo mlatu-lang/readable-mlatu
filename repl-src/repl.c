@@ -25,10 +25,10 @@ V pr(T ast) { C s=prettyTerms(ast); PF("|-> %s\n",s); fr(s); }
 V e(I er,C n) { if (er) { switch(er) {
 	case OPEN:  PF("Error opening file '%s'\n",n); B;
 	case PRN:   PF("Error parsing file '%s': unbalanced parentheses\n",n); B;
-	case SEMI:  PF("Error parsing file '%s': exactly one semicolon expected in each rule\n",n); B;
+	case PER:  PF("Error parsing file '%s': exactly one period expected in each rule\n",n); B;
 	case EQ:    PF("Error parsing file '%s': exactly one equal sign expected in each rule\n",n); B;
 	case EMPTY: PF("Error parsing file '%s': cannot match with empty LHS\n",n); B;
-	case END:   PF("Error parsing file '%s': semicolon expected at end of every rule\n",n); B;
+	case END:   PF("Error parsing file '%s': period expected at end of every rule\n",n); B;
 	case MCH:   PF("Error parsing file '%s': quotes are opaque and cannot be matched on\n",n); B; } exit(-1); } }
 I main(I ac,C *av) { C s=ma(100); D root=newRoot(); I er=parseRules(prelude,root); e(er,"prelude"); term ast;
 	DO(ac-1,I er=parseFile(av[i+1],root);e(er,av[i+1]);); // files
@@ -38,7 +38,7 @@ I main(I ac,C *av) { C s=ma(100); D root=newRoot(); I er=parseRules(prelude,root
 			case PRN:   PF("X-> parsing error: unbalanced parentheses\n"); B;
 			case EQ:    PF("X-> parsing error: equal sign. \
 If you are trying to define a rule, they cannot be defined in the repl, you need to load it from a file.\n"); B;
-			case SEMI:  PF("X-> parsing error: semicolon. \
+			case PER:  PF("X-> parsing error: period. \
 If you are trying to define a rule, they cannot be defined in the repl, you need to load it from a file.\n"); B;
 		} goto end; }
 		I show=1; if (dbg) { while (!stepRewrite(root,ast)) { show=0; pr(ast); } } else rewrite(root,ast); 

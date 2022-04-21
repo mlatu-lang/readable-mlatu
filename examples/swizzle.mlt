@@ -1,5 +1,5 @@
 # ((x)) (y) (z) swizzle |-> (x) y (z) (x)
-swizzle = >,>,+,<->,<;
+swizzle = >,>,+,<->,<.
 
 # (a) (b) xch |-> (b) (a)
-xch = >(->)(-) swizzle swizzle;
+xch = >(->)(-) swizzle swizzle.
