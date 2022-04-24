@@ -1,7 +1,11 @@
 done:
 improve system commands
+improve rewriter
 
 todo:
+timer in repl
+fix leaks
+way to see number of rewrites
 improve loading rulesets (don't load if any rule is malformed)
 fix long rule with clang
 add loading files to repl

@@ -6,17 +6,15 @@
 #include "../mlatuMacros.h"
 
 I dbg=0;
-V prD(D d,I i) { DO(i,PF("  ")); PF(" %s: ",d->q?"(?q)":d->w);
-	if (d->r||d->f||d->e) { if (d->f) PF("[internal rewrite]"); if (d->e) PF("[empty rewrite]");
-		if (d->r) { C s=prettyTerms(d->r); PF("%s",s); fr(s); } }
+V prD(D d,I i) { DO(i,PF("  ")); PF(" %s: ",d->w);
+	if (d->r) { C s=prettyTerms(d->r); PF("%s",s); fr(s); } else if (d->e) PF("[empty rewrite]");
 	PF("\n"); MAP(d->c,prD(c,i+1)); }
 V sys(C s,D root) { C t=strtok(s," ");
 	if (!strcmp(t,")h")&&!strtok(0,s)) PF(
 		" )h         you are here\n"
 		" bye        exit\n"
 		" )d         toggle debug mode\n"
-		" )ruletree  print tree of all defined rules\n"
-		" (?q) is used to represent an internal predicate that matches on any quote, something impossible for a user to use\n"); 
+		" )ruletree  print tree of all user-defined rules\n");
 	else if (!strcmp(t,")d")&&!strtok(0,s)) PF(" Turning debug mode %s\n",(dbg=!dbg)?"on":"off");
 	else if (!strcmp(t,")ruletree")&&!strtok(0,s)) {MAP(root->c,prD(c,0));}
 	else PF(" invalid command\n"); }
@@ -25,7 +23,7 @@ V pr(T ast) { C s=prettyTerms(ast); PF("|-> %s\n",s); fr(s); }
 V e(I er,C n) { if (er) { switch(er) {
 	case OPEN:  PF("Error opening file '%s'\n",n); B;
 	case PRN:   PF("Error parsing file '%s': unbalanced parentheses\n",n); B;
-	case PER:  PF("Error parsing file '%s': exactly one period expected in each rule\n",n); B;
+	case PRD:   PF("Error parsing file '%s': exactly one period expected in each rule\n",n); B;
 	case EQ:    PF("Error parsing file '%s': exactly one equal sign expected in each rule\n",n); B;
 	case EMPTY: PF("Error parsing file '%s': cannot match with empty LHS\n",n); B;
 	case END:   PF("Error parsing file '%s': period expected at end of every rule\n",n); B;
@@ -38,9 +36,9 @@ I main(I ac,C *av) { C s=ma(100); D root=newRoot(); I er=parseRules(prelude,root
 			case PRN:   PF("X-> parsing error: unbalanced parentheses\n"); B;
 			case EQ:    PF("X-> parsing error: equal sign. \
 If you are trying to define a rule, they cannot be defined in the repl, you need to load it from a file.\n"); B;
-			case PER:  PF("X-> parsing error: period. \
+			case PRD:  PF("X-> parsing error: period. \
 If you are trying to define a rule, they cannot be defined in the repl, you need to load it from a file.\n"); B;
 		} goto end; }
 		I show=1; if (dbg) { while (!stepRewrite(root,ast)) { show=0; pr(ast); } } else rewrite(root,ast); 
-		I l=0; MAP(ast,l++); if (l==2&&!strcmp("bye",ast->n->w)) B;
+		I l=0; MAP(ast,l++); if (l==2&&!strcmp("bye",ast->n->w)) { freeTerms(ast); B; };
 		if (show) pr(ast); end: freeTerms(ast); } freeRules(root); fr(s); }

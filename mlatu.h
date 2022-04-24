@@ -7,8 +7,8 @@ void freeTerms(term m);
 char *prettyTerms(term t); // pretty prints a list of terms, returning the allocated string
 char *prettyTerm(term t); // pretty prints a single term, returning the allocated string
 
-// word, children, next, function, rewrite, total length length (of rule + parents), match only on quote, rewrite to empty term?
-typedef struct d { char *w; struct d *c,*n; void (*f)(); term r; int l, q, e; } *D, *rule; // definition (R was taken)
+// word, children, next, rewrite, total length length (of rule + parents), rewrite to empty term?
+typedef struct d { char *w; struct d *c, *n; term r; int l, e; } *D, *rule; // definition (R was taken)
 /*  rule matching layout
 	mlatu: foo = x; foo bar = y; foo baz = z;
 	internal representation:
@@ -27,17 +27,17 @@ void freeRules(rule r);
 takes a string, and a pointer to an error variable
 if the parse was successful, er will be 0 (OK)
 otherwise, it will be nonzero -- one of
-PRN: unbalanced parens, PER: period in query, EQ: equal sign in query
+PRD: unbalanced parens, PRD: period in query, EQ: equal sign in query
 the errors in the enum are ordered from least to most precedence -- higher ones will override lower ones
 the term returned will always needs freeing regardless of whether there was an error or not
 */
-enum { OK,OPEN,MCH,PER,EQ,PRN,EMPTY,END };
+enum { OK,OPEN,MCH,PRD,EQ,PRN,EMPTY,END };
 term parseTerms(char *s, int *er);
 
 /*
 takes a string, and a root to add the rule to
 same error scheme as above, but with different meanings (if there was an error, root will not be changed)
-PRN: unbalanced parens, PER: more or less than 1 period in rule,
+PRD: unbalanced parens, PRD: more or less than 1 period in rule,
 EQ: more or less than 1 equal sign in rule, EMPTY: match on nothing, END: period is not at end of rule,
 MCH: tried to match on quote
 */
