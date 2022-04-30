@@ -1,5 +1,5 @@
 // https://stackoverflow.com/a/24045970/16610064
-#ifdef linux
+#if defined(linux) || defined(__APPLE__) && defined(__MACH__)
 
 	#include <time.h>
 	int milliDiff(struct timespec *start, struct timespec *end) {
@@ -9,7 +9,7 @@
 	typedef struct timespec Time;
 	#define getTime(t) clock_gettime(CLOCK_MONOTONIC, t);
 
-#elif _WIN32
+#elif defined(_WIN32)
 
 	#include <Windows.h>
 	int milliDiff(LARGE_INTEGER *start, LARGE_INTEGER *end)
