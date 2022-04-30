@@ -2,11 +2,12 @@ done:
 improve system commands
 improve rewriter
 fix leaks
+timer in repl
 
 todo:
-timer in repl
 fix leaks on error
 way to see number of rewrites
+read non-\r\n files on windows
 improve loading rulesets (don't load if any rule is malformed)
 fix long rule with clang
 add loading files to repl
