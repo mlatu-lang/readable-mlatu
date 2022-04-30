@@ -22,8 +22,7 @@ V sys(C s,D root) { C t=strtok(s," ");
 	else if (!strcmp(t,")ruletree")&&!strtok(0,s)) {MAP(root->c,prD(c,0));}
 	else PF(" invalid command\n"); }
 V pT(I ms) { I h=ms/3600000, m=(ms-h*3600000)/60000, s=(ms-m*60000-h*3600000)/1000; ms%=1000;
-	if (h) goto hL; if (m) goto mL; if (s) goto sL; goto msL;
-	hL: PF("%dh ",h); mL: PF("%dm ",m); sL: PF("%ds ",s); msL: PF("%dms",ms); }
+	I i=h?0:m?1:s?2:3; switch (i) { case 0: PF("%dh ",h); case 1: PF("%dm ",m); case 2: PF("%ds ",s); case 3: PF("%dms",ms); } }
 
 V pr(T ast) { C s=prettyTerms(ast); PF("|-> %s\n",s); fr(s); }
 V e(I er,C n) { if (er) { switch(er) {
