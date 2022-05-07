@@ -33,8 +33,8 @@ V pr(T ast) { C s=prettyTerms(ast); PF("|-> %s\n",s); fr(s); }
 	case EMPTY: PF("Error parsing file '%s': cannot match with empty LHS\n",n); B;                  \
 	case END:   PF("Error parsing file '%s': period expected at end of every rule\n",n); B;         \
 	case MCH:   PF("Error parsing file '%s': quotes are opaque and cannot be matched on\n",n); B; } \
-	freeRules(root); fr(s); exit(-1); }
-I main(I ac,C *av) { C s=ma(100); D root=newRoot(); I er=parseRules(prelude,root); e(er,"prelude"); term ast;
+	freeRules(root); exit(-1); }
+I main(I ac,C *av) { char s[100]; D root=newRoot(); I er=parseRules(prelude,root); e(er,"prelude"); term ast;
 	DO(ac-1,I er=parseFile(av[i+1],root);e(er,av[i+1]);); // files
 	PF(" readable-mlatu repl - github.com/mlatu-lang/readable-mlatu\n bye to exit, )h for help\n");
 	Time st, cl, fn; I ms, sc, m, h;
@@ -51,4 +51,4 @@ If you are trying to define a rule, they cannot be defined in the repl, you need
 		if (show) { getTime(&cl); pr(ast); } end: freeTerms(ast);
 		if (tmr) { getTime(&fn); ms=milliDiff(&st,&fn); PF(" "); pT(ms);
 			if (!dbg) { ms=milliDiff(&cl,&fn); PF(" ("); pT(ms); PF(" outputting)"); } PF("\n"); } }
-	freeRules(root); fr(s); }
+	freeRules(root); }
