@@ -25,14 +25,15 @@ V pT(I ms) { I h=ms/3600000, m=(ms-h*3600000)/60000, s=(ms-m*60000-h*3600000)/10
 	I i=h?0:m?1:s?2:3; switch (i) { case 0: PF("%dh ",h); case 1: PF("%dm ",m); case 2: PF("%ds ",s); case 3: PF("%dms",ms); } }
 
 V pr(T ast) { C s=prettyTerms(ast); PF("|-> %s\n",s); fr(s); }
-V e(I er,C n) { if (er) { switch(er) {
-	case OPEN:  PF("Error opening file '%s'\n",n); B;
-	case PRN:   PF("Error parsing file '%s': unbalanced parentheses\n",n); B;
-	case PRD:   PF("Error parsing file '%s': exactly one period expected in each rule\n",n); B;
-	case EQ:    PF("Error parsing file '%s': exactly one equal sign expected in each rule\n",n); B;
-	case EMPTY: PF("Error parsing file '%s': cannot match with empty LHS\n",n); B;
-	case END:   PF("Error parsing file '%s': period expected at end of every rule\n",n); B;
-	case MCH:   PF("Error parsing file '%s': quotes are opaque and cannot be matched on\n",n); B; } exit(-1); } }
+#define e(er,n) if (er) { switch(er) {                                                              \
+	case OPEN:  PF("Error opening file '%s'\n",n); B;                                               \
+	case PRN:   PF("Error parsing file '%s': unbalanced parentheses\n",n); B;                       \
+	case PRD:   PF("Error parsing file '%s': exactly one period expected in each rule\n",n); B;     \
+	case EQ:    PF("Error parsing file '%s': exactly one equal sign expected in each rule\n",n); B; \
+	case EMPTY: PF("Error parsing file '%s': cannot match with empty LHS\n",n); B;                  \
+	case END:   PF("Error parsing file '%s': period expected at end of every rule\n",n); B;         \
+	case MCH:   PF("Error parsing file '%s': quotes are opaque and cannot be matched on\n",n); B; } \
+	freeRules(root); fr(s); exit(-1); }
 I main(I ac,C *av) { C s=ma(100); D root=newRoot(); I er=parseRules(prelude,root); e(er,"prelude"); term ast;
 	DO(ac-1,I er=parseFile(av[i+1],root);e(er,av[i+1]);); // files
 	PF(" readable-mlatu repl - github.com/mlatu-lang/readable-mlatu\n bye to exit, )h for help\n");
