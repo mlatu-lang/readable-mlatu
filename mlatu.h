@@ -55,10 +55,14 @@ exactly like the above, except reads the rules directly from a string
 */
 int parseRules(char *string, rule root);
 
-void rewrite(rule r, term t); // rewrites the terms `t` using the rules `r` until no more rewrites can be applied
+/*
+rewrites the terms `t` using the rules `r` until no more rewrites can be applied
+returns the number of rewrites
+*/
+int rewrite(rule r, term t);
 
 /*
-the same as above, except it always rewrites exactly once, which is the one rule with the most precedence
+rewrites terms `t` with the rules `r` exactly once, applying the rule with the most precedence
 returns 1 if no more rewrites can be applied, and 0 if more can
 */
 int stepRewrite(rule r, term t); 

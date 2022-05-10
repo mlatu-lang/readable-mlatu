@@ -63,6 +63,6 @@ I lit(T t,D r) { D cR=r, bst=0; T u=t->n;
 I qot(T s) { T t=s->n, u; if (!(u=t->n)) R 0;
 	if (u->t==Q) { if (!u->n) R 0; char w=*u->n->w; if (w=='~') swap(s); else if (w==',') cat(s); else R 0; R 1; }
 	else switch (*u->w) { case '-': zap(s); R 1; case '+': copy(s); R 1; case '<': exec(s); R 1; case '>': wrap(s); R 1; } R 0; }
-I ex(T oT,D r,I stp) /* rewrite alg */ { T t=oT; I i=0; while (1) { I l=0; {MAP(oT,l++)} if (i>l-2) R 1;
-	if (t->n->t==Q?qot(t):lit(t,r)) { if (stp) R 0; else t=oT; i=0; } else { t=t->n; i++; } } }
-V rewrite(D r,T t) { ex(t,r,0); } I stepRewrite(D r,T t) { R ex(t,r,1); }
+I ex(T oT,D r,I stp) /* rewrite alg */ { T t=oT; I i=0, n=0; while (1) { I l=0; {MAP(oT,l++)} if (i>l-2) R stp+n;
+	if (t->n->t==Q?qot(t):lit(t,r)) { if (stp) R 0; else t=oT; i=0; n++; } else { t=t->n; i++; } } }
+I rewrite(D r,T t) { R ex(t,r,0); } I stepRewrite(D r,T t) { R !!ex(t,r,1); }
