@@ -10,7 +10,7 @@ Mlatu rule files to be loaded in the repl can be passed as command line args.
 
 ## Docs
 Documentation can be found in the header file [mlatu.h](mlatu.h).  
-You can also look at [repl.c](repl.c) for an example, and in the [examples](examples/) folder.  
+You can also look at [repl-src/repl.c](repl-src/repl.c) for an example, and in the [examples](examples/) folder.  
 
 ## License
 readable-mlatu, like all mlatu-lang projects, is licensed under https://mlatu-lang.github.io/license/
