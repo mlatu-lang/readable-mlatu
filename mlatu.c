@@ -65,4 +65,4 @@ I qot(T s) { T t=s->n, u; if (!(u=t->n)) R 0; // try to find rewrite on terms st
 	else switch (*u->w) { case '-': zap(s); R 1; case '+': copy(s); R 1; case '<': exec(s); R 1; case '>': wrap(s); R 1; } R 0; }
 I ex(T oT,D r,I stp) /* rewrite alg */ { T t=oT; I i=0, n=0; while (1) { I l=0; {MAP(oT,l++)} if (i>l-2) R stp+n;
 	if (t->n->t==Q?qot(t):lit(t,r)) { if (stp) R 0; else t=oT; i=0; n++; } else { t=t->n; i++; } } }
-I rewrite(D r,T t) { R ex(t,r,0); } I stepRewrite(D r,T t) { R !!ex(t,r,1); }
+I rewrite(D r,T t) { R ex(t,r,0); } I stepRewrite(D r,T t) { R ex(t,r,1); }

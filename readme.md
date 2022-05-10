@@ -1,6 +1,7 @@
 # Readable Mlatu 
 ## An implementation of Mlatu written in C
 Some Quiche Eaters have been complaining that code here is illegible, so I have named it "Readable Mlatu" to assert their fallaciousness.  
+readable-mlatu is, under specific conditions, slightly faster than eniac!
 
 ## Compiling and running
 Running `make lib` will compile the `mlatu.o` file.  
