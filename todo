@@ -5,9 +5,9 @@ fix leaks
 timer in repl
 way to see number of rewrites
 fix leaks on error
+P
 
 todo:
-P
 read non-\r\n files on windows
 improve loading rulesets (don't load if any rule is malformed)
 fix long rule with clang

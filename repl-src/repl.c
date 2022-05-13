@@ -26,8 +26,8 @@ V sys(C s,D root) { C t=strtok(s," ");
 V pT(I ms) { I h=ms/3600000, m=(ms-h*3600000)/60000, s=(ms-m*60000-h*3600000)/1000; ms%=1000;
 	switch (h?0:m?1:s?2:3) { case 0: PF("%dh ",h); case 1: PF("%dm ",m); case 2: PF("%ds ",s); case 3: PF("%dms",ms); } }
 
-V pra(T ast) { C s=prettyTerms(ast); PF("|-> %s\n",s); fr(s); }
-#define e(er,n) if (er) { switch(er) {                                                              \
+V P(T ast) { C s=prettyTerms(ast); PF("|-> %s\n",s); fr(s); }
+#define e(er,n) if (er) { switch(er) {                                                            \
 	case OPEN:  PF("error opening file '%s'\n",n); B;                                               \
 	case PRN:   PF("error parsing file '%s': unbalanced parentheses\n",n); B;                       \
 	case PRD:   PF("error parsing file '%s': exactly one period expected in each rule\n",n); B;     \
@@ -42,15 +42,15 @@ I main(I ac,C *av) { char s[999]; D root=newRoot(); I er=parseRules(prelude,root
 	Time st, pr, fn; I ms, sc, m, h;
 	while (fgets(s,100,stdin)) { s[strlen(s)-1]=0; if (*s==')') { sys(s,root); continue; } if (tmr) getTime(&st);
 		ast=parseTerms(s,&er); if (er) { switch (er) { 
-			case PRN:   PF("X-> parsing error: unbalanced parentheses\n"); B;
-			case EQ:    PF("X-> parsing error: equal sign\n\
+			case PRN: PF("X-> parsing error: unbalanced parentheses\n"); B;
+			case EQ:  PF("X-> parsing error: equal sign\n\
     if you are trying to define a rule, they cannot be defined in the repl, you need to load it from a file\n"); B;
-			case PRD:  PF("X-> parsing error: period\n\
+			case PRD: PF("X-> parsing error: period\n\
     if you are trying to define a rule, they cannot be defined in the repl, you need to load it from a file\n"); B;
 		} freeTerms(ast); continue; }
-		I show=1, n=0; if (dbg) { while (!stepRewrite(root,ast)) { n++; show=0; pra(ast); } } else n=rewrite(root,ast); 
+		I show=1, n=0; if (dbg) { while (!stepRewrite(root,ast)) { n++; show=0; P(ast); } } else n=rewrite(root,ast); 
 		I l=0; MAP(ast,l++); if (l==2&&!strcmp("bye",ast->n->w)) { freeTerms(ast); B; };
-		if (show) { getTime(&pr); pra(ast); } if (cnt) PF(" took %d rewrite%s\n", n, n==1?"":"s");
+		if (show) { getTime(&pr); P(ast); } if (cnt) PF(" took %d rewrite%s\n", n, n==1?"":"s");
 		if (tmr) { getTime(&fn); ms=milliDiff(&st,&fn); PF(" "); pT(ms);
 			if (!dbg) { ms=milliDiff(&pr,&fn); PF(" ("); pT(ms); PF(" outputting)"); } PF("\n"); }
 		freeTerms(ast); }
