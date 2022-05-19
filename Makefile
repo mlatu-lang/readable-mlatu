@@ -1,4 +1,4 @@
-CC=clang
+CC=gcc
 optimization=-O2
 
 repl: lib
