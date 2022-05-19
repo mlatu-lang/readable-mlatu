@@ -6,11 +6,11 @@ timer in repl
 way to see number of rewrites
 fix leaks on error
 P
+fix long rule with clang
 
 todo:
 read non-\r\n files on windows
 improve loading rulesets (don't load if any rule is malformed)
-fix long rule with clang
 add loading files to repl
 add printing rules to repl
 check leaks again, make primitives speedy
