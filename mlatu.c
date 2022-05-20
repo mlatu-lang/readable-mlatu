@@ -60,7 +60,7 @@ Z V cat (T t) { T q=t->n->n; MAP(t->n->c,); c?(c->n=q->c):(t->n->c=q->c); q->c=0
 Z I lit(T t,D r) { D cR=r, bst=0; T u=t->n; // try to find rewrite on terms starting with literal
 	l: {MAP(cR->c,if (!strcmp(u->w,c->w)) { if (c->r||c->e) bst=c; cR=c; if (u=u->n) goto l; else B; })}
 	if (bst) { DO(bst->l,rm(t)); T z=cT(bst->r); if (z) { MAP(z,); c->n=t->n; t->n=z; }} R !!bst; }
-Z I qot(T s) { T t=s->n, u; if (!(u=t->n)) R 0; // try to find rewrite on terms starting with quote
+Z I qot(T s) { T t=s->n, u=t->n; if (!u) R 0; // try to find rewrite on terms starting with quote
 	if (u->t==Q) { if (!u->n) R 0; char w=*u->n->w; if (w=='~') swap(s); else if (w==',') cat(s); else R 0; R 1; }
 	else switch (*u->w) { case '-': zap(s); R 1; case '+': copy(s); R 1; case '<': exec(s); R 1; case '>': wrap(s); R 1; } R 0; }
 Z I ex(T oT,D r,I stp) /* rewrite alg */ { T t=oT; I i=0, n=0; while (1) { I l=0; {MAP(oT,l++)} if (i>l-2) R stp+n;
