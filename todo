@@ -8,9 +8,11 @@ fix leaks on error
 P
 fix long rule with clang
 read non-\r\n files on windows
-
-todo:
 improve loading rulesets (don't load if any rule is malformed)
 add loading files to repl
+
+todo:
+why paren error?
+- test if leaks on parse error in parseFile
 add printing rules to repl
 check leaks again, make primitives speedy
