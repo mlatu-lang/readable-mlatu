@@ -35,18 +35,9 @@ enum { OK,OPEN,MCH,PRD,EQ,PRN,EMPTY,END };
 term parseTerms(char *s, int *er);
 
 /*
-takes a string, and a root to add the rule to
-same error scheme as above, but with different meanings (if there was an error, root will not be changed)
-PRD: unbalanced parens, PRD: more or less than 1 period in rule,
-EQ: more or less than 1 equal sign in rule, EMPTY: match on nothing, END: period is not at end of rule,
-MCH: tried to match on quote
-*/
-int parseRule(char *s, rule root);
-
-/*
 takes a filename as a string, and a root to add rules to
 returns a non-zero positive error on failure: one of the parseRule failure codes, or OPEN for failure to open file
-if there is a rule in a rule, rules up until it will still be added to root
+if there is an error in a rule, none of the rules will be added to root
 */
 int parseFile(char *name, rule root);
 
