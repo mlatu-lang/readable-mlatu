@@ -10,15 +10,15 @@ I dbg=0, tmr=0, cnt=0;
 V prD(D d,I i) { DO(i,PF("  ")); PF(" %s: ",d->w);
 	if (d->r) { C s=prettyTerms(d->r); PF("%s",s); fr(s); } else if (d->e) PF("[empty rewrite]");
 	PF("\n"); MAP(d->c,prD(c,i+1)); }
-#define e(er,n,then) if (er) { switch(er) {                                                            \
-	case OPEN:  PF("error opening file '%s'\n",n); B;                                               \
-	case PRN:   PF("error parsing file '%s': unbalanced parentheses\n",n); B;                       \
-	case PRD:   PF("error parsing file '%s': exactly one period expected in each rule\n",n); B;     \
-	case EQ:    PF("error parsing file '%s': exactly one equal sign expected in each rule\n",n); B; \
-	case EMPTY: PF("error parsing file '%s': cannot match with empty LHS\n",n); B;                  \
-	case END:   PF("error parsing file '%s': period expected at end of every rule\n",n); B;         \
-	case MCH:   PF("error parsing file '%s': quotes are opaque and cannot be matched on\n",n); B; } \
-	then; }
+void e(I er,C n,I ex,D root) { if (er) { switch(er) {
+	case OPEN:  PF("error opening file '%s'\n",n); B;
+	case PRN:   PF("error parsing file '%s': unbalanced parentheses\n",n); B;
+	case PRD:   PF("error parsing file '%s': exactly one period expected in each rule\n",n); B;
+	case EQ:    PF("error parsing file '%s': exactly one equal sign expected in each rule\n",n); B;
+	case EMPTY: PF("error parsing file '%s': cannot match with empty LHS\n",n); B;
+	case END:   PF("error parsing file '%s': period expected at end of every rule\n",n); B;
+	case MCH:   PF("error parsing file '%s': quotes are opaque and cannot be matched on\n",n); B; }
+	if (ex) { freeRules(root); exit(-1); } } }
 V sys(C s,D root) { C t=strtok(s," "); C n=strtok(0," ");
 	if (!strcmp(t,")h")&&!n) PF(
 		" )h         you are here\n"
@@ -32,14 +32,14 @@ V sys(C s,D root) { C t=strtok(s," "); C n=strtok(0," ");
 	else if (!strcmp(t,")t")&&!n) PF(" turning timer mode %s\n",   (tmr=!tmr)?"on":"off");
 	else if (!strcmp(t,")c")&&!n) PF(" turning counting mode %s\n",(cnt=!cnt)?"on":"off");
 	else if (!strcmp(t,")ruletree")&&!n) {MAP(root->c,prD(c,0));}
-	else if (!strcmp(t,")l")&&n) { I er=parseFile(n,root); e(er,n,); }
+	else if (!strcmp(t,")l")&&n) { I er=parseFile(n,root); e(er,n,0,0); }
 	else PF(" invalid command\n"); }
 V pT(I ms) { I h=ms/3600000, m=(ms-h*3600000)/60000, s=(ms-m*60000-h*3600000)/1000; ms%=1000;
 	switch (h?0:m?1:s?2:3) { case 0: PF("%dh ",h); case 1: PF("%dm ",m); case 2: PF("%ds ",s); case 3: PF("%dms",ms); } }
 
 V P(T ast) { C s=prettyTerms(ast); PF("|-> %s\n",s); fr(s); }
-I main(I ac,C *av) { char s[999]; D root=newRoot(); I er=parseRules(prelude,root); e(er,"prelude",freeRules(root);exit(-1)); term ast;
-	DO(ac-1,I er=parseFile(av[i+1],root);e(er,av[i+1],freeRules(root);exit(-1));); // files
+I main(I ac,C *av) { char s[999]; D root=newRoot(); I er=parseRules(prelude,root); e(er,"prelude",1,root); term ast;
+	DO(ac-1,e(parseFile(av[i+1],root),av[i+1],1,root)); // files
 	PF(" readable-mlatu repl - github.com/mlatu-lang/readable-mlatu\n bye to exit, )h for help\n");
 	Time st, pr, fn; I ms, sc, m, h;
 	while (fgets(s,100,stdin)) { s[strlen(s)-1]=0; if (*s==')') { sys(s,root); continue; } if (tmr) getTime(&st);
