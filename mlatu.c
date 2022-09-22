@@ -27,7 +27,7 @@ I parseRule(C s,T rs) { I l=strlen(s), cm=0; C nS=ma(l+1); strcpy(nS,s); DO(l,if
 	I e; T t; t=parseTerms(nS,&e); fr(nS); if (e==PRN) goto end;
 	I eq=0, per=0; MAP(t,if(*c->w=='=')eq++;if(*c->w=='.')per++;if(!eq&&c->c){e=MCH;goto end;});
 	if (e=eq!=1?EQ:*t->n->w=='='?EMPTY:per!=1?PRD:*c->w!='.'?END:0) goto end;
-	{MAP(t,if(*c->n->w=='.'){fT(c->n);c->n=0;B;})} {T c=rs; while (c->c) c=c->c; c->c=t->n;} end: R e; } // add rule
+	{MAP(t,if(*c->n->w=='.'){fT(c->n);c->n=0;B;})} {T c=rs; while (c->c) c=c->c; c->c=t->n; fT(t);} end: R e; } // add rule
 V aR(T t,D d) { D n; while (1) { if (*t->w=='=') { freeTerms(d->r); d->r=t->n; if (!t->n) d->e=1; t->n=0; B; }
 		n=0; MAP(d->c,if(!strcmp(t->w,c->w))n=c);
 		if (!n||!d->c) { n=nD(t->w,0); n->l=d->l+1; if (d->c) c->n=n; else d->c=n; } d=n; t=t->n; } }
@@ -35,12 +35,12 @@ I parseFile(C n,D root) { FILE *f=fopen(n,"rb"); if (!f) R OPEN; I pos, l=0, d, 
 	while (1) { d=fgetc(f); if (d==-1) B; if (d!=' '&&d!='\n'&&d!='\t'&&d!='\r'&&d!='#'&&!cm) r=1; l++;
 		if (!(cm=cm?d!='\n':d=='#')&&d=='.') { pos=ftell(f); C s=ma(l+1); fseek(f,st,SEEK_SET); fread(s,1,l,f); s[l]=0;
 			I er=parseRule(s,rs); fr(s); if (er) R freeTerms(rs), fclose(f), er; l=0; fseek(f,pos,SEEK_SET); st=ftell(f); r=0; } }
-	do { rs=rs->c; aR(rs,root); } while (rs->c); fclose(f); R r*END; }
+	T o=rs; if (!r) while (rs=rs->c) aR(rs,root); freeTerms(o); fclose(f); R r*END; }
 I parseRules(C s,D root) { I l=0, d, r=0, cm=0; T rs=nT(0,"");
 	DO(strlen(s), d=s[i]; if (d!=' '&&d!='\n'&&d!='\t'&&d!='\r'&&d!='#'&&!cm) r=1; l++;
 		if (!(cm=cm?d!='\n':d=='#')&&d=='.') { C nS=ma(l+1); strncpy(nS,s+i+1-l,l); nS[l]=0;
 			I er=parseRule(nS,rs); fr(nS); if (er) R (freeTerms(rs), er); l=r=0; });
-	do { rs=rs->c; aR(rs,root); } while (rs->c); R r*END; }
+	T o=rs; if (!r) while (rs=rs->c) aR(rs,root); freeTerms(o); R r*END; }
 
 Z I len(T t) { if (t->t==TRM) R strlen(t->w); else { I i=2; MAP(t->c,i+=len(c)+!!c->n) R i; } } // length of printed T
 Z V prT(T t); C s; I i; V prTL(T t) { MAP(t,prT(c);if(c->n)s[i++]=' '); } // print T list

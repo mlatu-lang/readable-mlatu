@@ -10,7 +10,7 @@ I dbg=0, tmr=0, cnt=0;
 V prD(D d,I i) { DO(i,PF("  ")); PF(" %s: ",d->w);
 	if (d->r) { C s=prettyTerms(d->r); PF("%s",s); fr(s); } else if (d->e) PF("[empty rewrite]");
 	PF("\n"); MAP(d->c,prD(c,i+1)); }
-void e(I er,C n,I ex,D root) { if (er) { switch(er) {
+void e(I er,C n,I ex,D root) { if (er) { if (!ex) PF(" "); switch(er) {
 	case OPEN:  PF("error opening file '%s'\n",n); B;
 	case PRN:   PF("error parsing file '%s': unbalanced parentheses\n",n); B;
 	case PRD:   PF("error parsing file '%s': exactly one period expected in each rule\n",n); B;

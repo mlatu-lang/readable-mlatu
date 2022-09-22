@@ -1,18 +1,5 @@
 done:
-improve system commands
-improve rewriter
-fix leaks
-timer in repl
-way to see number of rewrites
-fix leaks on error
-P
-fix long rule with clang
-read non-\r\n files on windows
-improve loading rulesets (don't load if any rule is malformed)
-add loading files to repl
 
 todo:
-why paren error?
-- test if leaks on parse error in parseFile
 add printing rules to repl
 check leaks again, make primitives speedy
