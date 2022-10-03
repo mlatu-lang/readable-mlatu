@@ -2,4 +2,5 @@ done:
 
 todo:
 add printing rules to repl
+add includes in files
 check leaks again, make primitives speedy

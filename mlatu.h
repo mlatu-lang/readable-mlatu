@@ -30,6 +30,7 @@ otherwise, it will be nonzero -- one of
 PRD: unbalanced parens, PRD: period in query, EQ: equal sign in query
 the errors in the enum are ordered from least to most precedence -- higher ones will override lower ones
 the term returned will always needs freeing regardless of whether there was an error or not
+this only parses basic mlatu, ie not `=` and `.` of rule syntax, and not comments
 */
 enum { OK,OPEN,MCH,PRD,EQ,PRN,EMPTY,END };
 term parseTerms(char *s, int *er);
