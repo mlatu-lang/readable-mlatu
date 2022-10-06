@@ -7,7 +7,8 @@ readable-mlatu is, under specific conditions, slightly faster than eniac!
 Running `make lib` will compile the `mlatu.o` file.  
 Works with gcc/clang, hasn't been tested with any other compilers.  
 Run `make repl` to make the repl.  
-Mlatu rule files to be loaded in the repl can be passed as command line args.  
+Mlatu rule files to be loaded in the repl can be passed as command line args; doing it like this will make mlatu exit if the files could not be opened.
+You can also load mlatu rule files in the repl with `#wield path/to/file.mlt`, and if the file could not be opened, it will error in the repl without exiting.
 
 ## Docs
 Documentation can be found in the header file [mlatu.h](mlatu.h).  
