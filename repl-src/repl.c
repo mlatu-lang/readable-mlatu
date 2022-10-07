@@ -10,7 +10,7 @@ I dbg=0, tmr=0, cnt=0;
 V prD(D d,I i) { DO(i,PF("  ")); PF(" %s: ",d->w);
 	if (d->r) { C s=prettyTerms(d->r); PF("%s",s); fr(s); } else if (d->e) PF("[empty rewrite]");
 	PF("\n"); MAP(d->c,prD(c,i+1)); }
-I fI, fL=100; C *f; V aF(C s) { if (fI==fL) f=realloc(f,fL+=100); f[fI++]=s; } // file list, add file
+I fI, fL=100; C *f; V aF(C s) { C nS=malloc(strlen(s)+1); strcpy(nS,s); if (fI==fL) f=realloc(f,fL+=100); f[fI++]=nS; } // file list, add file
 void e(I er,C n,I ex,D root) { if (er) { if (!ex) PF(" "); switch(er) {
 	case OPEN:  PF("error opening file '%s'\n",n); B;
 	case PRN:   PF("error parsing file '%s': unbalanced parentheses\n",n); B;
@@ -19,7 +19,7 @@ void e(I er,C n,I ex,D root) { if (er) { if (!ex) PF(" "); switch(er) {
 	case EMPTY: PF("error parsing file '%s': cannot match with empty LHS\n",n); B;
 	case END:   PF("error parsing file '%s': period expected at end of every rule\n",n); B;
 	case MCH:   PF("error parsing file '%s': quotes are opaque and cannot be matched on\n",n); B; }
-	if (ex) freeRules(root), fr(f), exit(-1); } }
+	if (ex) { DO(fI,fr(f[i])); freeRules(root), fr(f), exit(-1); } } }
 V sys(C s,D root) { C t=strtok(s," "); C n=strtok(0," ");
 	if (!strcmp(t,")h")&&!n) PF(
 		" )h             you are here\n"
@@ -60,4 +60,4 @@ I main(I ac,C *av) { char s[999]; D root=newRoot(); I er=parseRules(prelude,root
 		if (tmr) { getTime(&fn); ms=milliDiff(&st,&fn); PF(" "); pT(ms);
 			if (!dbg) { ms=milliDiff(&pr,&fn); PF(" ("); pT(ms); PF(" outputting)"); } PF("\n"); }
 		freeTerms(ast); }
-	freeRules(root); fr(f); }
+	freeRules(root); DO(fI,fr(f[i])); fr(f); }
