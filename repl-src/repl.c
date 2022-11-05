@@ -46,7 +46,7 @@ I main(I ac,C *av) { char s[999]; D root=newRoot(); I er=parseRules(prelude,root
 	f=malloc(fL); C n; DO(ac-1,e(parseFile(n=av[i+1],root),n,1,root);aF(n)); // files
 	PF(" readable-mlatu repl - github.com/mlatu-lang/readable-mlatu\n bye to exit, )h for help\n");
 	Time st, pr, fn; I ms, sc, m, h;
-	while (fgets(s,1000,stdin)) { s[strlen(s)-1]=0; if (*s==')'||!strncmp(s,"#wield ",7)) { sys(s,root); continue; } if (tmr) getTime(&st);
+	while (fgets(s,999,stdin)) { s[strlen(s)-1]=0; if (*s==')'||!strncmp(s,"#wield ",7)) { sys(s,root); continue; } if (tmr) getTime(&st);
 		C i=strchr(s,'#'); if (i) *i=0; ast=parseTerms(s,&er); if (er) { switch (er) { 
 			case PRN: PF("X-> parsing error: unbalanced parentheses\n"); B;
 			case EQ:  PF("X-> parsing error: equal sign\n\
