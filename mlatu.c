@@ -45,8 +45,8 @@ I parseRules(C s,D root) { I l=0, d, r=0, cm=0; T rs=nT(0,"");
 Z I len(T t) { if (t->t==TRM) R strlen(t->w); else { I i=2; MAP(t->c,i+=len(c)+!!c->n) R i; } } // length of printed T
 Z V prT(T t); C s; I i; V prTL(T t) { MAP(t,prT(c);if(c->n)s[i++]=' '); } // print T list
 Z V prT(T t) { if (t->t==TRM) i+=strlen(strcpy(s+i,t->w)); else { s[i++]='('; prTL(t->c); strcpy(s+i++,")"); } } // print T
-C prettyTerms(T t) { t=t->t==ST?t->n:t; I l=i=0; MAP(t,l+=len(c)+!!c->n); s=ma(l+1); prTL(t); R s; }
-C prettyTerm(T t) { I l=len(t); i=0; s=ma(l+1); prT(t); R s; }
+C prettyTerms(T t) { t=t->t==ST?t->n:t; I l=i=0; MAP(t,l+=len(c)+!!c->n); s=ma(l+1); prTL(t); s[l]=0; R s; }
+C prettyTerm(T t) { I l=len(t); i=0; s=ma(l+1); prT(t); s[l]=0; R s; }
 
 Z V rm(T t) { T n=t->n->n; fT(t->n); t->n=n; } // removes next T
 Z V zap (T t) { rm(t); rm(t); } 

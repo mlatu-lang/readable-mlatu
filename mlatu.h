@@ -30,6 +30,7 @@ otherwise, it will be nonzero -- one of
 PRD: unbalanced parens, PRD: period in query, EQ: equal sign in query
 the errors in the enum are ordered from least to most precedence -- higher ones will override lower ones
 the term returned will always needs freeing regardless of whether there was an error or not
+this only parses basic mlatu, ie not `=` and `.` of rule syntax, and not comments
 */
 enum { OK,OPEN,MCH,PRD,EQ,PRN,EMPTY,END };
 term parseTerms(char *s, int *er);
@@ -59,8 +60,7 @@ returns 1 if no more rewrites can be applied, and 0 if more can
 int stepRewrite(rule r, term t); 
 
 /*
-you might notice that some functions are missing - namely parseTerm, which parses a single term, prettyRule, which pretty prints a single rule, and prettyRules, which pretty prints multiple rules
-parseTerm is missing because tokenizing and parsing are done in one step, and aren't separate
-prettyRule(s) is missing because in this tree-like rule layout, it doesn't make sense to have any sort of print function that prints one specific rule
+you might notice that some functions (like parseTerm and prettyRule) are missing
+this is because those function don't make sense with how this interpreter works
 */
 #endif
