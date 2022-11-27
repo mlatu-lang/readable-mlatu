@@ -32,8 +32,8 @@ cdr  = (~-)~<.
 
 
 # church numbers:
-#   (f) 3<  |->   (f f f)
-# x (f) 3<  |->  x f f f
+#   (f) 3<   |->   (f f f)
+# x (f) 3<<  |->  x f f f
 succ = (+)~,(,),.
 pred = (()~(+))~+(<--()),~(,)~<,,.
 add  = (succ)~<<.
