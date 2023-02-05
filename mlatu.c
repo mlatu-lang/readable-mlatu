@@ -11,7 +11,7 @@ _ T cT(T t) { T z=nT(0,""), n=z; MAP(t,n=n->n=nT(c->t,c->w);n->c=cT(c->c)); n=z-
 enum { Q,TRM,ST }; // ST starts each ast
 V freeRules(D d) { MAP(d,fr(c->w);freeRules(c->c);freeTerms(c->r);fr(c)); }
 _ D nD(S w,T r) { D d=calloc(1,sizeof(struct d)); d->w=ma(strlen(w)+1); sc(d->w,w); d->r=r; R d; } // new D
-D newRoot() { D root=nD("",0); R root; }
+D newRoot() { R nD("",0); }
 
 _ T wd(S s,I st,I l,T *p) { S w=ma(l+1); strncpy(w,s+st,l); w[l]=0; T n=nT(TRM,w); fr(w); R *p=n; }
 _ V Pr(S s,I *i,I *er,I lvl,T *c/* n/c */) { I st=*i; do switch (s[*i]) { // parse
