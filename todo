@@ -1,7 +1,8 @@
 done:
 reloading
+panic
 
 todo:
-add printing rules to repl
+add printing rules to repl (wip!!)
 add includes in files
 check leaks again, make primitives speedy
