@@ -62,6 +62,6 @@ _ I lit(T t,D r) { D cR=r, bst=0; T u=t->n; // try to find rewrite on terms star
 _ I qot(T s) { T t=s->n, u=t->n; P(!u,0); // try to find rewrite on terms starting with quote
 	if (u->t==Q) { P(!u->n,0); char w=*u->n->w; if (w=='~') swap(s); else if (w==',') cat(s); else R 0; R 1; }
 	switch (*u->w) { C '-': zap(s); R 1; C '+': copy(s); R 1; C '<': exec(s); R 1; C '>': wrap(s); R 1; } R 0; }
-_ I ex(T oT,D r,I stp) /* rewrite alg */ { T t=oT; I i=0, n=0; while (1) { I l=0; MAP(oT,l++); P(i>l-2,stp+n);
+_ I ex(T oT,D r,I stp) /* rewrite alg */ { T t=oT; I i=0, n=0; while (1) { P(!t->n,stp+n);
 	if (t->n->t==Q?qot(t):lit(t,r)) { P(stp,0); t=oT; i=0; n++; } else { t=t->n; i++; } } }
 I rewrite(D r,T t) { R ex(t,r,0); } I stepRewrite(D r,T t) { R ex(t,r,1); }

@@ -42,10 +42,9 @@ V pT(I ms) { I h=ms/3600000, m=(ms-h*3600000)/60000, s=(ms-m*60000-h*3600000)/10
 	switch (h?0:m?1:s?2:3) { case 0: PF("%dh ",h); case 1: PF("%dm ",m); case 2: PF("%ds ",s); case 3: PF("%dms",ms); } }
 
 V O(T ast) { S s=prettyTerms(ast); PF("|-> %s\n",s); fr(s); }
-I main(I ac,S *av) { char s[999]; D root=newRoot(); I er=parseRules(prelude,root); e(er,"prelude",1,root); T ast;
-	f=malloc(fL); S n; DO(ac-1,e(parseFile(n=av[i+1],root),n,1,root);aF(n)); // files
+I main() { D root=newRoot(); I er=parseRules(prelude,root); e(er,"prelude",1,root); f=malloc(fL);
 	PF(" readable-mlatu repl - github.com/mlatu-lang/readable-mlatu\n bye to exit, )h for help\n");
-	Time st, pr, fn; I ms, sc, m, h;
+	char s[999]; T ast; Time st, pr, fn; I ms, sc, m, h;
 	while (fgets(s,999,stdin)) { s[strlen(s)-1]=0; if (*s==')'||!strncmp(s,"#wield ",7)) { sys(s,root); continue; }
 		if (tmr) getTime(&st); S i=strchr(s,'#'); if (i) *i=0; ast=parseTerms(s,&er); if (er) { switch (er) {
 			case PRN: PF("X-> parsing error: unbalanced parentheses\n"); B;
