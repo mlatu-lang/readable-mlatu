@@ -27,10 +27,10 @@ V pE(I er,I v) { switch (er) {
 	C PRD:   PF("X-> parsing error: period\n");
 		if (v) PF("if you are trying to define a rule, it cannot be defined in the repl, you need to load it from a file\n"); B; } }
 V O(T t,S f) { S s=prettyTerms(t); PF(f,s); fr(s); }
-V pRH(S s,D d) { if (d->e||d->r) { PF("%s =",s); if (d->r) O(d->r," %s"); PF(" .\n"); } // )rule helper
+V pRH(S s,D d) { if (d->e||d->r) { PF(" %s =",s); if (d->r) O(d->r," %s"); PF(" .\n"); } // )rule helper
 	MAP(d->c,S t=ma(strlen(s)+strlen(c->w)+2);sc(t,s);strcat(t," ");strcat(t,c->w);pRH(t,c);fr(t);); }
 V pR(S s,D root) { I er=0; T t=parseTerms(s+6,&er); P(er,pE(er,0)); D d=root; // )rule
-	MAP(t->n,T b=c;{MAP(d->c,if(!strcmp(b->w,c->w))goto e;)R;e:d=c;}); S u=prettyTerms(t); pRH(u,d); fr(u); }
+	MAP(t->n,T b=c;{MAP(d->c,if(!strcmp(b->w,c->w))goto e;)R;e:d=c;}); S u=prettyTerms(t); freeTerms(t); pRH(u,d); fr(u); }
 V sys(S oS,D root) { S s=malloc(strlen(oS)+1); sc(s,oS); S t=strtok(s," "); S n=strtok(0," ");
 	if (!strcmp(t,")h")&&!n) PF(
 		" )h             you are here\n"
