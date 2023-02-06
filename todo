@@ -1,8 +1,10 @@
 done:
 reloading
 panic
+add printing rules to repl
 
 todo:
-add printing rules to repl (wip!!)
+adding rules/matching with MAP?
+length??
 add includes in files
 check leaks again, make primitives speedy

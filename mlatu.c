@@ -53,7 +53,7 @@ _ V zap (T t) { rm(t); rm(t); }
 _ V swap(T t) { T c=t->n; t->n=c->n; c->n=t->n->n; t->n->n=c; rm(t->n->n); }
 _ V copy(T t) { rm(t->n); T n=t->n->n; t->n->n=0; T c=cT(t->n); t->n->n=c; c->n=n; }
 _ V wrap(T t) { T e=t->n, q=e->n; sc(q->w,""); q->t=Q; q->c=e; e->n=0; t->n=q; }
-_ V exec(T t) { T cs=t->n->c; t->n->c=0; rm(t); rm(t); if (!cs) R; MAP(cs,); c->n=t->n; t->n=cs;  }
+_ V exec(T t) { T cs=t->n->c; t->n->c=0; rm(t); rm(t); P(!cs,); MAP(cs,); c->n=t->n; t->n=cs; }
 _ V cat (T t) { T q=t->n->n; MAP(t->n->c,); c?(c->n=q->c):(t->n->c=q->c); q->c=0; rm(t->n); rm(t->n); }
 
 _ I lit(T t,D r) { D cR=r, bst=0; T u=t->n; // try to find rewrite on terms starting with literal
