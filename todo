@@ -5,6 +5,6 @@ add printing rules to repl
 
 todo:
 adding rules/matching with MAP?
-length??
 add includes in files
+100 100 mul 100 mul segfault
 check leaks again, make primitives speedy

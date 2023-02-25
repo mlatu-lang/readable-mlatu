@@ -1,5 +1,5 @@
-#ifndef mlatu_h
-#define mlatu_h
+#ifndef the_children_are_learning_to_leave_you_behind
+#define the_children_are_learning_to_leave_you_behind
 
 // type, word, children, next
 typedef struct t { int t; char *w; struct t *c,*n; } *T, *term;

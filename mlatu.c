@@ -6,10 +6,10 @@
 
 _ V fT(T t) { fr(t->w); MAP(t->c,fT(c)); fr(t); } V freeTerms(T t) { MAP(t,fT(c)); } // free T
 _ T nT(I t,S w) { T z=ma(sizeof(struct t)); z->t=t; z->w=ma(strlen(w)+1); sc(z->w,w); z->n=z->c=0; R z; } // new T
-_ T cT(T t) { T z=nT(0,""), n=z; MAP(t,n=n->n=nT(c->t,c->w);n->c=cT(c->c)); n=z->n; fT(z); R n; } // clone T
+_ T cT(T t) { T z=nT(0,""), n=z; MAP(t,n=n->n=nT(c->t,c->w); n->c=cT(c->c)); n=z->n; fT(z); R n; } // clone T
 
 enum { Q,TRM,ST }; // ST starts each ast
-V freeRules(D d) { MAP(d,fr(c->w);freeRules(c->c);freeTerms(c->r);fr(c)); }
+V freeRules(D d) { MAP(d,fr(c->w); freeRules(c->c); freeTerms(c->r); fr(c)); }
 _ D nD(S w,T r) { D d=calloc(1,sizeof(struct d)); d->w=ma(strlen(w)+1); sc(d->w,w); d->r=r; R d; } // new D
 D newRoot() { R nD("",0); }
 
@@ -23,13 +23,13 @@ _ V Pr(S s,I *i,I *er,I lvl,T *c/* n/c */) { I st=*i; do switch (s[*i]) { // par
 	C '(': WD; T n=nT(Q,""); *c=n; c=&(n->n); (*i)++; Pr(s,i,er,lvl+1,&(n->c)); st=*i+1; B;
 	C ')': WD; if (lvl==0) ER(PRN); R; } while ((*i)++<strlen(s)); if (lvl) ER(PRN); }
 T parseTerms(S s,I *er) { T t=nT(ST,""); I i=0; *er=0; Pr(s,&i,er,0,&t->n); R t; }
-I parseRule(S s,T rs) { I l=strlen(s), cm=0; S nS=ma(l+1); sc(nS,s); DO(l,if(cm=cm?s[i]!='\n':s[i]=='#')nS[i]=' ');
+I parseRule(S s,T rs) { I l=strlen(s), cm=0; S nS=ma(l+1); sc(nS,s); DO(l,if (cm=cm?s[i]!='\n':s[i]=='#') nS[i]=' ');
 	I e; T t; t=parseTerms(nS,&e); fr(nS); if (e==PRN) goto end;
-	I eq=0, per=0; MAP(t,if(*c->w=='=')eq++;if(*c->w=='.')per++;if(!eq&&c->c){e=MCH;goto end;});
+	I eq=0, per=0; MAP(t,if (*c->w=='=') eq++; if (*c->w=='.') per++; if (!eq&&c->c) { e=MCH; goto end; });
 	if (e=eq!=1?EQ:*t->n->w=='='?EMPTY:per!=1?PRD:*c->w!='.'?END:0) goto end;
-	{MAP(t,if(*c->n->w=='.'){fT(c->n);c->n=0;B;})} {T c=rs; while (c->c) c=c->c; c->c=t->n; fT(t);} end: R e; } // add rule
+	{MAP(t,if (*c->n->w=='.') { fT(c->n); c->n=0; B; })} T n=rs; while (n->c) n=n->c; n->c=t->n; fT(t); end: R e; } // add rule
 V aR(T t,D d) { D n; while (1) { if (*t->w=='=') { freeTerms(d->r); d->r=t->n; if (!t->n) d->e=1; t->n=0; B; }
-		n=0; MAP(d->c,if(!strcmp(t->w,c->w))n=c);
+		n=0; MAP(d->c,if (!strcmp(t->w,c->w)) n=c);
 		if (!n||!d->c) { n=nD(t->w,0); n->l=d->l+1; if (d->c) c->n=n; else d->c=n; } d=n; t=t->n; } }
 I parseFile(S n,D root) { FILE *f=fopen(n,"rb"); P(!f,OPEN); I pos, l=0, d, st=ftell(f), r=0, cm=0; T rs=nT(0,"");
 	while (1) { d=fgetc(f); if (d==-1) B; if (d!=' '&&d!='\n'&&d!='\t'&&d!='\r'&&d!='#'&&!cm) r=1; l++;
@@ -43,7 +43,7 @@ I parseRules(S s,D root) { I l=0, d, r=0, cm=0; T rs=nT(0,"");
 	T o=rs; if (!r) while (rs=rs->c) aR(rs,root); freeTerms(o); R r*END; }
 
 _ I len(T t) { P(t->t==TRM,strlen(t->w)); I i=2; MAP(t->c,i+=len(c)+!!c->n) R i; } // length of printed T
-_ V prT(T t); S s; I i; V prTL(T t) { MAP(t,prT(c);if(c->n)s[i++]=' '); } // print T list
+_ V prT(T t); S s; I i; V prTL(T t) { MAP(t,prT(c);if (c->n) s[i++]=' '); } // print T list
 _ V prT(T t) { if (t->t==TRM) i+=strlen(sc(s+i,t->w)); else { s[i++]='('; prTL(t->c); strcpy(s+i++,")"); } } // print T
 S prettyTerms(T t) { t=t->t==ST?t->n:t; I l=i=0; MAP(t,l+=len(c)+!!c->n); s=ma(l+1); prTL(t); s[l]=0; R s; }
 S prettyTerm(T t) { I l=len(t); i=0; s=ma(l+1); prT(t); s[l]=0; R s; }
