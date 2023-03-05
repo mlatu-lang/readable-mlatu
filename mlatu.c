@@ -27,8 +27,8 @@ I parseRule(S s,T rs) { I l=strlen(s), cm=0; S nS=ma(l+1); sc(nS,s); DO(l,if (cm
 	I e; T t; t=parseTerms(nS,&e); fr(nS); if (e==PRN) goto end;
 	I eq=0, per=0; MAP(t,if (*c->w=='=') eq++; if (*c->w=='.') per++; if (!eq&&c->c) { e=MCH; goto end; });
 	if (e=eq!=1?EQ:*t->n->w=='='?EMPTY:per!=1?PRD:*c->w!='.'?END:0) goto end;
-	{MAP(t,if (*c->n->w=='.') { fT(c->n); c->n=0; B; })} T n=rs; while (n->c) n=n->c; n->c=t->n; fT(t); end: R e; } // add rule
-V aR(T t,D d) { D n; while (1) { if (*t->w=='=') { freeTerms(d->r); d->r=t->n; if (!t->n) d->e=1; t->n=0; B; }
+	{MAP(t,if (*c->n->w=='.') { fT(c->n); c->n=0; B; })} T n=rs; while (n->c) n=n->c; n->c=t->n; fT(t); end: R e; }
+V aR(T t,D d) { D n; while (1) { if (*t->w=='=') { freeTerms(d->r); d->r=t->n; if (!t->n) d->e=1; t->n=0; B; } // add rule
 		n=0; MAP(d->c,if (!strcmp(t->w,c->w)) n=c);
 		if (!n||!d->c) { n=nD(t->w,0); n->l=d->l+1; if (d->c) c->n=n; else d->c=n; } d=n; t=t->n; } }
 I parseFile(S n,D root) { FILE *f=fopen(n,"rb"); P(!f,OPEN); I pos, l=0, d, st=ftell(f), r=0, cm=0; T rs=nT(0,"");

@@ -4,6 +4,8 @@ panic
 add printing rules to repl
 
 todo:
+parseRule documentation and improvement
+improve timing
 adding rules/matching with MAP?
 add includes in files
 100 100 mul 100 mul segfault
