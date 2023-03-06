@@ -10,26 +10,25 @@ I dbg, tmr, cnt;
 V prD(D d,I i) { DO(i,PF(" ")); PF("%s: ",d->w);
 	if (d->r) { S s=prettyTerms(d->r); PF("%s",s); fr(s); } else if (d->e) PF("[empty rewrite]");
 	PF("\n"); MAP(d->c,prD(c,i+1)); }
-I fI, fL=100; S *f; V aF(S s) { S n=malloc(strlen(s)+1); sc(n,s); if (fI==fL) f=realloc(f,fL+=100); f[fI++]=n; } // add file
-V e(I er,S n,I ex,D root) { if (er) { if (!ex) PF(" "); switch (er) { // file error
-	C OPEN:  PF("error opening file '%s'\n",n); B;
-	C PRN:   PF("error parsing file '%s': unbalanced parentheses\n",n); B;
-	C PRD:   PF("error parsing file '%s': exactly one period expected in each rule\n",n); B;
-	C EQ:    PF("error parsing file '%s': exactly one equal sign expected in each rule\n",n); B;
-	C EMPTY: PF("error parsing file '%s': cannot match with empty LHS\n",n); B;
-	C END:   PF("error parsing file '%s': period expected at end of every rule\n",n); B;
-	C MCH:   PF("error parsing file '%s': quotes are opaque and cannot be matched on\n",n); B; }
+I fI, fL=100; S *f; V aF(S s) /* add file */ { S n=malloc(strlen(s)+1); sc(n,s); if (fI==fL) f=realloc(f,fL+=100); f[fI++]=n; }
+V e(I er,S n,I ex,D root) { if (er) { PF("%.*serror %sing file '%s'",!ex," ",er==OPEN?"open":"pars",n); switch (er) {
+	C OPEN:  PF("\n",n); B;
+	C PRN:   PF(": unbalanced parentheses\n",n); B;
+	C EQ:    PF(": exactly one equal sign expected in each rule\n",n); B;
+	C EMPTY: PF(": cannot match with empty LHS\n",n); B;
+	C PRD:   PF(": period expected at end of every rule\n",n); B;
+	C MCH:   PF(": quotes are opaque and cannot be matched on\n",n); B; }
 	if (ex) { DO(fI,fr(f[i])); freeRules(root), fr(f), exit(-1); } } }
-V pE(I er,I v) { switch (er) {
-	C PRN:   PF("X-> parsing error: unbalanced parentheses\n"); B;
-	C EQ:    PF("X-> parsing error: equal sign\n");
-		if (v) PF("if you are trying to define a rule, it cannot be defined in the repl, you need to load it from a file\n"); B;
-	C PRD:   PF("X-> parsing error: period\n");
-		if (v) PF("if you are trying to define a rule, it cannot be defined in the repl, you need to load it from a file\n"); B; } }
+V pE(I er,I v) { PF("X -> parsing error: "); switch (er) {
+	C PRN:   PF("unbalanced parentheses\n"); B;
+	C EQ:    PF("equal sign\n");
+		if (v)  PF("if you are trying to define a rule, it cannot be defined in the repl, you need to load it from a file\n"); B;
+	C PRD:   PF("period\n");
+		if (v)  PF("if you are trying to define a rule, it cannot be defined in the repl, you need to load it from a file\n"); B; } }
 V O(T t,S f) { S s=prettyTerms(t); PF(f,s); fr(s); }
-V pRH(S s,D d) { if (d->e||d->r) { PF(" %s =",s); if (d->r) O(d->r," %s"); PF(" .\n"); } // )rule helper
+V pRH(S s,D d) /* )rule helper */ { if (d->e||d->r) { PF(" %s =",s); if (d->r) O(d->r," %s"); PF(" .\n"); }
 	MAP(d->c,S t=ma(strlen(s)+strlen(c->w)+2); sc(t,s); strcat(t," "); strcat(t,c->w); pRH(t,c); fr(t)); }
-V pR(S s,D root) { I er=0; T t=parseTerms(s+6,&er); P(er,pE(er,0)); D d=root; // )rule
+V pR(S s,D root) { I er=0; T t=parseTerms(s+6,&er); P(er,pE(er,0)); D d=root;
 	MAP(t->n,T b=c; {MAP(d->c,if (!strcmp(b->w,c->w)) goto e) R; e: d=c; }); S u=prettyTerms(t); freeTerms(t); pRH(u,d); fr(u); }
 V sys(S oS,D root) { S s=malloc(strlen(oS)+1); sc(s,oS); S t=strtok(s," "); S n=strtok(0," ");
 	if (!strcmp(t,")h")&&!n) PF(
@@ -43,7 +42,7 @@ V sys(S oS,D root) { S s=malloc(strlen(oS)+1); sc(s,oS); S t=strtok(s," "); S n=
 		" )rule <terms>  print all rules starting with <terms>\n"
 		" )ruletree      print tree of all user-defined rules (like  )rule  but nicer)\n");
 	else if (!strcmp(t,"#wield")&&n) { I er=parseFile(n,root); e(er,n,0,0); aF(n); }
-	else if (!strcmp(t,")r")&&!n) DO(fI,parseFile(f[i],root))
+	else if (!strcmp(t,")r")&&!n) DO(fI,I er=parseFile(f[i],root); e(er,f[i],0,0))
 	else if (!strcmp(t,")d")&&!n) PF(" turning debug mode %s\n",   (dbg=!dbg)?"on":"off");
 	else if (!strcmp(t,")t")&&!n) PF(" turning timer mode %s\n",   (tmr=!tmr)?"on":"off");
 	else if (!strcmp(t,")c")&&!n) PF(" turning counting mode %s\n",(cnt=!cnt)?"on":"off");

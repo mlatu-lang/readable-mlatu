@@ -2,9 +2,9 @@ done:
 reloading
 panic
 add printing rules to repl
+parseRule documentation and improvement
 
 todo:
-parseRule documentation and improvement
 improve timing
 adding rules/matching with MAP?
 add includes in files
