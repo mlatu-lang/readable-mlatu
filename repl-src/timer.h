@@ -15,13 +15,13 @@
 	int milliDiff(LARGE_INTEGER *start, LARGE_INTEGER *end)
 	{
 	    LARGE_INTEGER Frequency, elapsed;
-	
-	    QueryPerformanceFrequency(&Frequency); 
+
+	    QueryPerformanceFrequency(&Frequency);
 	    elapsed.QuadPart = end->QuadPart - start->QuadPart;
-	
+
 	    elapsed.QuadPart *= 1000;
 	    elapsed.QuadPart /= Frequency.QuadPart;
-	
+
 	    return elapsed.QuadPart;
 	}
 	typedef LARGE_INTEGER Time;

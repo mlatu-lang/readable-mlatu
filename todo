@@ -5,8 +5,12 @@ add printing rules to repl
 parseRule documentation and improvement
 
 todo:
+add includes in files
+ - get list to reload
+ - get better error reporting for file and line
 improve timing
 adding rules/matching with MAP?
-add includes in files
+be able to run rewrites on a file
+special term for last result in repl
 100 100 mul 100 mul segfault
 check leaks again, make primitives speedy
