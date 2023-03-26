@@ -30,14 +30,14 @@ _ I pR(S s,T rs) /* parse rule */ { I l=strlen(s), cm=0; S nS=ma(l+1); sc(nS,s);
 _ V aR(T t,D d) /* add rule */ { D n; while (1) { if (*t->w=='=') { freeTerms(d->r); d->r=t->n; if (!t->n) d->e=1; t->n=0; B; }
 		n=0; MAP(d->c,if (!strcmp(t->w,c->w)) n=c);
 		if (!n||!d->c) { n=nD(t->w,0); n->l=d->l+1; if (d->c) c->n=n; else d->c=n; } d=n; t=t->n; } }
-#define PRS(name,prel,cur,stop,slice,next,close) /* parse ruleset */ I name { prel; I l=0, c, r=0, cm=0; T rs=nT(0,""); \
-	while (1) { c=cur; if (stop) B; l++; if (c!=' '&&c!='\n'&&c!='\t'&&c!='\r'&&c!='#'&&!cm) r=1;                         \
-		if (!(cm=cm?c!='\n':c=='#')&&c=='.') { S nS=ma(l+1); slice; nS[l]=0;                                                \
-			I er=pR(nS,rs); fr(nS); P(er,freeTerms(rs),close,er); l=r=0; } next; }                                            \
+#define PRS(name,prel,cur,stop,slice/*last e chars*/,next,close) I name { prel; I l=0, r=0, cm=0, c, e; T rs=nT(0,""); \
+	while (1) { c=cur; if (stop) B; l++; if (c!=' '&&c!='\n'&&c!='\t'&&c!='\r'&&c!='#'&&!cm) r=1;                        \
+		if (!(cm=cm?c!='\n':c=='#')&&c=='.') { S nS=ma(l+1); e=l; slice; nS[l]=0;                                          \
+			I er=pR(nS,rs); fr(nS); P(er,freeTerms(rs),close,er); l=r=0; } next; }                                           \
 	T o=rs; if (!r) while (rs=rs->c) /* add rules at end, in case error */ aR(rs,root); freeTerms(o); close; R r*PRD; }
-PRS(parseRules(S s,D root), I i, s[i], !c, strncpy(nS,s+i+1-l,l), i++, 0);
-PRS(parseFile (S n,D root), FILE*f=fopen(n,"rb");P(!f,OPEN);I st=ftell(f), fgetc(f), c==-1,
-	I end=ftell(f);fseek(f,st,SEEK_SET);fread(nS,1,l,f);fseek(f,end,SEEK_SET);st=end, , fclose(f));
+PRS(parseRules(S s,D root), I i, s[i], !c, strncpy(nS,s+i+1-e,e), i++, 0);
+PRS(parseFile (S n,D root), FILE*f=fopen(n,"rb");P(!f,OPEN), fgetc(f), c==-1,
+	I end=ftell(f);fseek(f,-e,SEEK_CUR);fread(nS,1,e,f);fseek(f,end,SEEK_SET), , fclose(f)); // todo: why? why not all seek? test on windows
 
 _ I len(T t) /* length of printed T */ { P(t->t==TRM,strlen(t->w)); I i=2; MAP(t->c,i+=len(c)+!!c->n) R i; }
 _ V prT(T t); S s; I i; V prTL(T t) /* print T list */ { MAP(t,prT(c);if (c->n) s[i++]=' '); }
