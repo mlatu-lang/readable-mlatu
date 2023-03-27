@@ -12,12 +12,12 @@ V prD(D d,I i) { DO(i,PF(" ")); PF("%s: ",d->w);
 	PF("\n"); MAP(d->c,prD(c,i+1)); }
 I fI, fL=100; S *f; V aF(S s) /* add file */ { S n=malloc(strlen(s)+1); sc(n,s); if (fI==fL) f=realloc(f,fL+=100); f[fI++]=n; }
 V e(I er,S n,I ex,D root) { if (er) { PF("%.*serror %sing file '%s'",!ex," ",er==OPEN?"open":"pars",n); switch (er) {
-	C OPEN:  PF("\n",n); B;
-	C PRN:   PF(": unbalanced parentheses\n",n); B;
-	C EQ:    PF(": exactly one equal sign expected in each rule\n",n); B;
-	C EMPTY: PF(": cannot match with empty LHS\n",n); B;
-	C PRD:   PF(": period expected at end of every rule\n",n); B;
-	C MCH:   PF(": quotes are opaque and cannot be matched on\n",n); B; }
+	C OPEN:  PF("\n"); B;
+	C PRN:   PF(": unbalanced parentheses\n"); B;
+	C EQ:    PF(": exactly one equal sign expected in each rule\n"); B;
+	C EMPTY: PF(": cannot match with empty LHS\n"); B;
+	C PRD:   PF(": period expected at end of every rule\n"); B;
+	C MCH:   PF(": quotes are opaque and cannot be matched on\n"); B; }
 	if (ex) { DO(fI,fr(f[i])); freeRules(root), fr(f), exit(-1); } } }
 V pE(I er,I v) { PF("X -> parsing error: "); switch (er) {
 	C PRN:   PF("unbalanced parentheses\n"); B;

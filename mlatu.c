@@ -35,9 +35,8 @@ _ V aR(T t,D d) /* add rule */ { D n; while (1) { if (*t->w=='=') { freeTerms(d-
 		if (!(cm=cm?c!='\n':c=='#')&&c=='.') { S nS=ma(l+1); e=l; slice; nS[l]=0;                                          \
 			I er=pR(nS,rs); fr(nS); P(er,freeTerms(rs),close,er); l=r=0; } next; }                                           \
 	T o=rs; if (!r) while (rs=rs->c) /* add rules at end, in case error */ aR(rs,root); freeTerms(o); close; R r*PRD; }
-PRS(parseRules(S s,D root), I i, s[i], !c, strncpy(nS,s+i+1-e,e), i++, 0);
-PRS(parseFile (S n,D root), FILE*f=fopen(n,"rb");P(!f,OPEN), fgetc(f), c==-1,
-	I end=ftell(f);fseek(f,-e,SEEK_CUR);fread(nS,1,e,f);fseek(f,end,SEEK_SET), , fclose(f)); // todo: why? why not all seek? test on windows
+PRS(parseRules(S s,D root), I i,                             s[i],     !c,    strncpy(nS,s+i+1-e,e),               i++, 0);
+PRS(parseFile (S n,D root), FILE*f=fopen(n,"rb");P(!f,OPEN), fgetc(f), c==-1, fseek(f,-e,SEEK_CUR);fread(nS,1,e,f), , fclose(f));
 
 _ I len(T t) /* length of printed T */ { P(t->t==TRM,strlen(t->w)); I i=2; MAP(t->c,i+=len(c)+!!c->n) R i; }
 _ V prT(T t); S s; I i; V prTL(T t) /* print T list */ { MAP(t,prT(c);if (c->n) s[i++]=' '); }
