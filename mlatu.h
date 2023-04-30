@@ -40,6 +40,8 @@ this only parses basic mlatu, ie. not `=` and `.` of rule syntax, and not commen
 enum { OK,OPEN,MCH,PRD,EQ,PRN,EMPTY };
 term parseTerms(char *s, int *er);
 
+// error struct: filename, line number, error code
+typedef struct { char *f; int e, ln; } E;
 /*
 takes a filename as a string, and a root to add rules to
 returns a non-zero positive error on failure:
@@ -50,13 +52,14 @@ returns a non-zero positive error on failure:
  PRN:   unbalanced parens in file
  EMPTY: empty LHS
 if there is an error in a rule, none of the rules will be added to root
+the filename property of the error struct will always need to be freed if there was an error
 */
-int parseFile(char *name, rule root);
+E parseFile(char *name, rule root);
 
 /*
 exactly like the above, except reads the rules directly from a string
 */
-int parseRules(char *string, rule root);
+E parseRules(char *string, rule root);
 
 /*
 rewrites the terms `t` using the rules `r` until no more rewrites can be applied
