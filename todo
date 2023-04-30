@@ -8,7 +8,7 @@ todo:
 add includes in files
  - get list to reload
  - get better error reporting for file and line
- - get wields after last thingy
+ - get wields after last thingy                  x
 improve timing
 adding rules/matching with MAP?
 be able to run rewrites on a file

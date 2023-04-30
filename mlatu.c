@@ -28,16 +28,17 @@ _ I pR(S s,T rs) /* parse rule */ { I cm=0; S nS; sc(nS,s); DO(strlen(s),if (cm=
 _ V aR(T t,D d) /* add rule */ { D n; while (1) { if (*t->w=='=') { freeTerms(d->r); d->r=t->n; if (!t->n) d->e=1; t->n=0; B; }
 		n=0; MAP(d->c,if (!strcmp(t->w,c->w)) n=c);
 		if (!n||!d->c) { n=nD(t->w,0); n->l=d->l+1; if (d->c) c->n=n; else d->c=n; } d=n; t=t->n; } }
-#define WS(c) ((c)==' '||(c)=='\t'||(c)=='\r'||(c)=='\n')
+#define WS(c) ((c)==' '||(c)=='\t'||(c)=='\r'||(c)=='\n'||(c)<=0)
 #define ER(g,s) sc(n,s),(E){n,g}
 #define PRS(nm,fn,prel,cur,slice,next,end) E nm##H(S s,D root,T rs) { S n; sc(n,fn); prel; I l=0, r=0, w=0, x=0, cm=0, c, e;   \
-	while ((c=cur)>0) { l++; if (!WS(c)&&!(cm=cm?c!='\n':c=='#')) r=1;                                                           \
+	do { c=cur; l++; if (!WS(c)&&!(cm=cm?c!='\n':c=='#')) r=1;                                                                   \
 		if (!cm&&c=='.') { S nS=ma(l+1); e=l; slice; nS[l]=0; I g=pR(nS,rs); fr(nS); P(g,end,ER(g,fn)); l=r=0; }                   \
-		if (w==7) { x++; if (WS(c)) { S nS=ma(e=x); slice; nS[x-1]=0; E g=parseFileH(nS,root,rs); fr(nS); P(g.e,end,g); w=x=0; } } \
-		else if ("#wield "[w]==c) w++; else w=0; next; } end; P(r,ER(PRD,fn)); R (E){}; }                                          \
+		if (w==7) { x++; if (WS(c)) { S nS=ma(e=x); slice; PF("%d\n%d\n%s\n",c,e,nS); nS[x-1]=0;PF("%s\n",nS);  E g=parseFileH(nS,root,rs); fr(nS); P(g.e,end,g); w=x=0; } } \
+		else if ("#wield "[w]==c) w++; else w=0; next; } while (c>0); end; P(r,ER(PRD,fn)); R (E){}; }                             \
 E nm(S s,D root) { T rs=nT(0,""); E g=nm##H(s,root,rs); T o=rs; if (!g.e) while (rs=rs->c) aR(rs,root); freeTerms(o); R g; }
-PRS(parseFile , s , FILE*f=fopen(s,"rb");P(!f,ER(OPEN,s)), fgetc(f), fseek(f,-e,SEEK_CUR);fread(nS,1,e,f),   , fclose(f));
-PRS(parseRules, "", I i,                                   s[i],     strncpy(nS,s+i+1-e,e),               i++, 0        );
+// +(c<0): when nothing (not even whitespace) after a wield in a file, file pos will be right after, not 1 after like normal
+PRS(parseFile,  s,  FILE*f=fopen(s,"rb");P(!f,ER(OPEN,s)), fgetc(f), fseek(f,-e,SEEK_CUR);fread(nS,1,e,f),    , fclose(f));
+PRS(parseRules, "", I i,                                   s[i],     strncpy(nS,s+i+1-e,e),                      i++, 0        );
 
 _ I len(T t) /* length of printed T */ { P(t->t==TRM,strlen(t->w)); I i=2; MAP(t->c,i+=len(c)+!!c->n) R i; }
 _ V prT(T t); S s; I y; V prTL(T t) /* print T list */ { MAP(t,prT(c);if (c->n) s[y++]=' '); }
