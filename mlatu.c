@@ -31,7 +31,7 @@ _ V aR(T t,D d) /* add rule */ { D n; while (1) { if (*t->w=='=') { freeTerms(d-
 #define WS(c) ((c)==' '||(c)=='\t'||(c)=='\r'||(c)=='\n'||(c)<=0)
 #define ER(g,s) sc(n,s),(E){n,g}
 #define PRS(nm,fn,prel,cur,slice,next,end) E nm##H(S s,D root,T rs) { S n; sc(n,fn); prel; I l=0, r=0, w=0, x=0, cm=0, c, e;   \
-	do { c=cur; l++; if (!WS(c)&&!(cm=cm?c!='\n':c=='#')) r=1;                                                                   \
+	do { c=cur; l++; if (!WS(c)&&c!='#'&&!cm) r=1;  cm=cm?c!='\n':c=='#'; /*todo why no workkkkkk*/                              \
 		if (!cm&&c=='.') { S nS=ma(l+1); e=l; slice; nS[l]=0; I g=pR(nS,rs); fr(nS); P(g,end,ER(g,fn)); l=r=0; }                   \
 		if (w==7) { x++; if (WS(c)) { S nS=ma(e=x); slice; nS[x-1]=0; E g=parseFileH(nS,root,rs); fr(nS); P(g.e,end,g); w=x=0; } } \
 		else if ("#wield "[w]==c) w++; else w=0; next; } while (c>0); end; P(r,ER(PRD,fn)); R (E){}; }                             \
