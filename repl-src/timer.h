@@ -2,17 +2,17 @@
 #if defined(linux) || defined(__APPLE__) && defined(__MACH__)
 
 	#include <time.h>
-	int milliDiff(struct timespec *start, struct timespec *end) {
+	int msD(struct timespec *start, struct timespec *end) {
 	    return ((end->tv_sec * 1000) + (end->tv_nsec / 1000000)) -
 	        ((start->tv_sec * 1000) + (start->tv_nsec / 1000000));
 	}
 	typedef struct timespec Time;
-	#define getTime(t) clock_gettime(CLOCK_MONOTONIC, t);
+	#define rn(t) clock_gettime(CLOCK_MONOTONIC, t);
 
 #elif defined(_WIN32)
 
 	#include <Windows.h>
-	int milliDiff(LARGE_INTEGER *start, LARGE_INTEGER *end)
+	int msD(LARGE_INTEGER *start, LARGE_INTEGER *end)
 	{
 	    LARGE_INTEGER Frequency, elapsed;
 
@@ -25,7 +25,7 @@
 	    return elapsed.QuadPart;
 	}
 	typedef LARGE_INTEGER Time;
-	#define getTime(t) QueryPerformanceCounter(t);
+	#define rn(t) QueryPerformanceCounter(t);
 
 #else
 	#error OS not supported, repl-src/timer.h
