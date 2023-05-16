@@ -3,13 +3,13 @@ reloading
 panic
 add printing rules to repl
 parseRule documentation and improvement
+improve timing
 
 todo:
 add includes in files
  - get list to reload
  - get better error reporting for file and line
  - get wields after last thingy                  x
-improve timing
 adding rules/matching with MAP?
 be able to run rewrites on a file
 special term for last result in repl
