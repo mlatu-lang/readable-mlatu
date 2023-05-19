@@ -60,5 +60,5 @@ _ I lit(T t,D r) /* find rewrite on literal */ { D cR=r, bst=0; T u=t->n;
 _ I qot(T s) /* find rewrite on quote */ { T t=s->n, u=t->n; P(!u,0);
 	if (u->t==Q) { P(!u->n,0); char w=*u->n->w; if (w=='~') swap(s); else if (w==',') cat(s); else R 0; R 1; }
 	switch (*u->w) { C '-': zap(s); R 1; C '+': copy(s); R 1; C '<': exec(s); R 1; C '>': wrap(s); R 1; } R 0; }
-_ I ex(T oT,D r,I stp) { I n=0; l: MAP(oT,if (c->n&&(c->n->t==Q?qot(c):lit(c,r))) { P(stp,0); n++; goto l; }); R stp+n; }
-I rewrite(D r,T t) { R ex(t,r,0); } I stepRewrite(D r,T t) { R ex(t,r,1); }
+I stepRewrite(D r,T t) { MAP(t,if (c->n&&(c->n->t==Q?qot(c):lit(c,r))) R 0); R 1; }
+I rewrite(D r,T t) { I n=0; while (!stepRewrite(r,t)) n++; R n; }
