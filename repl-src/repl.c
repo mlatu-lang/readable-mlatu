@@ -29,7 +29,7 @@ V pRH(S s,D d) /* )rule helper */ { if (d->e||d->r) { PF(" %s =",s); if (d->r) O
 	MAP(d->c,S t=MA(strlen(s)+strlen(c->w)+2); strcpy(t,s); strcat(t," "); strcat(t,c->w); pRH(t,c); FR(t)); }
 V pR(S s,D root) { I er=0; T t=parseTerms(s+6,&er); P(er,pE(er,0)); D d=root;
 	MAP(t->n,T b=c; {MAP(d->c,if (SQ(b->w,c->w)) goto e) R; e: d=c; }); S u=prettyTerms(t); freeTerms(t); pRH(u,d); FR(u); }
-V sys(S oS,D root) { S s; SC(s,oS); S t=strtok(s," "); S n=strtok(0," ");
+V sys(S oS,D root) { S s; SC(s,oS); S t=strtok(s," \n"); S n=strtok(0," \n");
 	if (SQ(t,")h")&&!n) PF(
 		" )h             you are here\n"
 		" bye            exit\n"
@@ -53,7 +53,7 @@ V pT(I ms) { I h=ms/3600000, m=(ms-h*3600000)/60000, s=(ms-m*60000-h*3600000)/10
 
 I main() { D root=newRoot(); parseRules(prelude,root); char s[999]; T ast; Time st, pr, fn; I ms, sc, m, h;
 	PF(" how may readable-mlatu ease your life, oh grand exalted master?\n bye to exit, )h for help\n");
-	while (fgets(s,999,stdin)) { if (SQ("bye",strtok(s,"\n"))) B; if (*s==')'||!strncmp(s,"#wield ",7)) { sys(s,root); continue; }
+	while (fgets(s,999,stdin)) { if (SQ("bye\n",s)) B; if (*s==')'||!strncmp(s,"#wield ",7)) { sys(s,root); continue; }
 		rn(&st); S i=strchr(s,'#'); if (i) *i=0; I todoerr; ast=parseTerms(s,&todoerr); if (todoerr) { pE(todoerr,1); freeTerms(ast); continue; }
 		I show=1, n=0; if (dbg) { while (!stepRewrite(root,ast)) { n++; show=0; O(ast,"|-> %s\n"); } } else n=rewrite(root,ast);
 		rn(&pr); if (show) O(ast,"|-> %s\n"); if (cnt) PF(" %d rewrite%s\n", n, n==1?"":"s"); rn(&fn);
