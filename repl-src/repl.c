@@ -18,7 +18,7 @@ V fE(E e,D root) { P(!e.e); PF(" error %sing file '%s'",e.e==OPEN?"open":"pars",
 	C EMPTY: PF(": cannot match with empty LHS\n"); B;
 	C PRD:   PF(": period expected at end of every rule\n"); B;
 	C MCH:   PF(": quotes are opaque and cannot be matched on\n"); B; } }
-V pE(I er,I v) { PF("X -> parsing error: "); switch (er) {
+V pE(I er,I v) { PF("X-> parsing error: "); switch (er) {
 	C PRN:   PF("unbalanced parentheses\n"); B;
 	C EQ:    PF("equal sign\n");
 		if (v)  PF("if you are trying to define a rule, it cannot be defined in the repl, you need to load it from a file\n"); B;
@@ -55,8 +55,8 @@ I main() { D root=newRoot(); parseRules(prelude,root); char s[999]; T ast; Time 
 	PF(" how may readable-mlatu ease your life, oh grand exalted master?\n bye to exit, )h for help\n");
 	while (fgets(s,999,stdin)) { if (SQ("bye\n",s)) B; if (*s==')'||!strncmp(s,"#wield ",7)) { sys(s,root); continue; }
 		rn(&st); S i=strchr(s,'#'); if (i) *i=0; I todoerr; ast=parseTerms(s,&todoerr); if (todoerr) { pE(todoerr,1); freeTerms(ast); continue; }
-		I show=1, n=0; if (dbg) { while (!stepRewrite(root,ast)) { n++; show=0; O(ast,"|-> %s\n"); } } else n=rewrite(root,ast);
-		rn(&pr); if (show) O(ast,"|-> %s\n"); if (cnt) PF(" %d rewrite%s\n", n, n==1?"":"s"); rn(&fn);
+		I show=1, n=0; if (dbg) { while (!stepRewrite(root,ast)) { n++; show=0; O(ast," |-> %s\n"); } } else n=rewrite(root,ast);
+		rn(&pr); if (show) O(ast," |-> %s\n"); if (cnt) PF(" %d rewrite%s\n", n, n==1?"":"s"); rn(&fn);
 		if (tmr) { PF(" "); pT(msD(&st,dbg?&fn:&pr)); if (!dbg) PF(" rewriting, "), pT(msD(&pr,&fn)), PF(" printing"); PF("\n"); }
 		freeTerms(ast); }
 	freeRules(root); DO(fI,FR(f[i])); FR(f); }
