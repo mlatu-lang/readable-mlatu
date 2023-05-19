@@ -5,7 +5,6 @@
 typedef struct t { int t; char *w; struct t *c,*n; } *T, *term;
 void freeTerms(term m); // frees an AST of terms
 char *prettyTerms(term t); // pretty prints a list of terms, returning the allocated string
-char *prettyTerm(term t); // pretty prints a single term, returning the allocated string
 
 // word, children, next, rewrite, total length (of rule + parents), rewrite to empty term?
 typedef struct d { char *w; struct d *c, *n; term r; int l, e; } *D, *rule; // definition (R was taken)
@@ -74,7 +73,7 @@ returns 1 if no more rewrites can be applied, and 0 if more can
 int stepRewrite(rule r, term t);
 
 /*
-you might notice that some functions (like parseTerm and prettyRule) are missing
+you might notice that some functions (like parseTerm, prettyRule, and prettyTerm) are missing
 this is because those function don't make sense with how this interpreter works
 */
 #endif

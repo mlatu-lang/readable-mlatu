@@ -41,10 +41,9 @@ PRS(parseFile,  s,  FILE*f=fopen(s,"rb");P(!f,ER(OPEN,s)), fgetc(f), fseek(f,-e+
 PRS(parseRules, "", I i,                                   s[i],     strncpy(nS,s+i+1-e,e),                      i++, 0        );
 
 _ I len(T t) /* length of printed T */ { P(t->t==TRM,strlen(t->w)); I i=2; MAP(t->c,i+=len(c)+!!c->n) R i; }
-_ V prT(T t); S s; I y; V prTL(T t) /* print T list */ { MAP(t,prT(c); if (c->n) s[y++]=' '); }
-_ V prT(T t) /* print T */ { if (t->t==TRM) y+=strlen(strcpy(s+y,t->w)); else { s[y++]='('; prTL(t->c); strcpy(s+y++,")"); } }
-S prettyTerms(T t) { t=t->t==ST?t->n:t; I l=y=0; MAP(t,l+=len(c)+!!c->n); s=MA(l+1); prTL(t); s[l]=0; R s; }
-S prettyTerm(T t) { I l=len(t); y=0; s=MA(l+1); prT(t); s[l]=0; R s; }
+I j; S s; _ V prT(T t); V prTL(T t) /* print T list */ { MAP(t,prT(c); if (c->n) s[j++]=' '); }
+_ V prT(T t) /* print T */ { if (t->t==TRM) j+=strlen(strcpy(s+j,t->w)); else s[j++]='(', prTL(t->c), strcpy(s+j++,")"); }
+S prettyTerms(T t) { t=t->t==ST?t->n:t; I l=j=0; MAP(t,l+=len(c)+!!c->n); s=MA(l+1); prTL(t); s[l]=0; R s; }
 
 _ V rm(T t) /* remove next T */ { T n=t->n->n; fT(t->n); t->n=n; }
 _ V zap (T t) { rm(t); rm(t); }
@@ -60,5 +59,5 @@ _ I lit(T t,D r) /* find rewrite on literal */ { D cR=r, bst=0; T u=t->n;
 _ I qot(T s) /* find rewrite on quote */ { T t=s->n, u=t->n; P(!u,0);
 	if (u->t==Q) { P(!u->n,0); char w=*u->n->w; if (w=='~') swap(s); else if (w==',') cat(s); else R 0; R 1; }
 	switch (*u->w) { C '-': zap(s); R 1; C '+': copy(s); R 1; C '<': exec(s); R 1; C '>': wrap(s); R 1; } R 0; }
-I stepRewrite(D r,T t) { MAP(t,if (c->n&&(c->n->t==Q?qot(c):lit(c,r))) R 0); R 1; }
+I stepRewrite(D r,T t) { MAP(t,P(c->n&&(c->n->t==Q?qot(c):lit(c,r)),0)); R 1; }
 I rewrite(D r,T t) { I n=0; while (!stepRewrite(r,t)) n++; R n; }
