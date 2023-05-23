@@ -1,13 +1,13 @@
 READABLE-MLATU - An C implementation of Mlatu
 =============================================
 
-Some Quiche Eaters have been complaining that code here is illegible, so I have named it readable-mlatu to assert their fallaciousness.  
+Some Quiche Eaters have been complaining that code here is illegible, so I have named it readable-mlatu to assert their fallaciousness.
 
 
 Compiling and running
 ---------------------
 Run  make repl  to make the repl.
-Works with gcc/clang, hasn't been tested with any other compilers.  
+Works with gcc/clang, hasn't been tested with any other compilers.
 Running  make lib  will compile the mlatu.o file.
 
 Docs

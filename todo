@@ -5,13 +5,14 @@ add printing rules to repl
 parseRule documentation and improvement
 improve timing
 special term for last result in repl
+adding rules/matching with MAP?
 
 todo:
 add includes in files
  - get list to reload
  - get better error reporting for file and line
  - get wields after last thingy                  x
-adding rules/matching with MAP?
 be able to run rewrites on a file
+repl O
 100 100 mul 100 mul segfault
 check leaks again, make primitives speedy

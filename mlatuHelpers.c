@@ -1,6 +1,3 @@
-#ifndef mlatuMacros_h
-#define mlatuMacros_h
-
 typedef int I; typedef char *S; typedef void V;
 #define C case
 #define B break
@@ -14,5 +11,4 @@ typedef int I; typedef char *S; typedef void V;
 #define SC(d,s) d=MA(strlen(s)+1),strcpy(d,s)
 #define DO(n,x) { I _n=n; for (I i=0;i<_n;i++) { x; } } // no stinkin loops
 #define MAP(_d,x) typeof(_d) c=_d, _n; while (c) { _n=c->n; x; if (!_n) B; c=_n; } // map over linked list
-
-#endif
+_ D fnd(D d,S s) { MAP(d, P(SQ(c->w,s),c)); R 0; } // find
