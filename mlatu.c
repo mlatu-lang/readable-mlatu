@@ -34,7 +34,7 @@ _ V aR(T t,D d) /* add rule */ { MAP(t, if (*c->w=='=') { freeTerms(d->r); d->e=
 		if (!cm&&c=='.') { S nS=MA(l+1); e=l; slice; nS[l]=0; I g=pR(nS,rs); FR(nS); P(g,end,ER(g,fn)); l=r=0; }                    \
 		if (w==7) { x++; if (WS(c)) { S nS=MA(e=x); slice; nS[x-1]=0; E g=parseFileH(nS,root,rs); FR(nS); P(g.e,end,g); w=x=0; } } \
 		else if ("#wield "[w]==c) w++; else w=0; next; } while (c>0); end; P(r,ER(PRD,fn)); R (E){}; }                             \
-E nm(S s,D root) { T rs=nT(0,""); E g=nm##H(s,root,rs); T o=rs; if (!g.e) while (rs=rs->c) aR(rs,root); freeTerms(o); R g; }
+E nm(S s,D root) { T rs=nT(0,""); E g=nm##H(s,root,rs); T o=rs; if (!g.e) while (o=o->c) aR(o,root); freeTerms(rs); R g; }
 // +(c<0): when nothing (not even whitespace) after a wield in a file, file pos will be right after, not 1 after like normal
 PRS(parseFile,  s,  FILE*f=fopen(s,"rb");P(!f,ER(OPEN,s)), fgetc(f), fseek(f,-e+(c<0),SEEK_CUR);fread(nS,1,e,f),    , fclose(f));
 PRS(parseRules, "", I i,                                   s[i],     strncpy(nS,s+i+1-e,e),                      i++, 0        );
@@ -52,7 +52,7 @@ _ V wrap(T t) { T e=t->n, q=e->n; q->t=Q; q->c=e; e->n=0; t->n=q; }
 _ V exec(T t) { T cs=t->n->c; t->n->c=0; rm(t); rm(t); P(!cs,); MAP(cs,); c->n=t->n; t->n=cs; }
 _ V cat (T t) { T q=t->n->n; MAP(t->n->c,); c?(c->n=q->c):(t->n->c=q->c); q->c=0; rm(t->n); rm(t->n); }
 
-_ I lit(T t,D r) /* rewrite on literal */ { D bst=0, n; MAP(t->n,if (c->t!=TRM||!(n=fnd(r->c,c->w))) B; if (n->r||n->e) bst=n; r=n);
+_ I lit(T t,D r) /* rewrite on literal */ { D bst=0; MAP(t->n,if (c->t!=TRM||!(r=fnd(r->c,c->w))) B; if (r->r||r->e) bst=r);
 	P(!bst,0); DO(bst->l,rm(t)); T z=cT(bst->r); if (z) { MAP(z,); c->n=t->n; t->n=z; } R 1; }
 _ I qot(T s) /* rewrite on quote */ { T t=s->n, u=t->n; P(!u,0);
 	if (u->t==Q) { P(!u->n,0); char w=*u->n->w; if (w=='~') swap(s); else if (w==',') cat(s); else R 0; R 1; }
