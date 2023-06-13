@@ -21,17 +21,16 @@ _ V Pr(S s,I *i,I *er,I lvl,T *c/* ptr to n/c */) /* parse */ { I st=*i, d; do s
 	C '(': WD; T n=nT(Q,""); c=&(*c=n)->n; (*i)++; Pr(s,i,er,lvl+1,&n->c); st=*i+1; B;
 	C ')': WD; if (!lvl) ER(PRN); R; } while ((*i)++<strlen(s)); if (lvl) ER(PRN); }
 T parseTerms(S s,I *er) { T t=nT(ST,""); I i=0; *er=0; Pr(s,&i,er,0,&t->n); R t; }
-_ I pR(S s,T rs) /* parse rule */ { I cm=0; S nS; SC(nS,s); DO(strlen(s),if (cm=cm?s[i]!='\n':s[i]=='#') nS[i]=' ');
-	I e; T t; t=parseTerms(nS,&e); FR(nS); if (e==PRN) goto end;
-	I eq=0; MAP(t,if (*c->w=='=') eq++; if (e=MCH*(c->c&&!eq)) goto end); if (e=eq!=1?EQ:*t->n->w=='='?EMPTY:0) goto end;
-	{MAP(t,if (*c->n->w=='.') { fT(c->n); c->n=0; B; })} while (rs->c) rs=rs->c; rs->c=t->n; end: fT(t); R e; }
+_ I cR(T t) /* check rule */ { I eq=0; MAP(t,if (*c->w=='=') eq++; P(c->c&&!eq,MCH)); P(eq!=1,EQ); P(*t->n->w=='=',EMPTY); R 0; }
 _ V aR(T t,D d) /* add rule */ { MAP(t, if (*c->w=='=') { freeTerms(d->r); d->e=!(d->r=c->n); c->n=0; R; }
 	D n=fnd(d->c,c->w); if (!n) { n=nD(c->w); n->l=d->l+1; if (d->c) { MAP(d->c,); c->n=n; } else d->c=n; } d=n); }
 #define WS(c) ((c)==' '||(c)=='\t'||(c)=='\r'||(c)=='\n'||(c)<=0)
 #define ER(g,s) SC(n,s),(E){n,g}
 #define PRS(nm,fn,prel,cur,slice,next,end) E nm##H(S s,D root,T rs) { S n; SC(n,fn); prel; I l=0, r=0, w=0, x=0, cm=0, c, e;  \
-	do { c=cur; l++; if (!WS(c)&&c!='#'&&!cm) r=1; cm=cm?c!='\n':c=='#'; /*todo why no workkkkkk*/                                   \
-		if (!cm&&c=='.') { S nS=MA(l+1); e=l; slice; nS[l]=0; I g=pR(nS,rs); FR(nS); P(g,end,ER(g,fn)); l=r=0; }                    \
+	do { c=cur; l++; cm=cm?c!='\n':c=='#'; if (!WS(c)&&!cm) r=1;                                                                   \
+		if (!cm&&c=='.') { S nS=MA(l+1); e=l; slice; nS[l]=0; I cm=0; DO(strlen(nS),if (cm=cm?nS[i]!='\n':nS[i]=='#') nS[i]=' ');     \
+			I e; T t=parseTerms(nS,&e); FR(nS); I g=e==PRN?e:cR(t); P(g,freeTerms(t),end,ER(g,fn));                                  \
+			{MAP(t,if (*c->n->w=='.') { fT(c->n); c->n=0; B; })} while (rs->c) rs=rs->c; rs->c=t->n; fT(t); l=r=0; }	                        \
 		if (w==7) { x++; if (WS(c)) { S nS=MA(e=x); slice; nS[x-1]=0; E g=parseFileH(nS,root,rs); FR(nS); P(g.e,end,g); w=x=0; } } \
 		else if ("#wield "[w]==c) w++; else w=0; next; } while (c>0); end; P(r,ER(PRD,fn)); R (E){}; }                             \
 E nm(S s,D root) { T rs=nT(0,""); E g=nm##H(s,root,rs); T o=rs; if (!g.e) while (o=o->c) aR(o,root); freeTerms(rs); R g; }
