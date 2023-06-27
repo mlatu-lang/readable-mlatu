@@ -52,13 +52,14 @@ returns a non-zero positive error on failure:
  EMPTY: empty LHS
 if there is an error in a rule, none of the rules will be added to root
 the filename property of the error struct will always need to be freed if there was an error
+the callback is called with the filename of every file that is included, + all the files in that etc.
 */
-E parseFile(char *name, rule root);
+E parseFile(char *name, rule root, void (*callback)(char *));
 
 /*
 exactly like the above, except reads the rules directly from a string
 */
-E parseRules(char *string, rule root);
+E parseRules(char *string, rule root, void (*callback)(char *));
 
 /*
 rewrites the terms `t` using the rules `r` until no more rewrites can be applied

@@ -26,14 +26,16 @@ _ V aR(T t,D d) /* add rule */ { MAP(t, if (*c->w=='=') { freeTerms(d->r); d->e=
 	D n=fnd(d->c,c->w); if (!n) { n=nD(c->w); n->l=d->l+1; if (d->c) { MAP(d->c,); c->n=n; } else d->c=n; } d=n); }
 #define WS(c) ((c)==' '||(c)=='\t'||(c)=='\r'||(c)=='\n'||(c)<=0)
 #define ER(g,s) SC(n,s),(E){n,g}
-#define PRS(nm,fn,prel,cur,slice,next,end) E nm##H(S s,D root,T rs) { S n; SC(n,fn); prel; I l=0, r=0, w=0, x=0, cm=0, c, e;  \
-	do { c=cur; l++; cm=cm?c!='\n':c=='#'; if (!WS(c)&&!cm) r=1;                                                                   \
-		if (!cm&&c=='.') { S nS=MA(l+1); e=l; slice; nS[l]=0; I cm=0; DO(strlen(nS),if (cm=cm?nS[i]!='\n':nS[i]=='#') nS[i]=' ');     \
-			I e; T t=parseTerms(nS,&e); FR(nS); I g=e==PRN?e:cR(t); P(g,freeTerms(t),end,ER(g,fn));                                  \
-			{MAP(t,if (*c->n->w=='.') { fT(c->n); c->n=0; B; })} while (rs->c) rs=rs->c; rs->c=t->n; fT(t); l=r=0; }	                        \
-		if (w==7) { x++; if (WS(c)) { S nS=MA(e=x); slice; nS[x-1]=0; E g=parseFileH(nS,root,rs); FR(nS); P(g.e,end,g); w=x=0; } } \
-		else if ("#wield "[w]==c) w++; else w=0; next; } while (c>0); end; P(r,ER(PRD,fn)); R (E){}; }                             \
-E nm(S s,D root) { T rs=nT(0,""); E g=nm##H(s,root,rs); T o=rs; if (!g.e) while (o=o->c) aR(o,root); freeTerms(rs); R g; }
+#define PRS(nm,fn,prel,cur,slce,next,end) E nm##H(S s,D root,T rs,T y) { S n; SC(n,fn); prel; I l=0, r=0, w=0, x=0, cm=0, c, e; \
+	do { c=cur; l++; if (!WS(c)&&c!='#'&&!cm) r=1; cm=cm?c!='\n':c=='#'; /*todo why no workkkkkk*/                                     \
+		if (!cm&&c=='.') { S nS=MA(l+1); e=l; slce; nS[l]=0; I cm=0; DO(strlen(nS),if (cm=cm?nS[i]!='\n':nS[i]=='#') nS[i]=' ');        \
+			I e; T t=parseTerms(nS,&e); FR(nS); I g=e==PRN?e:cR(t); P(g,freeTerms(t),end,ER(g,fn));                                    \
+			{MAP(t,if (*c->n->w=='.') { fT(c->n); c->n=0; B; })} while (rs->c) rs=rs->c; rs->c=t->n; fT(t); l=r=0; }	                          \
+		if (w==7) { x++; if (WS(c)) {                                                                                                \
+			S nS=MA(e=x); slce; nS[x-1]=0; MAP(y,); c->n=nT(0,nS); E g=parseFileH(nS,root,rs,y); FR(nS); P(g.e,end,g); w=x=0; } }      \
+		else if ("#wield "[w]==c) w++; else w=0; next; } while (c>0); end; P(r,ER(PRD,fn)); R (E){}; }                               \
+E nm(S s,D root,V(*cb)(S)) { T rs=nT(0,""), y=nT(0,""); E g=nm##H(s,root,rs,y); T o=rs;                                         \
+	if (!g.e) { while (o=o->c) aR(o,root); MAP(y->n,cb(c->w)); } freeTerms(rs); freeTerms(y); R g; }
 // +(c<0): when nothing (not even whitespace) after a wield in a file, file pos will be right after, not 1 after like normal
 PRS(parseFile,  s,  FILE*f=fopen(s,"rb");P(!f,ER(OPEN,s)), fgetc(f), fseek(f,-e+(c<0),SEEK_CUR);fread(nS,1,e,f),    , fclose(f));
 PRS(parseRules, "", I i,                                   s[i],     strncpy(nS,s+i+1-e,e),                      i++, 0        );
