@@ -27,7 +27,7 @@ _ V aR(T t,D d) /* add rule */ { MAP(t, if (*c->w=='=') { freeTerms(d->r); d->e=
 #define WS(c) ((c)==' '||(c)=='\t'||(c)=='\r'||(c)=='\n'||(c)<=0)
 #define ER(g,s) SC(n,s),(E){n,g}
 #define PRS(nm,fn,prel,cur,slce,next,end) E nm##H(S s,D root,T rs,T y) { S n; SC(n,fn); prel; I l=0, r=0, w=0, x=0, cm=0, c, e; \
-	do { c=cur; l++; if (!WS(c)&&c!='#'&&!cm) r=1; cm=cm?c!='\n':c=='#'; /*todo why no workkkkkk*/                                     \
+	do { c=cur; l++; cm=cm?c!='\n':c=='#'; if (!WS(c)&&!cm) r=1;                                                                     \
 		if (!cm&&c=='.') { S nS=MA(l+1); e=l; slce; nS[l]=0; I cm=0; DO(strlen(nS),if (cm=cm?nS[i]!='\n':nS[i]=='#') nS[i]=' ');        \
 			I e; T t=parseTerms(nS,&e); FR(nS); I g=e==PRN?e:cR(t); P(g,freeTerms(t),end,ER(g,fn));                                    \
 			{MAP(t,if (*c->n->w=='.') { fT(c->n); c->n=0; B; })} while (rs->c) rs=rs->c; rs->c=t->n; fT(t); l=r=0; }	                          \
