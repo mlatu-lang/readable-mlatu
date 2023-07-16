@@ -20,3 +20,7 @@ repl.c, and the examples folder, have examples of using mlatu.o.
 License
 -------
 readable-mlatu, like all mlatu-lang projects, is licensed under https://mlatu-lang.github.io/license/
+
+WHAT IS MLATU???!??
+-------------------
+https://mlatu-lang.github.io/mlatu/
