@@ -4,6 +4,12 @@ READABLE-MLATU - An C implementation of Mlatu
 Some Quiche Eaters have been complaining that code here is illegible, so I have named it readable-mlatu to assert their fallaciousness.
 
 
+WHAT IS MLATU???!??
+-------------------
+https://mlatu-lang.github.io/mlatu/
+Some examples of mlatu code are at https://github.com/mlatu-lang/rebel-libraries/
+To be able to easily use them, clone that repo, then add its path to your ~/.mlatu_path
+
 Compiling and running
 ---------------------
 Run  make  to compile the repl.
@@ -21,6 +27,3 @@ License
 -------
 readable-mlatu, like all mlatu-lang projects, is licensed under https://mlatu-lang.github.io/license/
 
-WHAT IS MLATU???!??
--------------------
-https://mlatu-lang.github.io/mlatu/
