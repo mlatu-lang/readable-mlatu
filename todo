@@ -14,6 +14,7 @@ be able to run rewrites on a file
 use a path to load files
 
 todo:
-errors print twice sometimes with )r
+unwield
+free path, consolidate exits
 100 100 mul 100 mul segfault
 check leaks again, make primitives speedy

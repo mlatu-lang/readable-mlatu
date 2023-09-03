@@ -27,14 +27,14 @@ _ V aR(T t,D d) /* add rule */ { MAP(t, if (*c->w=='=') { freeTerms(d->r); d->e=
 _ E cR(T t,S f) /* check rule */ { S n; P(*t->n->w=='=',ER(EMPTY,t->n->ln));
 	I eq=0; MAP(t,if (*c->w=='=') eq++; P(eq==2,ER(EQ,c->ln)); P(c->c&&!eq,ER(MCH,c->ln))); P(!eq,ER(EQ,c->ln)); R (E){}; }
 #define PRS(nm,fn,prel,cur,slce,next,end) E nm##H(S s,D root,T rs,T y,T p) { S f=fn, n; prel;                                \
-	 I l=0, r=0, w=0, x=0, cm=0, ln=1, c, m; do { c=cur; l++; cm=cm?c!='\n':c=='#'; if (!WS(c)&&!cm) r=1;                         \
+	 I l=0, r=0, w=0, x=0, cm=0, ln=1, lm=1, c, m; do { c=cur; l++; if (c=='\n') lm++; cm=cm?c!='\n':c=='#'; if (!WS(c)&&!cm) r=1; \
 		if (!cm&&c=='.') { S nS=MA(l+1); m=l; slce; nS[l]=0; I cm=0; DO(strlen(nS),if (cm=cm?nS[i]!='\n':nS[i]=='#') nS[i]=' ');     \
 			T t; E e=pTH(nS,&t,&ln,f); FR(nS); if (e.e!=PRN) { if (e.f) FR(e.f); e=cR(t,f); } P(e.e,freeTerms(t),end,e);            \
 			{MAP(t,if (*c->n->w=='.') { fT(c->n); c->n=0; B; })} while (rs->c) rs=rs->c; rs->c=t->n; fT(t); l=r=0; }	                       \
 		if (w==7) { x++; if (WS(c)) {                                                                                             \
 			S nS=MA(m=x); slce; nS[x-1]=0; MAP(y,); c->n=nT(0,nS); E e=parseFileH(nS,root,rs,y,p); FR(nS); P(e.e,end,e); w=x=0; } } \
 		else if ("#wield "[w]==c) w++; else w=0; next; } while (c>0);                                                             \
-	end; P(r,ER(PRD,ln)); R (E){}; }                                                                                           \
+	end; P(r,ER(PRD,lm)); R (E){}; }                                                                                           \
 E nm(S s,D root,V(*cb)(S),T p) { T rs=nT(0,""), y=newTerm(0,""); E e=nm##H(s,root,rs,y,p);                                   \
 	T o=rs; if (!e.e) { while (o=o->c) aR(o,root); MAP(y->n,cb(c->w)); } freeTerms(rs); freeTerms(y); R e; }
 FILE *fF(S n,T p) { FILE *a; P(a=fopen(n,"rb"),a); MAP(p,S f=MA(strlen(n)+strlen(c->w)+2); strcpy(f,c->w); strcat(f,"/"); strcat(f,n);
