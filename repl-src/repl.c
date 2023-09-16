@@ -73,4 +73,4 @@ I main(I ac,S *av) { DO(ac-1,if (SQ("-s",av[i+1])) sil=1); D root=newRoot(); pat
 		rn(&pr); S s=prettyTerms(ast); if (!dbg||!n) sil||PF(" |-> "), puts(s); if (cnt) PF(" %d rewrite%s\n", n, n==1?"":"s"); rn(&fn);
 		if (tmr) { PF(" "); pT(msD(&st,dbg?&fn:&pr)); if (!dbg) PF(" rewriting, "), pT(msD(&pr,&fn)), PF(" printing"); PF("\n"); }
 		S r=MA(strlen(s)+4); strcpy(r,"^="); strcat(r,s); FR(s); strcat(r,"."); parseRules(r,root,aF,path); FR(r); end: freeTerms(ast); }
-	freeRules(root); DO(fI,FR(f[i])); FR(f); }
+	freeRules(root); freeTerms(path); DO(fI,FR(f[i])); FR(f); }

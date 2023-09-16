@@ -12,9 +12,9 @@ add includes in files
  - get wields after last thingy                  x
 be able to run rewrites on a file
 use a path to load files
+free path, consolidate exits
 
 todo:
 unwield
-free path, consolidate exits
 100 100 mul 100 mul segfault
 check leaks again, make primitives speedy
