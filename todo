@@ -16,5 +16,6 @@ free path, consolidate exits
 
 todo:
 unwield
+files load in weird orders (cons)
 100 100 mul 100 mul segfault
 check leaks again, make primitives speedy
