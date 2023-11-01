@@ -1,6 +1,7 @@
 (setq mlatu-keywords
       '(("~\\|,\\|<\\|>\\|\\+\\|-\\|" . 'font-lock-constant-face)
-	("=\\|\\." . 'font-lock-keyword-face)))
+	("=\\|\\."                    . 'font-lock-keyword-face)
+	("#wield .+\n"                . '(0 font-lock-type-face t))))
 
 (setq mlatu-syntax-table
       (let ((syntable (make-syntax-table)))
@@ -13,4 +14,5 @@
   (setq font-lock-defaults '(mlatu-keywords))
   (set-syntax-table mlatu-syntax-table))
 
+(add-to-list 'auto-mode-alist '("\\.mlt\\'" . mlatu-mode))
 (provide 'mlatu-mode)
