@@ -5,9 +5,9 @@
 #include "mlatuHelpers.c"
 
 _ V fT(T t) /* free T */ { FR(t->w); MAP(t->c,fT(c)); FR(t); } V freeTerms(T t) { MAP(t,fT(c)); }
-_ T nT(I t,S w) { T z=MA(sizeof(struct t)); z->t=t; SC(z->w,w); z->n=z->c=0; R z; } T newTerm(I t,S w) { R nT(t,w); }
+_ T nT(I t,S w) { T z=calloc(1,sizeof(struct t)); z->t=t; SC(z->w,w); R z; } T newTerm(I t,S w) { R nT(t,w); }
 _ T nTL(I t,S w,I ln) /* new T w/ line # */ { T z=nT(t,w); z->ln=ln; R z; }
-T cT(T t) /* clone T */ { T z=nT(0,""), n=z; MAP(t,n=n->n=newTerm(c->t,c->w); n->c=cT(c->c)); n=z->n; fT(z); R n; }
+_ T cT(T t) /* clone T */ { T z=nT(0,""), n=z; MAP(t,n=n->n=newTerm(c->t,c->w); n->c=cT(c->c)); n=z->n; fT(z); R n; }
 
 V freeRules(D d) { MAP(d,FR(c->w); freeRules(c->c); freeTerms(c->r); FR(c)); }
 _ D nD(S w) /* new D */ { D d=calloc(1,sizeof(struct d)); SC(d->w,w); R d; } D newRoot() { R nD(""); }
@@ -26,16 +26,15 @@ _ V aR(T t,D d) /* add rule */ { MAP(t, if (*c->w=='=') { freeTerms(d->r); d->e=
 	D n=fnd(d->c,c->w); if (!n) { n=nD(c->w); n->l=d->l+1; if (d->c) { MAP(d->c,); c->n=n; } else d->c=n; } d=n); }
 _ E cR(T t,S f) /* check rule */ { S n; P(*t->n->w=='=',ER(EMPTY,t->n->ln));
 	I eq=0; MAP(t,if (*c->w=='=') eq++; P(eq==2,ER(EQ,c->ln)); P(c->c&&!eq,ER(MCH,c->ln))); P(!eq,ER(EQ,c->ln)); R (E){}; }
-#define PRS(nm,fn,prel,cur,slce,next,end) E nm##H(S s,D root,T rs,T p) { S f=fn, n; prel;                                \
+#define PRS(nm,fn,prel,cur,slce,next,end) E nm##H(S s,T rs,T p) { S f=fn, n; prel;                                           \
 	 I l=0, r=0, w=0, x=0, cm=0, ln=1, lm=1, c, m; do { c=cur; l++; if (c=='\n') lm++; cm=cm?c!='\n':c=='#'; if (!WS(c)&&!cm) r=1; \
 		if (!cm&&c=='.') { S nS=MA(l+1); m=l; slce; nS[l]=0; I cm=0; DO(strlen(nS),if (cm=cm?nS[i]!='\n':nS[i]=='#') nS[i]=' ');     \
 			T t; E e=pTH(nS,&t,&ln,f); FR(nS); if (e.e!=PRN) { if (e.f) FR(e.f); e=cR(t,f); } P(e.e,freeTerms(t),end,e);            \
 			{MAP(t,if (*c->n->w=='.') { fT(c->n); c->n=0; B; })} while (rs->c) rs=rs->c; rs->c=t->n; fT(t); l=r=0; }	                       \
-		if (w==7) { x++; if (WS(c)) {                                                                                             \
-			S nS=MA(m=x); slce; nS[x-1]=0; E e=parseFileH(nS,root,rs,p); FR(nS); P(e.e,end,e); w=x=0; } } \
+		if (w==7) { x++; if (WS(c)) { S nS=MA(m=x); slce; nS[x-1]=0; E e=parseFileH(nS,rs,p); FR(nS); P(e.e,end,e); w=x=0; } }    \
 		else if ("#wield "[w]==c) w++; else w=0; next; } while (c>0);                                                             \
 	end; P(r,ER(PRD,lm)); R (E){}; }                                                                                           \
-E nm(S s,D root,T p) { T rs=nT(0,""); E e=nm##H(s,root,rs,p); T o=rs; if (!e.e) while (o=o->c) aR(o,root); freeTerms(rs); R e; }
+E nm(S s,D root,T p) { T rs=nT(0,""); E e=nm##H(s,rs,p); T o=rs; if (!e.e) while (o=o->c) aR(o,root); freeTerms(rs); R e; }
 FILE *fF(S n,T p) { FILE *a; P(a=fopen(n,"rb"),a); MAP(p,S f=MA(strlen(n)+strlen(c->w)+2); strcpy(f,c->w); strcat(f,"/"); strcat(f,n);
 	P(a=fopen(f,"rb"),a); FR(f)); R 0; };
 // +(c<0): when nothing (not even whitespace) after a wield in a file, file pos will be right after, not 1 after like normal
@@ -47,7 +46,7 @@ I j; S s; _ V prT(T t); V prTL(T t) /* print T list */ { MAP(t,prT(c); if (c->n)
 _ V prT(T t) /* print T */ { if (t->t==TRM) j+=strlen(strcpy(s+j,t->w)); else s[j++]='(', prTL(t->c), strcpy(s+j++,")"); }
 S prettyTerms(T t) { t=t->t==ST?t->n:t; I l=j=0; MAP(t,l+=len(c)+!!c->n); s=MA(l+1); prTL(t); s[l]=0; R s; }
 
-V rm(T t) /* remove next T */ { T n=t->n->n; fT(t->n); t->n=n; }
+_ V rm(T t) /* remove next T */ { T n=t->n->n; fT(t->n); t->n=n; }
 _ V zap (T t) { rm(t); rm(t); }
 _ V swap(T t) { T c=t->n; t->n=c->n; c->n=t->n->n; t->n->n=c; rm(t->n->n); }
 _ V copy(T t) { rm(t->n); T n=t->n->n; t->n->n=0; T c=cT(t->n); t->n->n=c; c->n=n; }

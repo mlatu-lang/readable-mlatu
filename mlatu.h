@@ -9,8 +9,6 @@ typedef struct t { int t, ln; char *w; struct t *c, *n; } *T, *term;
 term newTerm(int type, char *word);
 void freeTerms(term m); // frees an AST of terms
 char *prettyTerms(term t); // pretty prints a list of terms, returning the allocated string
-void rm(term t); // removes t->n from the list of terms
-term cT(term t); // clone t
 
 // word, children, next, rewrite, total length (of rule + parents), rewrite to empty term?
 typedef struct d { char *w; struct d *c, *n; term r; int l, e; } *D, *rule; // definition (R was taken)

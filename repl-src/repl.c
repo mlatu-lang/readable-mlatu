@@ -7,8 +7,7 @@
 #include "../mlatu.h"
 #include "../mlatuHelpers.c"
 
-T path; I sil, dbg, tmr, cnt;
-T fl; V aF(S s) /* add file */ { MAP(fl,if(_n&&SQ(_n->w,s)){rm(c);_n=c->n;}) c->n=newTerm(0,s); }
+D root; T path; I sil, dbg, tmr, cnt;
 V fE(E e) { P(!e.e); PF(" error %sing file '%s'",e.e==OPEN?"open":"pars",e.f); FR(e.f); if (e.e==OPEN) { PF("\n"); R; }
 	PF(" on line %d: ",e.ln); switch (e.e) {
 		C PRN:   PF("unbalanced parentheses\n"); B;
@@ -21,6 +20,9 @@ V pE(E e,I v) { FR(e.f); sil||PF("X-> "); PF("parsing error: "); switch (e.e) {
 		C EQ:    PF("equal sign\n"); B;
 		C PRD:   PF("period\n"); B; }
 	if (v) PF("if you are trying to define a rule, it cannot be defined in the repl; you need to load it from a file\n"); }
+T lf; /* uniq */ V rF(S s) /* rm */ { MAP(lf,P(_n&&SQ(_n->w,s),(c->n=_n->n,_n->n=0,freeTerms(_n)))); }
+V aF(S n) /* add */ { rF(n); MAP(lf,); c->n=newTerm(0,n); }
+V lF(S n) /* load */ { SQ(n,"PRELUDE")?parseRules(prelude,root,path):fE(parseFile(n,root,path)); }
 V O(T t,S f) { S s=prettyTerms(t); PF(f,s); FR(s); }
 V prD(D d,I i) { DO(i,PF(" ")); PF("%s: ",d->w);
 	if (d->r) O(d->r,"%s"); else if (d->e) PF("[empty rewrite]"); PF("\n"); MAP(d->c,prD(c,i+1)); }
@@ -28,14 +30,16 @@ V pRH(S s,D d) /* )rule helper */ { if (d->e||d->r) { PF(" %s =",s); if (d->r) O
 	MAP(d->c,S t=MA(strlen(s)+strlen(c->w)+2); strcpy(t,s); strcat(t," "); strcat(t,c->w); pRH(t,c); FR(t)); }
 V pR(S s,D d) { T t; E e=parseTerms(s+6,&t); P(e.e,freeTerms(t),pE(e,0));
 	MAP(t->n,P(!(d=fnd(d->c,c->w)),)); S u=prettyTerms(t); freeTerms(t); pRH(u,d); FR(u); }
-V sys(S oS,D root) { S s; SC(s,oS); S t=strtok(s," \n"); S n=strtok(0," \n");
-	if   (SQ(t,"#wield")&&n) fE(parseFile(n,root,path)), aF(n);
-	else if (SQ(t,")r")&&!n) { {MAP(fl->n,PF("%s\n",c->w));} MAP(fl->n,fE(parseFile(c->w,root,path))); }
-	else if (SQ(t,")d")&&!n) dbg=!dbg, sil||PF(" turning debug mode %s\n",   dbg?"on":"off");
-	else if (SQ(t,")t")&&!n) tmr=!tmr, sil||PF(" turning timer mode %s\n",   tmr?"on":"off");
-	else if (SQ(t,")c")&&!n) cnt=!cnt, sil||PF(" turning counting mode %s\n",cnt?"on":"off");
-	else if (SQ(t,")rule")) pR(oS,root);
+V sys(S oS) { S s; SC(s,oS); S t=strtok(s," \n"); S n=strtok(0," \n");
+	if      (SQ(t,"#wield")   &&n) aF(n), lF(n);
+	else if (SQ(t,"#unwield") &&n) rF(n);
+	else if (SQ(t,")r")       &&!n) { freeRules(root); root=newRoot(); MAP(lf->n,lF(c->w)); }
+	else if (SQ(t,")lf")      &&!n) { MAP(lf->n,PF(" %s\n",c->w)); }
+	else if (SQ(t,")d")       &&!n) sil||PF(" turning debug mode %s\n",   (dbg=!dbg)?"on":"off");
+	else if (SQ(t,")t")       &&!n) sil||PF(" turning timer mode %s\n",   (tmr=!tmr)?"on":"off");
+	else if (SQ(t,")c")       &&!n) sil||PF(" turning counting mode %s\n",(cnt=!cnt)?"on":"off");
 	else if (SQ(t,")ruletree")&&!n) {MAP(root->c,prD(c,1));}
+	else if (SQ(t,")rule")) pR(oS,root);
 	else if (SQ(t,")h")) {
 		if (!n) PF(
 			" )h             you are here\n"
@@ -44,6 +48,7 @@ V sys(S oS,D root) { S s; SC(s,oS); S t=strtok(s," \n"); S n=strtok(0," \n");
 			" #wield <file>  load ruleset from file\n"
 			" ^              special term that rewrites to last result\n"
 			" )r             reload all loaded files\n"
+			" )lf            print the list of loaded files\n"
 			" )d             toggle debug mode\n"
 			" )t             toggle timer mode\n"
 			" )c             toggle counting mode\n"
@@ -64,13 +69,13 @@ T gP() { S d=xp("~/.mlatu_path"); FILE *f=fopen(d,"rb"); FR(d); P(!f,0); T z=new
 		MAP(z,); c->n=newTerm(TRM,x); FR(x);
 	} R z; }
 
-I main(I ac,S *av) { DO(ac-1,if (SQ("-s",av[i+1])) sil=1); fl=newTerm(0,"");
-	D root=newRoot(); path=gP(); parseRules(prelude,root,path); char s[999]; T ast; Time st, pr, fn; I ms, sc, m, h;
+I main(I ac,S *av) { DO(ac-1,if (SQ("-s",av[i+1])) sil=1); lf=newTerm(0,"");
+	root=newRoot(); path=gP(); aF("PRELUDE"); lF("PRELUDE"); char s[999]; T ast; Time st, pr, fn; I ms, sc, m, h;
 	if (!sil) PF(" how may readable-mlatu ease your life, oh grand exalted master?\n bye to exit, )h for help\n");
-	while (fgets(s,999,stdin)) { if (SQ("bye\n",s)) B; if (*s==')'||!strncmp(s,"#wield ",7)) { sys(s,root); continue; }
+	while (fgets(s,999,stdin)) { if (SQ("bye\n",s)) B; if (*s==')'||!strncmp(s,"#wield ",7)||!strncmp(s,"#unwield ",9)) { sys(s); continue; }
 		rn(&st); S i=strchr(s,'#'); if (i) *i=0; E e=parseTerms(s,&ast); if (e.e) { pE(e,1); goto end; }
-		I n=0; if (dbg) while (!stepRewrite(root,ast)) n++, sil||PF(" |-> "), O(ast,"%s\n");  else n=rewrite(root,ast);
+		I n=0; if (dbg) while (!stepRewrite(root,ast)) n++, sil||PF(" |-> "), O(ast,"%s\n"); else n=rewrite(root,ast);
 		rn(&pr); S s=prettyTerms(ast); if (!dbg||!n) sil||PF(" |-> "), puts(s); if (cnt) PF(" %d rewrite%s\n", n, n==1?"":"s"); rn(&fn);
 		if (tmr) { PF(" "); pT(msD(&st,dbg?&fn:&pr)); if (!dbg) PF(" rewriting, "), pT(msD(&pr,&fn)), PF(" printing"); PF("\n"); }
 		S r=MA(strlen(s)+4); strcpy(r,"^="); strcat(r,s); FR(s); strcat(r,"."); parseRules(r,root,path); FR(r); end: freeTerms(ast); }
-	freeRules(root); freeTerms(path); freeTerms(fl); }
+	freeRules(root); freeTerms(path); freeTerms(lf); }
