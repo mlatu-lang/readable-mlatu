@@ -13,9 +13,10 @@ add includes in files
 be able to run rewrites on a file
 use a path to load files
 free path, consolidate exits
+files load in weird orders (cons) ()r)
+why don't i need church/????
 
 todo:
 unwield
-files load in weird orders (cons)
 100 100 mul 100 mul segfault
 check leaks again, make primitives speedy

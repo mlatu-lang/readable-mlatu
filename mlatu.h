@@ -9,6 +9,8 @@ typedef struct t { int t, ln; char *w; struct t *c, *n; } *T, *term;
 term newTerm(int type, char *word);
 void freeTerms(term m); // frees an AST of terms
 char *prettyTerms(term t); // pretty prints a list of terms, returning the allocated string
+void rm(term t); // removes t->n from the list of terms
+term cT(term t); // clone t
 
 // word, children, next, rewrite, total length (of rule + parents), rewrite to empty term?
 typedef struct d { char *w; struct d *c, *n; term r; int l, e; } *D, *rule; // definition (R was taken)
@@ -57,16 +59,15 @@ returns an Error with a non-zero error code on failure:
  EMPTY: empty LHS
 if there is an error in a rule, none of the rules will be added to root
 the filename property of the error struct will always need to be freed if there was an error
-the callback is called with the filename of every file that is included, + all the files in that etc.
 path is a linked list of terms with the paths to check when finding the location of a file to wield
 these must already be tilde-expanded etc.
 */
-E parseFile(char *name, rule root, void (*callback)(char *), term path);
+E parseFile(char *name, rule root, term path);
 
 /*
 exactly like the above, except reads the rules directly from a string
 */
-E parseRules(char *string, rule root, void (*callback)(char *), term path);
+E parseRules(char *string, rule root, term path);
 
 /*
 rewrites the terms `t` using the rules `r` until no more rewrites can be applied
