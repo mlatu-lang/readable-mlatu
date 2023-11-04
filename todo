@@ -15,9 +15,9 @@ use a path to load files
 free path, consolidate exits
 files load in weird orders (cons) ()r)
 why don't i need church/????
+unwield
 
 todo:
-unwield
 remove if (!n) B; in MAP? (since for params)
 100 100 mul 100 mul segfault
 check leaks again, make primitives speedy
