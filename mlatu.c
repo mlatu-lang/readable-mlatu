@@ -7,7 +7,7 @@
 _ V fT(T t) /* free T */ { FR(t->w); MAP(t->c,fT(c)); FR(t); } V freeTerms(T t) { MAP(t,fT(c)); }
 _ T nT(I t,S w) { T z=calloc(1,sizeof(struct t)); z->t=t; SC(z->w,w); R z; } T newTerm(I t,S w) { R nT(t,w); }
 _ T nTL(I t,S w,I ln) /* new T w/ line # */ { T z=nT(t,w); z->ln=ln; R z; }
-_ T cT(T t) /* clone T */ { T z=nT(0,""), n=z; MAP(t,n=n->n=newTerm(c->t,c->w); n->c=cT(c->c)); n=z->n; fT(z); R n; }
+_ T cT(T t) /* clone T */ { T z=nT(0,""), n=z; MAP(t,n=n->n=nT(c->t,c->w); n->c=cT(c->c)); n=z->n; fT(z); R n; }
 
 V freeRules(D d) { MAP(d,FR(c->w); freeRules(c->c); freeTerms(c->r); FR(c)); }
 _ D nD(S w) /* new D */ { D d=calloc(1,sizeof(struct d)); SC(d->w,w); R d; } D newRoot() { R nD(""); }

@@ -1,4 +1,4 @@
-char prelude[]=
+char PRLD[]=
 "copy    = +."
 "remove  = -."
 "wrap    = >."

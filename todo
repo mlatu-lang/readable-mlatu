@@ -1,23 +1,7 @@
 done:
-reloading
-panic
-add printing rules to repl
-parseRule documentation and improvement
-improve timing
-special term for last result in repl
-adding rules/matching with MAP?
-add includes in files
- - get list to reload                            x
- - get better error reporting for file and line  x
- - get wields after last thingy                  x
-be able to run rewrites on a file
-use a path to load files
-free path, consolidate exits
-files load in weird orders (cons) ()r)
-why don't i need church/????
-unwield
+improve gP
 
 todo:
-remove if (!n) B; in MAP? (since for params)
-100 100 mul 100 mul segfault
+get rid of stack overflows
+	- 100 100 mul 100 mul
 check leaks again, make primitives speedy
