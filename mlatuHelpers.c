@@ -7,6 +7,7 @@ typedef int I; typedef char *S; typedef void V;
 #define FR(x) free(x)
 #define MA(x) malloc(x)
 #define SQ(s,t) (!strcmp(s,t))
+#define TMP(t,x) T s=nT(0,""); s->n=t; x; fT(s);
 #define P(c,...) if (c) R __VA_ARGS__ // panic
 #define SC(d,s) (d=MA(strlen(s)+1),strcpy(d,s))
 #define WS(c) ((c)==' '||(c)=='\t'||(c)=='\r'||(c)=='\n'||(c)<=0) // whitespace

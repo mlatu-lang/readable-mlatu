@@ -13,7 +13,7 @@ V freeRules(D d) { MAP(d,FR(c->w); freeRules(c->c); freeTerms(c->r); FR(c)); }
 _ D nD(S w) /* new D */ { D d=calloc(1,sizeof(struct d)); SC(d->w,w); R d; } D newRoot() { R nD(""); }
 
 _ T wd(S s,I st,I l,T *c,I ln) { S w=MA(l+1); strncpy(w,s+st,l); w[l]=0; T n=nTL(TRM,w,ln); FR(w); R *c=n; }
-_ E Pr(S s,I *i,I lvl,I *ln,T *c/* ptr to n/c */,S f) /* parse */ { E e=(E){}; I st=*i, d; S n; do switch (d=s[*i]) {
+_ E Pr(S s,I *i,I lvl,I *ln,T *c/* ptr to n/c */,S f) /* parse */ { *c=0; E e=(E){}; I st=*i, d; S n; do switch (d=s[*i]) {
 	#define PE(b,c) if (b&&c>e.e) { if (e.f) FR(e.f); e=ER(c,*ln); }
 	#define WD if (*i>st) c=&(wd(s,st,*i-st,c,*ln)->n); st=*i+1
 	C '\n': C ' ': C '\0': C '\t': C '\r': WD; if (d=='\n') (*ln)++; B;
@@ -21,16 +21,16 @@ _ E Pr(S s,I *i,I lvl,I *ln,T *c/* ptr to n/c */,S f) /* parse */ { E e=(E){}; I
 		PE(d=='=',EQ); PE(d=='.',PRD); B;
 	C '(': WD; T q=nTL(Q,"",*ln); c=&(*c=q)->n; (*i)++; I nE=Pr(s,i,lvl+1,ln,&q->c,f).e; PE(1,nE); st=*i+1; B;
 	C ')': WD; PE(!lvl,PRN); R e; } while ((*i)++<strlen(s)); PE(lvl,PRN); R e; }
-E pTH(S s,T *t,I *ln,S f) { *t=nT(ST,""); I i=0; R Pr(s,&i,0,ln,&(*t)->n,f); } E parseTerms(S s,T *t) { I x; R pTH(s,t,&x,""); }
+E pTH(S s,T *t,I *ln,S f) { I i=0; R Pr(s,&i,0,ln,t,f); } E parseTerms(S s,T *t) { I x; R pTH(s,t,&x,""); }
 _ V aR(T t,D d) /* add rule */ { MAP(t, if (*c->w=='=') { freeTerms(d->r); d->e=!(d->r=c->n); c->n=0; R; }
 	D n=fnd(d->c,c->w); if (!n) { n=nD(c->w); n->l=d->l+1; if (d->c) { MAP(d->c,); c->n=n; } else d->c=n; } d=n); }
-_ E cR(T t,S f) /* check rule */ { S n; P(*t->n->w=='=',ER(EMPTY,t->n->ln));
+_ E cR(T t,S f) /* check rule */ { S n; P(*t->w=='=',ER(EMPTY,t->ln));
 	I eq=0; MAP(t,if (*c->w=='=') eq++; P(eq==2,ER(EQ,c->ln)); P(c->c&&!eq,ER(MCH,c->ln))); P(!eq,ER(EQ,c->ln)); R (E){}; }
 #define PRS(nm,fn,prel,cur,slce,next,end) E nm##H(S s,T rs,T p) { S f=fn, n; prel;                                           \
 	 I l=0, r=0, w=0, x=0, cm=0, ln=1, lm=1, c, m; do { c=cur; l++; if (c=='\n') lm++; cm=cm?c!='\n':c=='#'; if (!WS(c)&&!cm) r=1; \
 		if (!cm&&c=='.') { S nS=MA(l+1); m=l; slce; nS[l]=0; I cm=0; DO(strlen(nS),if (cm=cm?nS[i]!='\n':nS[i]=='#') nS[i]=' ');     \
-			T t; E e=pTH(nS,&t,&ln,f); FR(nS); if (e.e!=PRN) { if (e.f) FR(e.f); e=cR(t,f); } P(e.e,freeTerms(t),end,e);            \
-			{MAP(t,if (*c->n->w=='.') { fT(c->n); c->n=0; B; })} while (rs->c) rs=rs->c; rs->c=t->n; fT(t); l=r=0; }	                       \
+			T t; E e=pTH(nS,&t,&ln,f); FR(nS); if (e.e!=PRN) { FR(e.f); e=cR(t,f); } P(e.e,freeTerms(t),end,e);                     \
+			{MAP(t,if (*c->n->w=='.') { fT(c->n); c->n=0; B; })} while (rs->c) rs=rs->c; rs->c=t; l=r=0; }        	                       \
 		if (w==7) { x++; if (WS(c)) { S nS=MA(m=x); slce; nS[x-1]=0; E e=parseFileH(nS,rs,p); FR(nS); P(e.e,end,e); w=x=0; } }    \
 		else if ("#wield "[w]==c) w++; else w=0; next; } while (c>0);                                                             \
 	end; P(r,ER(PRD,lm)); R (E){}; }                                                                                           \
@@ -44,7 +44,7 @@ PRS(parseRules, "", I i,                              s[i],     strncpy(nS,s+i+1
 _ I len(T t) /* length of printed T */ { P(t->t==TRM,strlen(t->w)); I i=2; MAP(t->c,i+=len(c)+!!c->n) R i; }
 I j; S s; _ V prT(T t); V prTL(T t) /* print T list */ { MAP(t,prT(c); if (c->n) s[j++]=' '); }
 _ V prT(T t) /* print T */ { if (t->t==TRM) j+=strlen(strcpy(s+j,t->w)); else s[j++]='(', prTL(t->c), strcpy(s+j++,")"); }
-S prettyTerms(T t) { t=t->t==ST?t->n:t; I l=j=0; MAP(t,l+=len(c)+!!c->n); s=MA(l+1); prTL(t); s[l]=0; R s; }
+S prettyTerms(T t) { I l=j=0; MAP(t,l+=len(c)+!!c->n); s=MA(l+1); prTL(t); s[l]=0; R s; }
 
 _ V rm(T t) /* remove next T */ { T n=t->n->n; fT(t->n); t->n=n; }
 _ V zap (T t) { rm(t); rm(t); }
@@ -59,5 +59,6 @@ _ I lit(T t,D r) /* rewrite on literal */ { D bst=0; MAP(t->n,if (c->t!=TRM||!(r
 _ I qot(T s) /* rewrite on quote */ { T t=s->n, u=t->n; P(!u,0);
 	if (u->t==Q) { P(!u->n,0); I w=*u->n->w; if (w=='~') swap(s); else if (w==',') cat(s); else R 0; R 1; }
 	switch (*u->w) { C '-': zap(s); R 1; C '+': copy(s); R 1; C '<': exec(s); R 1; C '>': wrap(s); R 1; } R 0; }
-I stepRewrite(D r,T t) { MAP(t,P(c->n&&(c->n->t==Q?qot(c):lit(c,r)),0)); R 1; }
-I rewrite(D r,T t) { I n=0; while (!stepRewrite(r,t)) n++; R n; }
+I rH(D r,T t) /* rule helper */ { MAP(t,P(c->n&&(c->n->t==Q?qot(c):lit(c,r)),0)); R 1; }
+I stepRewrite(D r,T *t) { TMP(*t, I d=rH(r,s); *t=s->n); R d; }
+I rewrite(D r,T *t) { TMP(*t, I n=0; while (!rH(r,s)) n++; *t=s->n; ); R n; }

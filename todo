@@ -1,7 +1,9 @@
 done:
 improve gP
+remove ST
 
 todo:
+remove AST types
 get rid of stack overflows
 	- 100 100 mul 100 mul
 check leaks again, make primitives speedy

@@ -29,7 +29,7 @@ V prD(D d,I i) { DO(i,PF(" ")); PF("%s: ",d->w);
 V pRH(S s,D d) /* )rule helper */ { if (d->e||d->r) { PF(" %s =",s); if (d->r) O(d->r," %s"); PF(" .\n"); }
 	MAP(d->c,S t=MA(strlen(s)+strlen(c->w)+2); strcpy(t,s); strcat(t," "); strcat(t,c->w); pRH(t,c); FR(t)); }
 V pR(S s,D d) { T t; E e=parseTerms(s+6,&t); P(e.e,freeTerms(t),pE(e,0));
-	MAP(t->n,P(!(d=fnd(d->c,c->w)),)); S u=prettyTerms(t); freeTerms(t); pRH(u,d); FR(u); }
+	MAP(t,P(!(d=fnd(d->c,c->w)),)); S u=prettyTerms(t); freeTerms(t); pRH(u,d); FR(u); }
 V sys(S oS) { S s; SC(s,oS); S t=strtok(s," \n"); S n=strtok(0," \n");
 	if      (SQ(t,"#wield")   &&n) aF(n), lF(n);
 	else if (SQ(t,"#unwield") &&n) { rF(n); goto rel; }
@@ -74,7 +74,7 @@ I main(I ac,S *av) { DO(ac-1,if (SQ("-s",av[i+1])) sil=1); lf=newTerm(0,"");
 	if (!sil) PF(" how may readable-mlatu ease your life, oh grand exalted master?\n bye to exit, )h for help\n");
 	while (fgets(s,999,stdin)) { if (SQ("bye\n",s)) B; if (*s==')'||!strncmp(s,"#wield ",7)||!strncmp(s,"#unwield ",9)) { sys(s); continue; }
 		rn(&st); S i=strchr(s,'#'); if (i) *i=0; E e=parseTerms(s,&ast); if (e.e) { pE(e,1); goto end; }
-		I n=0; if (dbg) while (!stepRewrite(root,ast)) n++, sil||PF(" |-> "), O(ast,"%s\n"); else n=rewrite(root,ast);
+		I n=0; if (dbg) while (!stepRewrite(root,&ast)) n++, sil||PF(" |-> "), O(ast,"%s\n"); else n=rewrite(root,&ast);
 		rn(&pr); S s=prettyTerms(ast); if (!dbg||!n) sil||PF(" |-> "), puts(s); if (cnt) PF(" %d rewrite%s\n", n, n==1?"":"s"); rn(&fn);
 		if (tmr) { PF(" "); pT(msD(&st,dbg?&fn:&pr)); if (!dbg) PF(" rewriting, "), pT(msD(&pr,&fn)), PF(" printing"); PF("\n"); }
 		S r=MA(strlen(s)+4); strcpy(r,"^="); strcat(r,s); FR(s); strcat(r,"."); parseRules(r,root,path); FR(r); end: freeTerms(ast); }

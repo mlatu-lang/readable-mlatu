@@ -2,7 +2,7 @@
 #define the_children_are_learning_to_leave_you_behind
 
 
-enum { Q,TRM,ST }; // AST types. ST starts each ast
+enum { Q,TRM }; // AST types
 
 // type, line number, word, children, next
 typedef struct t { int t, ln; char *w; struct t *c, *n; } *T, *term;
@@ -42,7 +42,7 @@ otherwise, it will be nonzero - one of
  PRD: period in query
  EQ:  equal sign in query
 the term will always needs freeing regardless of whether there was an error or not
-this only parses basic mlatu, ie. not `=` and `.` of rule syntax, and not comments
+this only parses basic mlatu, ie. not  =  and  .  of rule syntax, and not comments
 */
 Error parseTerms(char *s, term *t);
 
@@ -68,16 +68,17 @@ exactly like the above, except reads the rules directly from a string
 E parseRules(char *string, rule root, term path);
 
 /*
-rewrites the terms `t` using the rules `r` until no more rewrites can be applied
+rewrites the terms  *t  using the rules  r  until no more rewrites can be applied
 returns the number of rewrites
+a pointer to the terms is needed to handle the case where it rewrites to an empty ast
 */
-int rewrite(rule r, term t);
+int rewrite(rule r, term *t);
 
 /*
-rewrites terms `t` with the rules `r` exactly once, applying the rule with the most precedence
-returns 1 if no more rewrites can be applied, and 0 if more can
+rewrites terms  *t  with the rules  r  exactly once, applying the first rule it can
+returns 1 if no rewrite could be performed, and 0 if  *t  was rewritten
 */
-int stepRewrite(rule r, term t);
+int stepRewrite(rule r, term *t);
 
 /*
 you might notice that some functions (like parseTerm, prettyRule, and prettyTerm) are missing
