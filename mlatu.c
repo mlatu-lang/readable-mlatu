@@ -60,5 +60,5 @@ _ I qot(T s) /* rewrite on quote */ { T t=s->n, u=t->n; P(!u,0);
 	if (u->t==Q) { P(!u->n,0); I w=*u->n->w; if (w=='~') swap(s); else if (w==',') cat(s); else R 0; R 1; }
 	switch (*u->w) { C '-': zap(s); R 1; C '+': copy(s); R 1; C '<': exec(s); R 1; C '>': wrap(s); R 1; } R 0; }
 I rH(D r,T t) /* rule helper */ { MAP(t,P(c->n&&(c->n->t==Q?qot(c):lit(c,r)),0)); R 1; }
-I stepRewrite(D r,T *t) { TMP(*t, I d=rH(r,s); *t=s->n); R d; }
-I rewrite(D r,T *t) { TMP(*t, I n=0; while (!rH(r,s)) n++; *t=s->n; ); R n; }
+#define TMP(t,x) T s=nT(0,""); s->n=t; x; t=s->n; fT(s);
+I stepRewrite(D r,T *t) { TMP(*t, I d=rH(r,s)); R d; } I rewrite(D r,T *t) { TMP(*t, I n=0; while (!rH(r,s)) n++); R n; }
