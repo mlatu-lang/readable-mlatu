@@ -35,8 +35,8 @@ _ E cR(T t,S f) /* check rule */ { S n; P(*t->w=='=',ER(EMPTY,t->ln));
 		else if ("#wield "[w]==c) w++; else w=0; next; } while (c>0);                                                             \
 	end; P(r,ER(PRD,lm)); R (E){}; }                                                                                           \
 E nm(S s,D root,T p) { T rs=nT(0,""); E e=nm##H(s,rs,p); T o=rs; if (!e.e) while (o=o->c) aR(o,root); freeTerms(rs); R e; }
-FILE *fF(S n,T p) { FILE *a; P(a=fopen(n,"rb"),a); MAP(p,S f=MA(strlen(n)+strlen(c->w)+2); strcpy(f,c->w); strcat(f,"/"); strcat(f,n);
-	P(a=fopen(f,"rb"),a); FR(f)); R 0; };
+FILE *fF(S n,T p) { FILE *a; P(a=fopen(n,"rb"),a);
+	MAP(p, S f=MA(strlen(n)+strlen(c->w)+2); strcpy(f,c->w); strcat(f,"/"); strcat(f,n); a=fopen(f,"rb"); FR(f); P(a,a)); R 0; }
 // +(c<0): when nothing (not even whitespace) after a wield in a file, file pos will be right after, not 1 after like normal
 PRS(parseFile,  s,  FILE *a=fF(s,p);P(!a,ER(OPEN,0)), fgetc(a), fseek(a,-m+(c<0),SEEK_CUR);fread(nS,1,m,a),    , fclose(a));
 PRS(parseRules, "", I i,                              s[i],     strncpy(nS,s+i+1-m,m),                      i++, 0        );
