@@ -42,18 +42,17 @@ PRS(parseFile,  s,  FILE *a=fF(s,p);P(!a,ER(OPEN,0)), fgetc(a), fseek(a,-m+(c<0)
 PRS(parseRules, "", I i,                              s[i],     strncpy(nS,s+i+1-m,m),                      i++, 0        );
 
 _ I len(T t) /* length of printed T */ { P(t->w,strlen(t->w)); I i=2; MAP(t->c,i+=len(c)+!!c->n) R i; }
-I j; S s; _ V prT(T t); V prTL(T t) /* print T list */ { MAP(t,prT(c); if (c->n) s[j++]=' '); }
-_ V prT(T t) /* print T */ { if (t->w) j+=strlen(strcpy(s+j,t->w)); else s[j++]='(', prTL(t->c), strcpy(s+j++,")"); } // todo why strcpy?
-S prettyTerms(T t) { I l=j=0; MAP(t,l+=len(c)+!!c->n); s=MA(l+1); prTL(t); s[l]=0; R s; }
+S s; _ V prT(T t); V prTL(T t) /* print T list */ { MAP(t,prT(c); if (c->n) strcat(s," ")); }
+_ V prT(T t) /* print T */ { if (t->w) strcat(s,t->w); else strcat(s,"("), prTL(t->c), strcat(s,")"); }
+S prettyTerms(T t) { I l=0; MAP(t,l+=len(c)+!!c->n); s=MA(l+1); *s=0; prTL(t); R s; }
 
 _ V rm(T t) /* remove next T */ { T n=t->n->n; fT(t->n); t->n=n; }
 _ V zap (T t) { rm(t); rm(t); }
-_ V swap(T t) { T c=t->n; t->n=c->n; c->n=t->n->n; t->n->n=c; rm(t->n->n); }
-//_ V swap(T t) { T c=t->n, n=c->n; c->n=n->n; t->n=n; n->n=c; rm(c->n); } todo?
+_ V swap(T t) { T c=t->n, n=c->n; rm(n); c->n=n->n; n->n=c; t->n=n; }
 _ V copy(T t) { rm(t->n); T n=t->n->n; t->n->n=0; T c=cT(t->n); t->n->n=c; c->n=n; }
 _ V wrap(T t) { T e=t->n, q=e->n; FR(q->w); q->w=0; q->c=e; e->n=0; t->n=q; }
 _ V exec(T t) { T cs=t->n->c; t->n->c=0; rm(t); rm(t); P(!cs,); MAP(cs,); c->n=t->n; t->n=cs; }
-_ V cat (T t) { T q=t->n->n; MAP(t->n->c,); c?(c->n=q->c):(t->n->c=q->c); q->c=0; rm(t->n); rm(t->n); }
+_ V cat (T t) { T q=t->n->n; rm(q); MAP(t->n->c,); c?(c->n=q->c):(t->n->c=q->c); q->c=0; rm(t->n); }
 
 _ I lit(T t,D r) /* rewrite on literal */ { D bst=0; MAP(t->n,if (!c->w||!(r=fnd(r->c,c->w))) B; if (r->r||r->e) bst=r);
 	P(!bst,0); DO(bst->l,rm(t)); T z=cT(bst->r); if (z) { MAP(z,); c->n=t->n; t->n=z; } R 1; }
