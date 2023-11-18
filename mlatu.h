@@ -1,12 +1,10 @@
 #ifndef the_children_are_learning_to_leave_you_behind
 #define the_children_are_learning_to_leave_you_behind
 
-
-enum { Q,TRM }; // AST types
-
-// type, line number, word, children, next
-typedef struct t { int t, ln; char *w; struct t *c, *n; } *T, *term;
-term newTerm(int type, char *word);
+// line number, word, children, next
+// the term is a word if its word is non-null, otherwise it's a quote
+typedef struct t { int ln; char *w; struct t *c, *n; } *T, *term;
+term newTerm(char *word);
 void freeTerms(term m); // frees an AST of terms
 char *prettyTerms(term t); // pretty prints a list of terms, returning the allocated string
 

@@ -20,8 +20,8 @@ V pE(E e,I v) { FR(e.f); sil||PF("X-> "); PF("parsing error: "); switch (e.e) {
 		C EQ:    PF("equal sign\n"); B;
 		C PRD:   PF("period\n"); B; }
 	if (v) PF("if you are trying to define a rule, it cannot be defined in the repl; you need to load it from a file\n"); }
-T lf; /* uniq */ V rF(S s) /* rm */ { MAP(lf,P(_n&&SQ(_n->w,s),(c->n=_n->n,_n->n=0,freeTerms(_n)))); }
-V aF(S n) /* add */ { rF(n); MAP(lf,); c->n=newTerm(0,n); }
+T lf; /* uniq */ V rF(S s) /* rm */ { MAP(lf->n,P(_n&&SQ(_n->w,s),(c->n=_n->n,_n->n=0,freeTerms(_n)))); }
+V aF(S n) /* add */ { rF(n); MAP(lf,); c->n=newTerm(n); }
 V lF(S n) /* load */ { SQ(n,"PRELUDE")?parseRules(PRLD,root,path):fE(parseFile(n,root,path)); }
 V O(T t,S f) { S s=prettyTerms(t); PF(f,s); FR(s); }
 V prD(D d,I i) { DO(i,PF(" ")); PF("%s: ",d->w);
@@ -64,12 +64,12 @@ V pT(I ms) { I h=ms/3600000, m=(ms-h*3600000)/60000, s=(ms-m*60000-h*3600000)/10
 	switch (h?0:m?1:s?2:3) { C 0: PF("%dh ",h); C 1: PF("%dm ",m); C 2: PF("%ds ",s); C 3: PF("%dms",ms); } }
 
 S xp(S s) /* expand */ { wordexp_t x; wordexp(s,&x,0); S z; SC(z,*x.we_wordv); wordfree(&x); R z; }
-T gP() /* get path */ { S d=xp("~/.mlatu_path"); FILE *f=fopen(d,"rb"); FR(d); P(!f,0); T z=newTerm(0,""), c=z;
+T gP() /* get path */ { S d=xp("~/.mlatu_path"); FILE *f=fopen(d,"rb"); FR(d); P(!f,0); T z=newTerm(0), c=z;
 	while (1) { S l=0, s, e; size_t m; if (getline(&l,&m,f)==-1) { FR(l); B; }
-		s=l; while (*s&&WS(*s)) s++; e=l+strlen(l)-1; while (WS(*e)&&e>=s) *e=0, e--; S x=xp(s); FR(l); c=c->n=newTerm(0,x); FR(x);
-	} R z; }
+		s=l; while (*s&&WS(*s)) s++; e=l+strlen(l)-1; while (WS(*e)&&e>=s) *e=0, e--; S x=xp(s); FR(l); c=c->n=newTerm(x); FR(x);
+	} R z->n; }
 
-I main(I ac,S *av) { DO(ac-1,if (SQ("-s",av[i+1])) sil=1); lf=newTerm(0,"");
+I main(I ac,S *av) { DO(ac-1,if (SQ("-s",av[i+1])) sil=1); lf=newTerm(0);
 	root=newRoot(); path=gP(); aF("PRELUDE"); lF("PRELUDE"); char s[999]; T ast; Time st, pr, fn; I ms, sc, m, h;
 	if (!sil) PF(" how may readable-mlatu ease your life, oh grand exalted master?\n bye to exit, )h for help\n");
 	while (fgets(s,999,stdin)) { if (SQ("bye\n",s)) B; if (*s==')'||!strncmp(s,"#wield ",7)||!strncmp(s,"#unwield ",9)) { sys(s); continue; }
