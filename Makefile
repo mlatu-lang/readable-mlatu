@@ -7,8 +7,8 @@ repl: lib
 lib:
 	$(CC) $(optimization) -c mlatu.c -o mlatu.o
 
-timer: lib
-	$(CC) $(optimization) mlatu.o examples/timer.c -o timer
+halt: lib
+	$(CC) $(optimization) mlatu.o examples/halt.c -o halt
 
 clean:
-	rm -f mlatu.o repl timer repl.exe timer.exe
+	rm -f mlatu.o repl halt repl.exe halt.exe

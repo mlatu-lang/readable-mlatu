@@ -1,9 +1,10 @@
-(setq mlatu-keywords
+;; -*- lexical-binding: t; -*-
+(defvar mlatu-keywords
       '(("~\\|,\\|<\\|>\\|\\+\\|-\\|" . 'font-lock-constant-face)
 	("=\\|\\."                    . 'font-lock-keyword-face)
 	("#wield .+\n"                . '(0 font-lock-type-face t))))
 
-(setq mlatu-syntax-table
+(defvar mlatu-syntax-table
       (let ((syntable (make-syntax-table)))
 	(modify-syntax-entry ?# "<" syntable)
 	(modify-syntax-entry ?\n ">" syntable)
