@@ -42,7 +42,7 @@ PRS(parseFile,  s,  FILE *a=fF(s,p);P(!a,ER(OPEN,0)), fgetc(a), fseek(a,-m+(c<0)
 PRS(parseRules, "", I i,                              s[i],     strncpy(nS,s+i+1-m,m),                      i++, 0        );
 
 _ I len(T t) /* length of printed T */ { P(t->w,strlen(t->w)); I i=2; MAP(t->c,i+=len(c)+!!c->n) R i; }
-S s; _ V prT(T t); V prTL(T t) /* print T list */ { MAP(t,prT(c); if (c->n) strcat(s," ")); }
+S s; _ V prT(T t); V prTL(T t) /* print T list */ { MAP(t,prT(c); /*if (c->n) strcat(s," ")*/); }
 _ V prT(T t) /* print T */ { if (t->w) strcat(s,t->w); else strcat(s,"("), prTL(t->c), strcat(s,")"); }
 S prettyTerms(T t) { I l=0; MAP(t,l+=len(c)+!!c->n); s=MA(l+1); *s=0; prTL(t); R s; }
 

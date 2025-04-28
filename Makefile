@@ -7,8 +7,11 @@ repl: lib
 lib:
 	$(CC) $(optimization) -c mlatu.c -o mlatu.o
 
-halt: lib
-	$(CC) $(optimization) mlatu.o examples/halt.c -o halt
+bible: lib
+	$(CC) $(optimization) mlatu.o examples/bible.c -o bible
+
+examine: lib
+	$(CC) $(optimization) mlatu.o examples/examine.c -o examine
 
 clean:
-	rm -f mlatu.o repl halt repl.exe halt.exe
+	rm -f mlatu.o repl halt examine repl.exe halt.exe examine.exe
