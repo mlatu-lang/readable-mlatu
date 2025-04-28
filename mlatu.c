@@ -19,7 +19,7 @@ _ E Pr(S s,I *i,I lvl,I *ln,T *c/* ptr to n/c */,S f) /* parse */ { *c=0; E e=(E
 	C '\n': C ' ': C '\0': C '\t': C '\r': WD; if (d=='\n') (*ln)++; B;
 	C '=': C '.': C '+': C '-': C '<': C '>': C '~': C ',': WD; char t[2]={d}; c=&(*c=nTL(t,*ln))->n;
 		PE(d=='=',EQ); PE(d=='.',PRD); B;
-	C '(': WD; T q=nTL(0,*ln); c=&(*c=q)->n; (*i)++; I nE=Pr(s,i,lvl+1,ln,&q->c,f).e; PE(1,nE); st=*i+1; B;
+	C '(': WD; T q=nTL(0,*ln); c=&(*c=q)->n; (*i)++; E nE=Pr(s,i,lvl+1,ln,&q->c,f); if (nE.f) FR(nE.f); PE(1,nE.e); st=*i+1; B;
 	C ')': WD; PE(!lvl,PRN); R e; } while ((*i)++<strlen(s)); PE(lvl,PRN); R e; }
 E pTH(S s,T *t,I *ln,S f) { I i=0; R Pr(s,&i,0,ln,t,f); } E parseTerms(S s,T *t) { I x; R pTH(s,t,&x,""); }
 _ V aR(T t,D d) /* add rule */ { MAP(t, if (*c->w=='=') { freeTerms(d->r); d->e=!(d->r=c->n); c->n=0; R; }
