@@ -5,9 +5,9 @@
 #include "mlatuHelpers.c"
 
 _ V fT(T t) /* free T */ { if (t->w) FR(t->w); MAP(t->c,fT(c)); FR(t); } V freeTerms(T t) { MAP(t,fT(c)); }
-_ T nT(S w) { T z=calloc(1,sizeof(struct t)); if (w) SC(z->w,w); R z; } T newTerm(S w) { R nT(w); }
-_ T nTL(S w,I ln) /* new T w/ line # */ { T z=nT(w); z->ln=ln; R z; }
-_ T cT(T t) /* clone T */ { T z=nT(0), n=z; MAP(t,n=n->n=nT(c->w); n->c=cT(c->c)); n=z->n; fT(z); R n; }
+T newTerm(S w) { T z=calloc(1,sizeof(struct t)); if (w) SC(z->w,w); R z; }
+_ T nTL(S w,I ln) /* new T w/ line # */ { T z=newTerm(w); z->ln=ln; R z; }
+_ T cT(T t) /* clone T */ { T z=newTerm(0), n=z; MAP(t,n=n->n=newTerm(c->w); n->c=cT(c->c)); n=z->n; fT(z); R n; }
 
 V freeRules(D d) { MAP(d,FR(c->w); freeRules(c->c); freeTerms(c->r); FR(c)); }
 _ D nD(S w) /* new D */ { D d=calloc(1,sizeof(struct d)); SC(d->w,w); R d; } D newRoot() { R nD(""); }
@@ -34,7 +34,7 @@ _ E cR(T t,S f) /* check rule */ { S n; P(t->w&&*t->w=='=',ER(EMPTY,t->ln));
 		if (w==7) { x++; if (WS(c)) { S nS=MA(m=x); slce; nS[x-1]=0; E e=parseFileH(nS,rs,p); FR(nS); P(e.e,end,e); w=x=0; } }    \
 		else if ("#wield "[w]==c) w++; else w=0; next; } while (c>0);                                                             \
 	end; P(r,ER(PRD,lm)); R (E){}; }                                                                                           \
-E nm(S s,D root,T p) { T rs=nT(0); E e=nm##H(s,rs,p); T o=rs; if (!e.e) while (o=o->c) aR(o,root); freeTerms(rs); R e; }
+E nm(S s,D root,T p) { T rs=newTerm(0); E e=nm##H(s,rs,p); T o=rs; if (!e.e) while (o=o->c) aR(o,root); freeTerms(rs); R e; }
 FILE *fF(S n,T p) { FILE *a; P(a=fopen(n,"rb"),a);
 	MAP(p, S f=MA(strlen(n)+strlen(c->w)+2); strcpy(f,c->w); strcat(f,"/"); strcat(f,n); a=fopen(f,"rb"); FR(f); P(a,a)); R 0; }
 // +(c<0): when nothing (not even whitespace) after a wield in a file, file pos will be right after, not 1 after like normal
@@ -60,5 +60,5 @@ _ I qot(T s) /* rewrite on quote */ { T t=s->n, u=t->n; P(!u,0);
 	if (!u->w) { P(!u->n,0); P(!u->n->w,0); I w=*u->n->w; if (w=='~') swap(s); else if (w==',') cat(s); else R 0; R 1; }
 	switch (*u->w) { C '-': zap(s); R 1; C '+': copy(s); R 1; C '<': exec(s); R 1; C '>': wrap(s); R 1; } R 0; }
 I rH(D r,T t) /* rule helper */ { MAP(t,P(c->n&&(c->n->w?lit(c,r):qot(c)),0)); R 1; }
-#define DMY(t,x) T s=nT(0); s->n=t; x; t=s->n; fT(s);
+#define DMY(t,x) T s=newTerm(0); s->n=t; x; t=s->n; fT(s);
 I stepRewrite(D r,T *t) { DMY(*t, I d=rH(r,s)); R d; } I rewrite(D r,T *t) { DMY(*t, I n=0; while (!rH(r,s)) n++); R n; }
