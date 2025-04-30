@@ -23,7 +23,7 @@ _ E Pr(S s,I *i,I lvl,I *ln,T *c/* ptr to n/c */,S f) /* parse */ { *c=0; E e=(E
 	C ')': WD; PE(!lvl,PRN); R e; } while ((*i)++<strlen(s)); PE(lvl,PRN); R e; }
 E pTH(S s,T *t,I *ln,S f) { I i=0; R Pr(s,&i,0,ln,t,f); } E parseTerms(S s,T *t) { I x; R pTH(s,t,&x,""); }
 _ V aR(T t,D d) /* add rule */ { MAP(t, if (*c->w=='=') { freeTerms(d->r); d->e=!(d->r=c->n); c->n=0; R; }
-	D n=fnd(d->c,c->w); if (!n) { n=nD(c->w); n->l=d->l+1; if (d->c) { MAP(d->c,); c->n=n; } else d->c=n; } d=n); }
+	D n=fnd(d->c,c->w); if (!n) { n=nD(c->w); n->l=d->l+1; MAP(d->c,); if (c) c->n=n; else d->c=n; } d=n); }
 _ E cR(T t,S f) /* check rule */ { S n; P(t->w&&*t->w=='=',ER(EMPTY,t->ln));
 	I eq=0; MAP(t,if (c->w&&*c->w=='=') eq++; P(eq==2,ER(EQ,c->ln)); P(!c->w&&!eq,ER(MCH,c->ln))); P(!eq,ER(EQ,c->ln)); R (E){}; }
 #define PRS(nm,fn,prel,cur,slce,next,end) E nm##H(S s,T rs,T p) { S f=fn, n; prel;                                           \
