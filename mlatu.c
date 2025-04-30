@@ -41,10 +41,10 @@ FILE *fF(S n,T p) { FILE *a; P(a=fopen(n,"rb"),a);
 PRS(parseFile,  s,  FILE *a=fF(s,p);P(!a,ER(OPEN,0)), fgetc(a), fseek(a,-m+(c<0),SEEK_CUR);fread(nS,1,m,a),    , fclose(a));
 PRS(parseRules, "", I i,                              s[i],     strncpy(nS,s+i+1-m,m),                      i++, 0        );
 
-_ I len(T t) /* length of printed T */ { P(t->w,strlen(t->w)); I i=2; MAP(t->c,i+=len(c)+!!c->n) R i; }
+_ I lenT(T t); _ I lenTL(T t) { I i=0; MAP(t,i+=lenT(c)+!!c->n); R i; }; _ I lenT(T t)  { R t->w?strlen(t->w):lenTL(t->c)+2; }
 S s; _ V prT(T t); V prTL(T t) /* print T list */ { MAP(t,prT(c); if (c->n) strcat(s," ")); }
 _ V prT(T t) /* print T */ { if (t->w) strcat(s,t->w); else strcat(s,"("), prTL(t->c), strcat(s,")"); }
-S prettyTerms(T t) { I l=0; MAP(t,l+=len(c)+!!c->n); s=MA(l+1); *s=0; prTL(t); R s; }
+S prettyTerms(T t) { s=MA(lenTL(t)+1); *s=0; prTL(t); R s; }
 
 _ V rm(T t) /* remove next T */ { T n=t->n->n; fT(t->n); t->n=n; }
 _ V zap (T t) { rm(t); rm(t); }
@@ -60,5 +60,5 @@ _ I qot(T s) /* rewrite on quote */ { T t=s->n, u=t->n; P(!u,0);
 	if (!u->w) { P(!u->n,0); P(!u->n->w,0); I w=*u->n->w; if (w=='~') swap(s); else if (w==',') cat(s); else R 0; R 1; }
 	switch (*u->w) { C '-': zap(s); R 1; C '+': copy(s); R 1; C '<': exec(s); R 1; C '>': wrap(s); R 1; } R 0; }
 I rH(D r,T t) /* rule helper */ { MAP(t,P(c->n&&(c->n->w?lit(c,r):qot(c)),0)); R 1; }
-#define TMP(t,x) T s=nT(0); s->n=t; x; t=s->n; fT(s);
-I stepRewrite(D r,T *t) { TMP(*t, I d=rH(r,s)); R d; } I rewrite(D r,T *t) { TMP(*t, I n=0; while (!rH(r,s)) n++); R n; }
+#define DMY(t,x) T s=nT(0); s->n=t; x; t=s->n; fT(s);
+I stepRewrite(D r,T *t) { DMY(*t, I d=rH(r,s)); R d; } I rewrite(D r,T *t) { DMY(*t, I n=0; while (!rH(r,s)) n++); R n; }
