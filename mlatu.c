@@ -41,7 +41,7 @@ FILE *fF(S n,T p) { FILE *a; P(a=fopen(n,"rb"),a);
 PRS(parseFile,  s,  FILE *a=fF(s,p);P(!a,ER(OPEN,0)), fgetc(a), fseek(a,-m+(c<0),SEEK_CUR);fread(nS,1,m,a),    , fclose(a));
 PRS(parseRules, "", I i,                              s[i],     strncpy(nS,s+i+1-m,m),                      i++, 0        );
 
-_ I lenT(T t); _ I lenTL(T t) { I i=0; MAP(t,i+=lenT(c)+!!c->n); R i; }; _ I lenT(T t)  { R t->w?strlen(t->w):lenTL(t->c)+2; }
+_ I lenT(T t); _ I lenTL(T t) { I i=0; MAP(t,i+=lenT(c)+!!c->n); R i; }; _ I lenT(T t) { R t->w?strlen(t->w):lenTL(t->c)+2; }
 S s; _ V prT(T t); V prTL(T t) /* print T list */ { MAP(t,prT(c); if (c->n) strcat(s," ")); }
 _ V prT(T t) /* print T */ { if (t->w) strcat(s,t->w); else strcat(s,"("), prTL(t->c), strcat(s,")"); }
 S prettyTerms(T t) { s=MA(lenTL(t)+1); *s=0; prTL(t); R s; }

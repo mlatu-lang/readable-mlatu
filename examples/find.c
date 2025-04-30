@@ -1,7 +1,7 @@
 /* find.c
    brute force combinators
-   usage: ./find (<before> <after>)+
-   example usage: ./find '(B)(A)' 'A' '(B)(A)' '(A(B))'
+   usage: ./find <before> <after>
+   example usage: ./find '(B)(A)'
    also see bible.c */
 
 #include <stdio.h>
@@ -17,13 +17,10 @@ I pr(T ast) { S s=prettyTerms(ast); puts(s); FR(s); }
 I ipow(I b,I p) { I r=1; DO(p,r*=b); R r; }
 S cs="()+-<>~,";
 I teq(T t,T u) { MAP(t,P(!u||(c->w?!u->w||strcmp(c->w,u->w):u->w||!teq(c->c,u->c)),0);u=u->n); R !u; }
-#define progs(i) I _j=i; DO(l,I k=i;DO(w,s[i][k+pls[i]]=cs[_j%8]);_j/=8)
-I oflen(I l,I w,S*ls,T*rs) { PF("length %d:\n",l); S*s=MA(w*sizeof(S)); I*pls=MA(w*sizeof(I)); DO(w,pls[i]=strlen(ls[i]));
-	DO(w,s[i]=MA(l+pls[i]+1);strcpy(s[i],ls[i]);s[i][l+pls[i]]=0); T ast; D r=newRoot();
-	DO(ipow(8,l), progs(i);
-		DO(w,parses(s[i],&ast)&&small(&ast,r)&&teq(ast,rs[i])&&PF("%s |-> ",s[i])&&pr(ast);freeTerms(ast)));
-	freeRules(r); DO(w,FR(s[i])); FR(s); FR(pls); }
-S help="usage: ./find (<before> <after>)*\nexample: ./find '(B)(A)' 'A' '(B)(A)' '(A(B))'";
-I main(I argc,S argv[]) { P(argc==1||!(argc%2),puts(help)); I w=argc/2; S*ls=MA(w*sizeof(S)); T l,*rs=MA(w*sizeof(T));
-	DO(w,parse(ls[i]=argv[2*i+1],&l);freeTerms(l);parse(argv[2*(i+1)],&rs[i])); DO(100,oflen(i,w,ls,rs));
-	DO(w,freeTerms(rs[i])); FR(ls); FR(rs); }
+#define prog(i) I _j=i; DO(l,s[l-i-1+pl]=cs[_j%8];_j/=8)
+I oflen(I l,S ls,T rs) { PF("length %d:\n",l); I pl=strlen(ls); S s=MA(l+pl+1); strcpy(s,ls); s[l+pl]=0; T ast; D r=newRoot();
+	DO(ipow(8,l),prog(i);parses(s,&ast)&&small(&ast,r)&&teq(ast,rs)&&PF("%s |-> ",s)&&pr(ast);freeTerms(ast));
+	freeRules(r); FR(s); }
+S help="usage: ./find <before> <after>\nexample: ./find '(B)(A)' 'A'";
+I main(I argc,S argv[]) { P(argc!=3,puts(help)); S ls=argv[1]; T rs; parse(ls,&rs); freeTerms(rs); parse(argv[2],&rs);
+	DO(5,oflen(i,ls,rs)); freeTerms(rs); }
