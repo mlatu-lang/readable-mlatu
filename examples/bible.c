@@ -16,7 +16,8 @@ I comb(T ast) { P(!ast,0); MAP(ast,P(c->w?!strchr("ABCDE",*c->w):!comb(c->c),0))
 I pr(T ast) { S s=prettyTerms(ast); puts(s); FR(s); }
 I ipow(I b,I p) { I r=1; DO(p,r*=b); R r; }
 S cs="()+-<>~,", prelude="(E)(D)(C)(B)(A)";
-#define prog(i) I _j=i; DO(l,s[i+pl]=cs[_j%8];_j/=8)
+I up(I l,S s) { I p=0; DO(l,p+=(s[i]=='(')-(s[i]==')');P(p<0,i)); R -1; }
+#define prog(i) I _j=i; DO(l,s[l-i-1+pl]=cs[_j%8];_j/=8); I u=up(l,s+pl); if (u>=0) { i+=ipow(8,l-u-1)-1; continue; }
 I oflen(I l) { I pl=strlen(prelude); S s=MA(l+pl+1); strcpy(s,prelude); s[l+pl]=0; T ast; D r=newRoot();
 	DO(ipow(8,l), prog(i); parses(s,&ast)&&small(&ast,r)&&comb(ast)&&PF("%s|",s)&&pr(ast); freeTerms(ast)); freeRules(r); FR(s); }
 I main(I argc,S argv[]){ P(argc==1,puts("usage: ./bible <length>")); DO(1+atoi(argv[1]),oflen(i)); }
